@@ -1,10 +1,6 @@
-// Import Firebase SDK functions (these need to be added)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis", 
   authDomain: "stashortrash-acbbf.firebaseapp.com",
   projectId: "stashortrash-acbbf",
   storageBucket: "stashortrash-acbbf.firebasestorage.app",
@@ -14,12 +10,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-// Get Firestore instance
-const db = getFirestore(app);
+const db = firebase.firestore();
 
-// Elements
+// Elements for product rating
 const stashBtn = document.querySelector(".stash");
 const trashBtn = document.querySelector(".trash");
 
@@ -29,14 +24,38 @@ trashBtn.addEventListener("click", () => rateProduct("trash"));
 
 // Function to save the rating to Firestore
 function rateProduct(rating) {
-  const productRef = doc(db, "ratings", "CocaCola");
+  const productRef = db.collection("ratings").doc("CocaCola");
 
-  // Update Firestore document with the rating
-  updateDoc(productRef, {
-    [rating]: increment(1)  // Increment the count for the respective rating
+  productRef.update({
+    [rating]: firebase.firestore.FieldValue.increment(1)
   })
   .then(() => {
     alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
+  })
+  .catch((error) => {
+    console.error("Error adding document: ", error);
+  });
+}
+
+// Elements for rating the AI
+const durabilityBtn = document.querySelector(".rate-durability");
+const functionalityBtn = document.querySelector(".rate-functionality");
+const helpfulnessBtn = document.querySelector(".rate-helpfulness");
+
+// Click handlers for AI rating buttons
+durabilityBtn.addEventListener("click", () => rateAI("durability"));
+functionalityBtn.addEventListener("click", () => rateAI("functionality"));
+helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
+
+// Function to save the AI rating to Firestore
+function rateAI(ratingType) {
+  const aiRef = db.collection("ai_ratings").doc("assistant");
+
+  aiRef.update({
+    [ratingType]: firebase.firestore.FieldValue.increment(1)
+  })
+  .then(() => {
+    alert(`You rated the AI's ${ratingType} as 👍!`);
   })
   .catch((error) => {
     console.error("Error adding document: ", error);
