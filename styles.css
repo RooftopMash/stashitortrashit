@@ -1,0 +1,57 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fdfdfd;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #facc15; /* golden yellow for attention */
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.rating-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-align: center;
+  background: #fff;
+}
+
+button.stash {
+  background-color: #4ade80; /* green for stash */
+  color: white;
+  padding: 0.8rem 1.2rem;
+  margin: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+button.trash {
+  background-color: #ef4444; /* red for trash */
+  color: white;
+  padding: 0.8rem 1.2rem;
+  margin: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+  padding: 1rem;
+  background: #f3f4f6;
+  font-size: 0.9rem;
+}
