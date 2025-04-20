@@ -1,11 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "your-api-key-here", 
-  authDomain: "your-auth-domain-here",
-  projectId: "your-project-id-here",
-  storageBucket: "your-storage-bucket-here",
-  messagingSenderId: "your-sender-id-here",
-  appId: "your-app-id-here"
+  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis", 
+  authDomain: "stashortrash-acbbf.firebaseapp.com",
+  projectId: "stashortrash-acbbf",
+  storageBucket: "stashortrash-acbbf.firebasestorage.app",
+  messagingSenderId: "782905521538",
+  appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+  measurementId: "G-8Y4ZXJTPM6"
 };
 
 // Initialize Firebase
