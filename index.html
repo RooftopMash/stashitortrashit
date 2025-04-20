@@ -1,98 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stash or Trash???</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div id="app">
-    <header>
-      <h1>Stash or Trash???</h1>
-      <p>Rate brands, products, and companies — Your voice matters!</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Stash or Trash???</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Stash or Trash???</h1>
+        <p>Rate brands, products, and companies — Your voice matters!</p>
+      </header>
 
-    <main>
-      <div class="rating-card">
-        <h2>What do you think of Coca-Cola?</h2>
-        <button class="stash">🔥 Stash</button>
-        <button class="trash">🗑️ Trash</button>
-      </div>
+      <main>
+        <div class="rating-card">
+          <h2>What do you think of Coca-Cola?</h2>
+          <button class="stash">🔥 Stash</button>
+          <button class="trash">🗑️ Trash</button>
+        </div>
 
-      <!-- New section to rate the AI -->
-      <section class="rate-ai">
-        <h2>Rate Your AI Assistant!</h2>
-        <p>How helpful was the AI?</p>
-        <button class="rate-durability">💪 Durability</button>
-        <button class="rate-functionality">🛠️ Functionality</button>
-        <button class="rate-helpfulness">🤝 Helpfulness</button>
-      </section>
-    </main>
+        <!-- New section to rate the AI -->
+        <section class="rate-ai">
+          <h2>Rate Your AI Assistant!</h2>
+          <p>How helpful was the AI?</p>
+          <button class="rate-durability">💪 Durability</button>
+          <button class="rate-functionality">🛠️ Functionality</button>
+          <button class="rate-helpfulness">🤝 Helpfulness</button>
+        </section>
+      </main>
 
-    <footer>
-      <p>Login to comment & rate. Global reviews, local voice.</p>
-    </footer>
-  </div>
+      <footer>
+        <p>Login to comment & rate. Global reviews, local voice.</p>
+      </footer>
+    </div>
 
-  <!-- ✅ Firebase Modular SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    <!-- ✅ Firebase SDK with your actual configuration -->
+    <script type="module">
+      // Import the functions you need from Firebase SDKs
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-      authDomain: "stashortrash-acbbf.firebaseapp.com",
-      projectId: "stashortrash-acbbf",
-      storageBucket: "stashortrash-acbbf.firebasestorage.app",
-      messagingSenderId: "782905521538",
-      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-      measurementId: "G-8Y4ZXJTPM6"
-    };
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+        authDomain: "stashortrash-acbbf.firebaseapp.com",
+        projectId: "stashortrash-acbbf",
+        storageBucket: "stashortrash-acbbf.firebasestorage.app",
+        messagingSenderId: "782905521538",
+        appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+        measurementId: "G-8Y4ZXJTPM6"
+      };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-    // PRODUCT RATING
-    const stashBtn = document.querySelector(".stash");
-    const trashBtn = document.querySelector(".trash");
+      // Elements for product rating
+      const stashBtn = document.querySelector(".stash");
+      const trashBtn = document.querySelector(".trash");
 
-    stashBtn.addEventListener("click", () => rateProduct("stash"));
-    trashBtn.addEventListener("click", () => rateProduct("trash"));
+      // Click handlers for stash/trash buttons
+      stashBtn.addEventListener("click", () => rateProduct("stash"));
+      trashBtn.addEventListener("click", () => rateProduct("trash"));
 
-    async function rateProduct(rating) {
-      const productRef = doc(db, "ratings", "CocaCola");
-      try {
-        await updateDoc(productRef, {
-          [rating]: increment(1)
-        });
-        alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
-      } catch (error) {
-        console.error("Error updating product rating:", error);
+      async function rateProduct(rating) {
+        const productRef = doc(db, "ratings", "CocaCola");
+        try {
+          await updateDoc(productRef, {
+            [rating]: increment(1)
+          });
+          alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
+        } catch (error) {
+          console.error("Error updating product rating:", error);
+        }
       }
-    }
 
-    // AI RATING
-    const durabilityBtn = document.querySelector(".rate-durability");
-    const functionalityBtn = document.querySelector(".rate-functionality");
-    const helpfulnessBtn = document.querySelector(".rate-helpfulness");
+      // Elements for AI rating
+      const durabilityBtn = document.querySelector(".rate-durability");
+      const functionalityBtn = document.querySelector(".rate-functionality");
+      const helpfulnessBtn = document.querySelector(".rate-helpfulness");
 
-    durabilityBtn.addEventListener("click", () => rateAI("durability"));
-    functionalityBtn.addEventListener("click", () => rateAI("functionality"));
-    helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
+      durabilityBtn.addEventListener("click", () => rateAI("durability"));
+      functionalityBtn.addEventListener("click", () => rateAI("functionality"));
+      helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
 
-    async function rateAI(ratingType) {
-      const aiRef = doc(db, "ai_ratings", "assistant");
-      try {
-        await updateDoc(aiRef, {
-          [ratingType]: increment(1)
-        });
-        alert(`You rated the AI's ${ratingType} as 👍!`);
-      } catch (error) {
-        console.error("Error updating AI rating:", error);
+      async function rateAI(ratingType) {
+        const aiRef = doc(db, "ai_ratings", "assistant");
+        try {
+          await updateDoc(aiRef, {
+            [ratingType]: increment(1)
+          });
+          alert(`You rated the AI's ${ratingType} as 👍!`);
+        } catch (error) {
+          console.error("Error updating AI rating:", error);
+        }
       }
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
