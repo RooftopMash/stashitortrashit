@@ -7,10 +7,10 @@
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
+        // Firebase Configuration (Replace with your actual Firebase config from Firebase Console)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -35,32 +35,20 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     alert("Signed up successfully!");
+                    // Optionally save user data to Firestore (for future features)
+                    // await setDoc(doc(db, "users", user.uid), {
+                    //     email: user.email,
+                    //     createdAt: new Date()
+                    // });
+
+                    // Hide sign up form and show success message
                     document.getElementById("signup").style.display = "none";
-                    document.getElementById("login").style.display = "block"; // Show login after sign up
+                    document.getElementById("signup-success").style.display = "block"; 
                 })
                 .catch((error) => {
                     const errorCode = error.code;
                     const errorMessage = error.message;
                     alert(`Sign Up Failed: ${errorMessage}`);
-                });
-        });
-
-        // Login functionality
-        document.getElementById("login-btn").addEventListener("click", () => {
-            const email = document.getElementById("email-login").value;
-            const password = document.getElementById("password-login").value;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    alert("Logged in successfully!");
-                    document.getElementById("login").style.display = "none";
-                    document.getElementById("main").style.display = "block"; // Show main app after login
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(`Login Failed: ${errorMessage}`);
                 });
         });
     </script>
@@ -73,13 +61,12 @@
         <button id="signup-btn">Sign Up</button>
     </div>
 
-    <div id="login" style="display: none;">
-        <h2>Log In</h2>
-        <input type="email" id="email-login" placeholder="Enter email" />
-        <input type="password" id="password-login" placeholder="Enter password" />
-        <button id="login-btn">Log In</button>
+    <div id="signup-success" style="display: none;">
+        <h2>Sign Up Successful!</h2>
+        <p>You can now log in to your account. Please check your inbox for confirmation!</p>
     </div>
 
+    <!-- Main App Content (hidden for now) -->
     <div id="main" style="display: none;">
         <h2>Welcome to Stash or Trash!</h2>
         <button id="stash-btn">Stash</button>
