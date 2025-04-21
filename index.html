@@ -5,67 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stash or Trash?</title>
     <style>
+        /* General Styles */
         body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
-            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
         }
 
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-        }
-
-        #signup, #verify-email, #main {
-            display: none; /* Initially hide all sections */
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
             text-align: center;
+        }
+
+        h2 {
+            color: #333;
             margin-bottom: 20px;
         }
 
-        #signup {
-            display: block; /* Show the signup form initially */
+        /* Input Styles */
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Prevents padding from affecting width */
         }
 
-        input {
-            margin: 5px;
-            padding: 8px;
+        /* Button Styles */
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* Form Section Styles */
+        #signup, #login, #verify-email, #main {
+            display: none;
+        }
+
+        #signup {
+            display: block;
+        }
+
+        /* Error Message Styles */
+        .error-message {
+            color: #d9534f;
+            margin-top: 10px;
             font-size: 14px;
         }
+
+        /* Loading Indicator Styles */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #5cb85c;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .weak { color: red; }
+        .medium { color: orange; }
+        .strong { color: green; }
     </style>
 </head>
 <body>
-    <div id="signup">
-        <h2>Sign Up</h2>
-        <input type="email" id="email" placeholder="Enter email" required />
-        <input type="password" id="password" placeholder="Enter password" required />
-        <button id="signup-btn">Sign Up</button>
-    </div>
+    <div class="container">
+        <div id="signup">
+            <h2>Sign Up</h2>
+            <input type="email" id="email-signup" placeholder="Enter email" required />
+            <div class="error-message" id="email-error"></div>
 
-    <div id="verify-email" style="display: none;">
-        <h2>Please verify your email</h2>
-        <p>Check your inbox for the verification link, and once confirmed, create your username.</p>
-        <input type="text" id="username" placeholder="Enter username" />
-        <button id="create-username-btn">Create Username</button>
-    </div>
+            <input type="password" id="password-signup" placeholder="Enter password" required />
+            <div class="password-strength" id="password-strength"></div>
+            <div class="error-message" id="password-error"></div>
 
-    <div id="main" style="display: none;">
-        <h2>Welcome to Stash or Trash!</h2>
-        <p>Rate the items!</p>
-        <button id="stash-btn">Stash</button>
-        <button id="trash-btn">Trash</button>
+            <button id="signup-btn">Sign Up</button>
+            <div class="loader" id="signup-loader"></div>
+        </div>
+
+        <div id="login">
+            <h2>Login</h2>
+            <input type="email" id="email-login" placeholder="Enter email" required />
+            <input type="password" id="password-login" placeholder="Enter password" required />
+            <button id="login-btn">Login</button>
+            <div class="loader" id="login-loader"></div>
+            <div class="error-message" id="login-error"></div>
+        </div>
+
+        <div id="verify-email">
+            <h2>Please verify your email</h2>
+            <p>Check your inbox for the verification link, and once confirmed, create your username.</p>
+            <input type="text" id="username" placeholder="Enter username" />
+            <button id="create-username-btn">Create Username</button>
+            <div class="loader" id="username-loader"></div>
+            <div class="error-message" id="username-error"></div>
+        </div>
+
+        <div id="main">
+            <h2>Welcome to Stash or Trash!</h2>
+            <p>Rate the items!</p>
+            <button id="stash-btn">Stash</button>
+            <button id="trash-btn">Trash</button>
+            <button id="logout-btn">Logout</button>
+        </div>
+
+        <div id="user-info"></div>
     </div>
 
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Firebase Configuration
@@ -84,11 +168,113 @@
         const auth = getAuth();
         const db = getFirestore(app);
 
-        // Sign Up functionality
-        document.getElementById("signup-btn").addEventListener("click", () => {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+        // --- UI Element References ---
+        const signupDiv = document.getElementById("signup");
+        const loginDiv = document.getElementById("login");
+        const verifyEmailDiv = document.getElementById("verify-email");
+        const mainDiv = document.getElementById("main");
+        const userInfoDiv = document.getElementById("user-info");
 
+        // Error Message Elements
+        const emailError = document.getElementById("email-error");
+        const passwordError = document.getElementById("password-error");
+        const loginError = document.getElementById("login-error");
+        const usernameError = document.getElementById("username-error");
+
+        // Loading Indicator Elements
+        const signupLoader = document.getElementById("signup-loader");
+        const loginLoader = document.getElementById("login-loader");
+        const usernameLoader = document.getElementById("username-loader");
+
+        // Password Strength Indicator
+        const passwordStrength = document.getElementById("password-strength");
+
+        // --- Helper Functions ---
+        function showLoader(loader) {
+            loader.style.display = "block";
+        }
+
+        function hideLoader(loader) {
+            loader.style.display = "none";
+        }
+
+        function clearErrors() {
+            emailError.textContent = "";
+            passwordError.textContent = "";
+            loginError.textContent = "";
+            usernameError.textContent = "";
+        }
+
+        // --- Password Strength Validation ---
+        function checkPasswordStrength(password) {
+            const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+            const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+            if (strongRegex.test(password)) {
+                passwordStrength.textContent = "Strong";
+                passwordStrength.className = "password-strength strong";
+            } else if (mediumRegex.test(password)) {
+                passwordStrength.textContent = "Medium";
+                passwordStrength.className = "password-strength medium";
+            } else {
+                passwordStrength.textContent = "Weak";
+                passwordStrength.className = "password-strength weak";
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById("password-signup").addEventListener("input", (event) => {
+            checkPasswordStrength(event.target.value);
+        });
+
+        // --- Firebase Auth State Listener ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                if (user.emailVerified) {
+                    // Email is verified
+                    mainDiv.style.display = "block";
+                    loginDiv.style.display = "none";
+                    signupDiv.style.display = "none";
+                    verifyEmailDiv.style.display = "none";
+                    userInfoDiv.textContent = `Logged in as: ${user.email}`;
+                } else {
+                    // Email not verified
+                    verifyEmailDiv.style.display = "block";
+                    loginDiv.style.display = "none";
+                    signupDiv.style.display = "none";
+                    mainDiv.style.display = "none";
+                    userInfoDiv.textContent = "Please verify your email.";
+                }
+            } else {
+                // User is signed out
+                loginDiv.style.display = "block";
+                signupDiv.style.display = "none";
+                verifyEmailDiv.style.display = "none";
+                mainDiv.style.display = "none";
+                userInfoDiv.textContent = "";
+            }
+        });
+
+        // --- Sign Up Functionality ---
+        document.getElementById("signup-btn").addEventListener("click", () => {
+            clearErrors(); // Clear any previous errors
+            const email = document.getElementById("email-signup").value;
+            const password = document.getElementById("password-signup").value;
+
+            // Basic email validation
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailError.textContent = "Invalid email format";
+                return;
+            }
+
+            // Check password strength
+            if (passwordStrength.className !== "password-strength strong") {
+                passwordError.textContent = "Password is not strong enough";
+                return;
+            }
+
+            showLoader(signupLoader);
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
@@ -96,21 +282,50 @@
                     sendEmailVerification(user)
                         .then(() => {
                             alert("Sign-up successful! A verification link has been sent to your email.");
-                            document.getElementById("signup").style.display = "none";
-                            document.getElementById("verify-email").style.display = "block";
+                            signupDiv.style.display = "none";
+                            verifyEmailDiv.style.display = "block";
+                            loginDiv.style.display = "none";
+                        })
+                        .finally(() => {
+                            hideLoader(signupLoader);
                         });
                 })
                 .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(`Sign Up Failed: ${errorMessage}`);
+                    hideLoader(signupLoader);
+                    let errorMessage = "Sign Up Failed: " + error.message;
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = "This email is already in use.";
+                    }
+                    emailError.textContent = errorMessage;
                 });
         });
 
-        // Username creation after email verification
+        // --- Login Functionality ---
+        document.getElementById("login-btn").addEventListener("click", () => {
+            clearErrors();
+            const email = document.getElementById("email-login").value;
+            const password = document.getElementById("password-login").value;
+
+            showLoader(loginLoader);
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log("Login successful!"); // Optional: Add a console log
+                    // The onAuthStateChanged listener will handle the UI update
+                })
+                .catch((error) => {
+                    hideLoader(loginLoader);
+                    loginError.textContent = "Login Failed: " + error.message;
+                });
+        });
+
+        // --- Username creation after email verification ---
         document.getElementById("create-username-btn").addEventListener("click", () => {
+            clearErrors();
             const username = document.getElementById("username").value;
 
+            showLoader(usernameLoader);
             // Save username to Firestore
             const user = auth.currentUser;
             setDoc(doc(db, "users", user.uid), {
@@ -118,12 +333,29 @@
             })
                 .then(() => {
                     alert("Username created successfully!");
-                    document.getElementById("verify-email").style.display = "none";
-                    document.getElementById("main").style.display = "block"; // Main app after successful setup
+                    verifyEmailDiv.style.display = "none";
+                    mainDiv.style.display = "block";
+                    loginDiv.style.display = "none";
+                    userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${username})`;
                 })
                 .catch((error) => {
-                    alert(`Error saving username: ${error.message}`);
+                    usernameError.textContent = "Error saving username: " + error.message;
+                })
+                .finally(() => {
+                    hideLoader(usernameLoader);
                 });
+        });
+
+        // --- Logout Functionality ---
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                // Sign-out successful.
+                console.log("Logout successful!");
+                // The onAuthStateChanged listener will handle the UI update
+            }).catch((error) => {
+                // An error happened.
+                alert(`Logout Failed: ${error.message}`);
+            });
         });
     </script>
 </body>
