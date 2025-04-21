@@ -10,7 +10,7 @@
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (Replace with your actual Firebase config from Firebase Console)
+        // Firebase Configuration (replace with your actual Firebase config)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -26,11 +26,17 @@
         const auth = getAuth();
         const db = getFirestore(app);
 
-        // Sign Up functionality
+        // Sign Up functionality with profile and password confirmation
         document.getElementById("signup-btn").addEventListener("click", async () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            const username = document.getElementById("username").value; // Getting username from input field
+            const confirmPassword = document.getElementById("confirm-password").value;
+            const username = document.getElementById("username").value; // Getting the username
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
 
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -53,14 +59,17 @@
     </script>
 </head>
 <body>
+    <!-- Sign Up Section -->
     <div id="signup">
         <h2>Sign Up</h2>
         <input type="text" id="username" placeholder="Enter username" required />
         <input type="email" id="email" placeholder="Enter email" required />
         <input type="password" id="password" placeholder="Enter password" required />
+        <input type="password" id="confirm-password" placeholder="Confirm password" required />
         <button id="signup-btn">Sign Up</button>
     </div>
 
+    <!-- Success Message -->
     <div id="signup-success" style="display: none;">
         <h2>Sign Up Successful!</h2>
         <p>You can now log in to your account. Please check your inbox for confirmation!</p>
