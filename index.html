@@ -277,6 +277,13 @@
             <div class="error-message" id="login-error"></div>
         </div>
 
+        <!-- INSERTED HTML CODE HERE -->
+        <div id="add-product">
+            <h2>Add New Product</h2>
+            <input type="text" id="product-name" placeholder="Product Name" required />
+            <button id="add-product-btn">Add Product</button>
+        </div>
+
         <div id="product-selection">
             <h2>Select a Product to Rate</h2>
             <div id="product-list">
@@ -526,13 +533,4 @@
                 .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user;
-                    console.log("Login successful!"); // Optional: Add a console log
-                    // The onAuthStateChanged listener will handle the UI update
-                })
-                .catch((error) => {
-                    hideLoader(loginLoader);
-                    loginError.textContent = "Login Failed: " + error.message;
-                });
-        });
-
-        // --- Logout Functionality ---
+                    console.log("Login successful!"); // Optional: Add
