@@ -27,37 +27,37 @@
         const db = getFirestore(app);
 
         // Sign Up functionality
-        document.getElementById("signup-btn").addEventListener("click", () => {
+        document.getElementById("signup-btn").addEventListener("click", async () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const username = document.getElementById("username").value; // Getting username from input field
 
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    alert("Signed up successfully!");
-                    // Optionally save user data to Firestore (for future features)
-                    // await setDoc(doc(db, "users", user.uid), {
-                    //     email: user.email,
-                    //     createdAt: new Date()
-                    // });
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-                    // Hide sign up form and show success message
-                    document.getElementById("signup").style.display = "none";
-                    document.getElementById("signup-success").style.display = "block"; 
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(`Sign Up Failed: ${errorMessage}`);
+                // Store user profile in Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    email: user.email,
+                    username: username,
+                    createdAt: new Date()
                 });
+
+                alert("Signed up successfully!");
+                document.getElementById("signup").style.display = "none";
+                document.getElementById("signup-success").style.display = "block"; // Show success message
+            } catch (error) {
+                alert(`Sign Up Failed: ${error.message}`);
+            }
         });
     </script>
 </head>
 <body>
     <div id="signup">
         <h2>Sign Up</h2>
-        <input type="email" id="email" placeholder="Enter email" />
-        <input type="password" id="password" placeholder="Enter password" />
+        <input type="text" id="username" placeholder="Enter username" required />
+        <input type="email" id="email" placeholder="Enter email" required />
+        <input type="password" id="password" placeholder="Enter password" required />
         <button id="signup-btn">Sign Up</button>
     </div>
 
