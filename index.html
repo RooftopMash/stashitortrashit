@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stash or Trash???</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -39,7 +39,7 @@
     <script type="module">
       // Import the functions you need from Firebase SDKs
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-      import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+      import { getFirestore, doc, updateDoc, increment, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
       // Firebase configuration
       const firebaseConfig = {
@@ -67,6 +67,18 @@
       async function rateProduct(rating) {
         const productRef = doc(db, "ratings", "CocaCola");
         try {
+          // Get the document
+          const docSnap = await getDoc(productRef);
+
+          // If the document doesn't exist, create it
+          if (!docSnap.exists()) {
+            await setDoc(productRef, {
+              stash: 0,
+              trash: 0
+            });
+          }
+
+          // Now update the document
           await updateDoc(productRef, {
             [rating]: increment(1)
           });
@@ -88,6 +100,17 @@
       async function rateAI(ratingType) {
         const aiRef = doc(db, "ai_ratings", "assistant");
         try {
+          // Get the document
+          const docSnap = await getDoc(aiRef);
+
+          // If the document doesn't exist, create it
+          if (!docSnap.exists()) {
+            await setDoc(aiRef, {
+              durability: 0,
+              functionality: 0,
+              helpfulness: 0
+            });
+          }
           await updateDoc(aiRef, {
             [ratingType]: increment(1)
           });
