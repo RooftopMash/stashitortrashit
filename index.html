@@ -11,7 +11,7 @@
             background-color: #f4f4f4;
             margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             color: #333;
@@ -43,15 +43,38 @@
 
         /* Button Styles */
         button {
-            background-color: #5cb85c;
-            color: white;
             padding: 12px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
             font-size: 16px;
             transition: background-color 0.3s ease;
+            margin: 5px; /* Add some spacing between buttons */
+        }
+
+        #stash-btn {
+            background-color: #5cb85c; /* Green */
+            color: white;
+        }
+
+        #stash-btn:hover {
+            background-color: #4cae4c;
+        }
+
+        #trash-btn {
+            background-color: #d9534f; /* Red */
+            color: white;
+        }
+
+        #trash-btn:hover {
+            background-color: #c9302c;
+        }
+
+        /* General Button Style for other buttons */
+        button {
+            background-color: #5cb85c; /* Green */
+            color: white;
+            width: 100%;
         }
 
         button:hover {
@@ -100,10 +123,39 @@
         .weak { color: red; }
         .medium { color: orange; }
         .strong { color: green; }
+
+        /* Logout Button Styling */
+        #logout-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #6c757d; /* Grey */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #logout-btn:hover {
+            background-color: #5a6268;
+        }
+
+        /* Main Section Layout */
+        #main {
+            display: none;
+            text-align: center;
+        }
+
+        #main button {
+            width: auto; /* Adjust width to fit content */
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <button id="logout-btn">Logout</button> <!-- Logout Button at the top right -->
+
         <div id="auth-options">
             <h2>Welcome to Stash or Trash!</h2>
             <button id="show-signup">Sign Up</button>
@@ -153,7 +205,6 @@
             <p>Rate the items!</p>
             <button id="stash-btn">Stash</button>
             <button id="trash-btn">Trash</button>
-            <button id="logout-btn">Logout</button>
         </div>
 
         <div id="user-info"></div>
@@ -163,7 +214,7 @@
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -390,25 +441,4 @@
             // Save user profile to Firestore
             setDoc(doc(db, "users", user.uid), {
                 username: username,
-                realname: realname,
-                phone: phone
-            })
-                .then(() => {
-                    alert("Profile created successfully!");
-                    createProfileDiv.style.display = "none";
-                    mainDiv.style.display = "block";
-                    loginDiv.style.display = "none";
-                    signupDiv.style.display = "none";
-                    authOptionsDiv.style.display = "none";
-                    userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${username})`;
-                })
-                .catch((error) => {
-                    profileError.textContent = "Error creating profile: " + error.message;
-                })
-                .finally(() => {
-                    hideLoader(profileLoader);
-                });
-        });
-
-        // --- Logout Functionality ---
-        document.getElementById("logout-btn").
+                realname: realname
