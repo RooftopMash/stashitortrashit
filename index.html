@@ -24,7 +24,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 350px;
             text-align: center;
-            position: relative;
+            position: relative; /* Make container relative for absolute positioning of logout button */
         }
 
         h2 {
@@ -113,17 +113,6 @@
             background-color: #5a6268;
         }
 
-        /* Emojis Styling */
-        #main div[style*="inline-block"] {
-            cursor: pointer;
-        }
-
-        /* Specific styling for emojis */
-        #main div[style*="inline-block"] span:first-child {
-            font-size: 3em;
-            display: block;
-        }
-
         /* Product display styles */
         .product {
             margin: 20px 0;
@@ -157,20 +146,28 @@
         }
 
         /* Stash and Trash Icon Buttons */
-        .emoji-btn {
+       .emoji-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 3em;
+            font-size: 3em; /* Increased size for better visibility */
             margin: 10px;
             padding: 0;
             outline: none;
+            display: inline-block; /* Ensure they sit side by side */
+            vertical-align: middle; /* Align items vertically */
         }
 
         .emoji-btn span {
             display: block;
             font-size: 0.5em;
             color: #555;
+        }
+
+        /* Style for the container holding the emoji buttons */
+        .emoji-container {
+            text-align: center; /* Center the content */
+            margin-top: 20px; /* Add space above the buttons */
         }
     </style>
 </head>
@@ -227,6 +224,15 @@
             <p>Rate the items!</p>
             <div id="products-container">
                 <!-- Products will be displayed here -->
+            </div>
+              <!-- Stash and Trash Emoji Buttons -->
+            <div class="emoji-container">
+                  <button class="emoji-btn" onclick="rateProduct(currentProductId, 'stash')">
+                       &#x1F4B0;<span>Stash</span>
+                  </button>
+                  <button class="emoji-btn" onclick="rateProduct(currentProductId, 'trash')">
+                       &#x1F6AE;<span>Trash</span>
+                  </button>
             </div>
         </div>
 
@@ -321,7 +327,7 @@
                 }
                 productDiv.appendChild(ratingDiv);
 
-                // Add Stash and Trash Emoji Buttons
+                 // Add Stash and Trash Emoji Buttons
                 const stashBtn = document.createElement('button');
                 stashBtn.classList.add('emoji-btn');
                 stashBtn.innerHTML = '🪙💰<span>Stash</span>';
@@ -345,7 +351,7 @@
             displayProducts(products);
         }
 
-        async function rateProduct(productId, ratingValue) {
+         async function rateProduct(productId, ratingValue) {
             const user = auth.currentUser;
             if (!user) {
                 alert("You must be logged in to rate products.");
@@ -364,6 +370,7 @@
             // Optionally, refresh the product list to update the average rating
             fetchProducts();
         }
+
 
         // --- Password Strength Validation ---
         function checkPasswordStrength(password) {
@@ -419,4 +426,14 @@
                                 mainDiv.style.display = "block";
                                 loginDiv.style.display = "none";
                                 signupDiv.style.display = "none";
-                                verifyEmailDiv
+                                verifyEmailDiv.style.display = "none";
+                                createProfileDiv.style.display = "none";
+                                authOptionsDiv.style.display = "none";
+                                userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${userData.username})`;
+
+                                 // Fetch and display products
+                                fetchProducts();
+                            } else {
+                                // No profile data, show create profile form
+                                verifyEmailDiv.style.display = "none";
+                                createProfileDiv.style.display = "block
