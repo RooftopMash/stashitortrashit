@@ -23,31 +23,107 @@
             cursor: pointer;
         }
 
-        #main {
-            display: block; /* Initially show the main content */
+        #signup, #verify-email, #main {
+            display: none; /* Initially hide all sections */
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        /* Add more CSS as needed */
+        #signup {
+            display: block; /* Show the signup form initially */
+        }
+
+        input {
+            margin: 5px;
+            padding: 8px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div id="main">
+    <div id="signup">
+        <h2>Sign Up</h2>
+        <input type="email" id="email" placeholder="Enter email" required />
+        <input type="password" id="password" placeholder="Enter password" required />
+        <button id="signup-btn">Sign Up</button>
+    </div>
+
+    <div id="verify-email" style="display: none;">
+        <h2>Please verify your email</h2>
+        <p>Check your inbox for the verification link, and once confirmed, create your username.</p>
+        <input type="text" id="username" placeholder="Enter username" />
+        <button id="create-username-btn">Create Username</button>
+    </div>
+
+    <div id="main" style="display: none;">
         <h2>Welcome to Stash or Trash!</h2>
         <p>Rate the items!</p>
         <button id="stash-btn">Stash</button>
         <button id="trash-btn">Trash</button>
     </div>
 
-    <script>
-        document.getElementById("stash-btn").addEventListener("click", () => {
-            alert("You chose to Stash!");
-            // Add your "Stash" logic here
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+            authDomain: "stashortrash-acbbf.firebaseapp.com",
+            projectId: "stashortrash-acbbf",
+            storageBucket: "stashortrash-acbbf.firebasestorage.app",
+            messagingSenderId: "782905521538",
+            appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+            measurementId: "G-8Y4ZXJTPM6"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore(app);
+
+        // Sign Up functionality
+        document.getElementById("signup-btn").addEventListener("click", () => {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    // Send email verification
+                    sendEmailVerification(user)
+                        .then(() => {
+                            alert("Sign-up successful! A verification link has been sent to your email.");
+                            document.getElementById("signup").style.display = "none";
+                            document.getElementById("verify-email").style.display = "block";
+                        });
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(`Sign Up Failed: ${errorMessage}`);
+                });
         });
 
-        document.getElementById("trash-btn").addEventListener("click", () => {
-            alert("You chose to Trash!");
-            // Add your "Trash" logic here
+        // Username creation after email verification
+        document.getElementById("create-username-btn").addEventListener("click", () => {
+            const username = document.getElementById("username").value;
+
+            // Save username to Firestore
+            const user = auth.currentUser;
+            setDoc(doc(db, "users", user.uid), {
+                username: username
+            })
+                .then(() => {
+                    alert("Username created successfully!");
+                    document.getElementById("verify-email").style.display = "none";
+                    document.getElementById("main").style.display = "block"; // Main app after successful setup
+                })
+                .catch((error) => {
+                    alert(`Error saving username: ${error.message}`);
+                });
         });
     </script>
 </body>
