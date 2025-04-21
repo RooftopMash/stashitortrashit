@@ -1,57 +1,146 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fdfdfd;
-  margin: 0;
-  padding: 0;
-  color: #333;
+    font-family: Arial, sans-serif;
+    background-color: #fdfdfd;
+    margin: 0;
+    padding: 0;
+    color: #333;
 }
 
 header {
-  background-color: #facc15; /* golden yellow for attention */
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 2px solid #e5e7eb;
+    background-color: #facc15;
+    /* golden yellow for attention */
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 2px solid #e5e7eb;
 }
 
 h1 {
-  margin: 0;
-  font-size: 2.5rem;
+    margin: 0;
+    font-size: 2.5rem;
 }
 
 .rating-card {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  text-align: center;
-  background: #fff;
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-align: center;
+    background: #fff;
 }
 
 button.stash {
-  background-color: #4ade80; /* green for stash */
-  color: white;
-  padding: 0.8rem 1.2rem;
-  margin: 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2rem;
+    background-color: #4ade80;
+    /* green for stash */
+    color: white;
+    padding: 0.8rem 1.2rem;
+    margin: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
 }
 
 button.trash {
-  background-color: #ef4444; /* red for trash */
-  color: white;
-  padding: 0.8rem 1.2rem;
-  margin: 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.2rem;
+    background-color: #ef4444;
+    /* red for trash */
+    color: white;
+    padding: 0.8rem 1.2rem;
+    margin: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
 }
 
 footer {
-  margin-top: 3rem;
-  text-align: center;
-  padding: 1rem;
-  background: #f3f4f6;
-  font-size: 0.9rem;
+    margin-top: 3rem;
+    text-align: center;
+    padding: 1rem;
+    background: #f3f4f6;
+    font-size: 0.9rem;
+}
+
+/* Add Product Section Styles */
+#add-product {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#add-product input[type="text"] {
+    width: 80%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#add-product button {
+    background-color: #5bc0de;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#add-product button:hover {
+    background-color: #46b8da;
+}
+
+/* Product List Styles */
+#product-selection {
+    margin-top: 20px;
+}
+
+#product-list {
+    list-style: none;
+    padding: 0;
+}
+
+.product-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: left;
+}
+
+.product-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Emoji Button Styles */
+.emoji-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 3em;
+    margin: 10px;
+    padding: 0;
+    outline: none;
+    display: inline-block;
+    vertical-align: middle;
+    transition: transform 0.2s ease-in-out;
+}
+
+.emoji-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Trash and Stash Button Specific Styles - Overriding general emoji-btn styles */
+.emoji-btn.trash {
+    color: #ef4444;
+    /* red for trash */
+    font-size: 3.2em;
+}
+
+.emoji-btn.stash {
+    color: #4ade80;
+    /* green for stash */
+    font-size: 3.2em;
 }
