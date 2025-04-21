@@ -7,18 +7,18 @@
     <script type="module">
         // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Firebase Configuration (replace with your actual Firebase config)
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
+            apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+            authDomain: "stashortrash-acbbf.firebaseapp.com",
+            projectId: "stashortrash-acbbf",
+            storageBucket: "stashortrash-acbbf.firebasestorage.app",
+            messagingSenderId: "782905521538",
+            appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+            measurementId: "G-8Y4ZXJTPM6"
         };
 
         // Initialize Firebase
@@ -26,56 +26,64 @@
         const auth = getAuth();
         const db = getFirestore(app);
 
-        // Sign Up functionality with profile and password confirmation
-        document.getElementById("signup-btn").addEventListener("click", async () => {
+        // Sign Up functionality
+        document.getElementById("signup-btn").addEventListener("click", () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirm-password").value;
-            const username = document.getElementById("username").value; // Getting the username
 
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return;
-            }
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // Store user profile in Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    email: user.email,
-                    username: username,
-                    createdAt: new Date()
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    // Send email verification
+                    sendEmailVerification(user)
+                        .then(() => {
+                            alert("Sign-up successful! A verification link has been sent to your email.");
+                            document.getElementById("signup").style.display = "none";
+                            document.getElementById("verify-email").style.display = "block";
+                        });
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(`Sign Up Failed: ${errorMessage}`);
                 });
+        });
 
-                alert("Signed up successfully!");
-                document.getElementById("signup").style.display = "none";
-                document.getElementById("signup-success").style.display = "block"; // Show success message
-            } catch (error) {
-                alert(`Sign Up Failed: ${error.message}`);
-            }
+        // Username creation after email verification
+        document.getElementById("create-username-btn").addEventListener("click", () => {
+            const username = document.getElementById("username").value;
+
+            // Save username to Firestore
+            const user = auth.currentUser;
+            setDoc(doc(db, "users", user.uid), {
+                username: username
+            })
+                .then(() => {
+                    alert("Username created successfully!");
+                    document.getElementById("verify-email").style.display = "none";
+                    document.getElementById("main").style.display = "block"; // Main app after successful setup
+                })
+                .catch((error) => {
+                    alert(`Error saving username: ${error.message}`);
+                });
         });
     </script>
 </head>
 <body>
-    <!-- Sign Up Section -->
     <div id="signup">
         <h2>Sign Up</h2>
-        <input type="text" id="username" placeholder="Enter username" required />
         <input type="email" id="email" placeholder="Enter email" required />
         <input type="password" id="password" placeholder="Enter password" required />
-        <input type="password" id="confirm-password" placeholder="Confirm password" required />
         <button id="signup-btn">Sign Up</button>
     </div>
 
-    <!-- Success Message -->
-    <div id="signup-success" style="display: none;">
-        <h2>Sign Up Successful!</h2>
-        <p>You can now log in to your account. Please check your inbox for confirmation!</p>
+    <div id="verify-email" style="display: none;">
+        <h2>Please verify your email</h2>
+        <p>Check your inbox for the verification link, and once confirmed, create your username.</p>
+        <input type="text" id="username" placeholder="Enter username" />
+        <button id="create-username-btn">Create Username</button>
     </div>
 
-    <!-- Main App Content (hidden for now) -->
     <div id="main" style="display: none;">
         <h2>Welcome to Stash or Trash!</h2>
         <button id="stash-btn">Stash</button>
