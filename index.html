@@ -59,7 +59,7 @@
         }
 
         /* Form Section Styles */
-        #signup, #login, #verify-email, #main {
+        #auth-options, #signup, #login, #verify-email, #create-profile, #main {
             display: none;
         }
 
@@ -100,11 +100,6 @@
         .weak { color: red; }
         .medium { color: orange; }
         .strong { color: green; }
-
-        /* Auth Options Style */
-        #auth-options {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -139,11 +134,18 @@
 
         <div id="verify-email">
             <h2>Please verify your email</h2>
-            <p>Check your inbox for the verification link, and once confirmed, create your username.</p>
-            <input type="text" id="username" placeholder="Enter username" />
-            <button id="create-username-btn">Create Username</button>
-            <div class="loader" id="username-loader"></div>
-            <div class="error-message" id="username-error"></div>
+            <p>Check your inbox for the verification link, and once confirmed, click the button below.</p>
+            <button id="show-create-profile">Create Profile</button>
+        </div>
+
+        <div id="create-profile">
+            <h2>Create Your Profile</h2>
+            <input type="text" id="username" placeholder="Enter username" required />
+            <input type="text" id="realname" placeholder="Enter your real name" />
+            <input type="tel" id="phone" placeholder="Enter your phone number" />
+            <button id="create-profile-btn">Create Profile</button>
+            <div class="loader" id="profile-loader"></div>
+            <div class="error-message" id="profile-error"></div>
         </div>
 
         <div id="main">
@@ -184,6 +186,7 @@
         const signupDiv = document.getElementById("signup");
         const loginDiv = document.getElementById("login");
         const verifyEmailDiv = document.getElementById("verify-email");
+        const createProfileDiv = document.getElementById("create-profile");
         const mainDiv = document.getElementById("main");
         const userInfoDiv = document.getElementById("user-info");
 
@@ -191,12 +194,12 @@
         const emailError = document.getElementById("email-error");
         const passwordError = document.getElementById("password-error");
         const loginError = document.getElementById("login-error");
-        const usernameError = document.getElementById("username-error");
+        const profileError = document.getElementById("profile-error");
 
         // Loading Indicator Elements
         const signupLoader = document.getElementById("signup-loader");
         const loginLoader = document.getElementById("login-loader");
-        const usernameLoader = document.getElementById("username-loader");
+        const profileLoader = document.getElementById("profile-loader");
 
         // Password Strength Indicator
         const passwordStrength = document.getElementById("password-strength");
@@ -214,7 +217,7 @@
             emailError.textContent = "";
             passwordError.textContent = "";
             loginError.textContent = "";
-            usernameError.textContent = "";
+            profileError.textContent = "";
         }
 
         // --- Password Strength Validation ---
@@ -251,23 +254,48 @@
             signupDiv.style.display = "none";
         });
 
+        document.getElementById("show-create-profile").addEventListener("click", () => {
+            verifyEmailDiv.style.display = "none";
+            createProfileDiv.style.display = "block";
+        });
+
         // --- Firebase Auth State Listener ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in
                 if (user.emailVerified) {
-                    // Email is verified
-                    mainDiv.style.display = "block";
-                    loginDiv.style.display = "none";
-                    signupDiv.style.display = "none";
-                    verifyEmailDiv.style.display = "none";
-                    authOptionsDiv.style.display = "none";
-                    userInfoDiv.textContent = `Logged in as: ${user.email}`;
+                    // Email is verified, check for profile data
+                    const userRef = doc(db, "users", user.uid);
+                    getDoc(userRef)
+                        .then((docSnap) => {
+                            if (docSnap.exists()) {
+                                // Profile data exists, show main app
+                                const userData = docSnap.data();
+                                mainDiv.style.display = "block";
+                                loginDiv.style.display = "none";
+                                signupDiv.style.display = "none";
+                                verifyEmailDiv.style.display = "none";
+                                createProfileDiv.style.display = "none";
+                                authOptionsDiv.style.display = "none";
+                                userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${userData.username})`;
+                            } else {
+                                // No profile data, show create profile form
+                                verifyEmailDiv.style.display = "none";
+                                createProfileDiv.style.display = "block";
+                                loginDiv.style.display = "none";
+                                signupDiv.style.display = "none";
+                                authOptionsDiv.style.display = "none";
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error getting document:", error);
+                        });
                 } else {
                     // Email not verified
                     verifyEmailDiv.style.display = "block";
                     loginDiv.style.display = "none";
                     signupDiv.style.display = "none";
+                    createProfileDiv.style.display = "none";
                     mainDiv.style.display = "none";
                     authOptionsDiv.style.display = "none";
                     userInfoDiv.textContent = "Please verify your email.";
@@ -278,6 +306,7 @@
                 loginDiv.style.display = "none";
                 signupDiv.style.display = "none";
                 verifyEmailDiv.style.display = "none";
+                createProfileDiv.style.display = "none";
                 mainDiv.style.display = "none";
                 userInfoDiv.textContent = "";
             }
@@ -348,20 +377,25 @@
                 });
         });
 
-        // --- Username creation after email verification ---
-        document.getElementById("create-username-btn").addEventListener("click", () => {
+        // --- Create Profile Functionality ---
+        document.getElementById("create-profile-btn").addEventListener("click", () => {
             clearErrors();
             const username = document.getElementById("username").value;
+            const realname = document.getElementById("realname").value;
+            const phone = document.getElementById("phone").value;
 
-            showLoader(usernameLoader);
-            // Save username to Firestore
+            showLoader(profileLoader);
             const user = auth.currentUser;
+
+            // Save user profile to Firestore
             setDoc(doc(db, "users", user.uid), {
-                username: username
+                username: username,
+                realname: realname,
+                phone: phone
             })
                 .then(() => {
-                    alert("Username created successfully!");
-                    verifyEmailDiv.style.display = "none";
+                    alert("Profile created successfully!");
+                    createProfileDiv.style.display = "none";
                     mainDiv.style.display = "block";
                     loginDiv.style.display = "none";
                     signupDiv.style.display = "none";
@@ -369,24 +403,12 @@
                     userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${username})`;
                 })
                 .catch((error) => {
-                    usernameError.textContent = "Error saving username: " + error.message;
+                    profileError.textContent = "Error creating profile: " + error.message;
                 })
                 .finally(() => {
-                    hideLoader(usernameLoader);
+                    hideLoader(profileLoader);
                 });
         });
 
         // --- Logout Functionality ---
-        document.getElementById("logout-btn").addEventListener("click", () => {
-            signOut(auth).then(() => {
-                // Sign-out successful.
-                console.log("Logout successful!");
-                // The onAuthStateChanged listener will handle the UI update
-            }).catch((error) => {
-                // An error happened.
-                alert(`Logout Failed: ${error.message}`);
-            });
-        });
-    </script>
-</body>
-</html>
+        document.getElementById("logout-btn").
