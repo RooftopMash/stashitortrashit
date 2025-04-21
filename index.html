@@ -2,15 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stash or Trash???</title>
-    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="app">
+    <!-- Add a basic login form -->
+    <div id="login">
+      <input type="email" id="email" placeholder="Enter email" />
+      <input type="password" id="password" placeholder="Enter password" />
+      <button id="login-btn">Log In</button>
+    </div>
+
+    <div id="app" style="display: none;"> <!-- Initially hidden until login -->
       <header>
         <h1>Stash or Trash???</h1>
-        <p>Rate brands, products, and companies — Your voice matters!</p>
       </header>
 
       <main>
@@ -35,13 +40,13 @@
       </footer>
     </div>
 
-    <!-- Firebase SDK integration -->
+    <!-- Firebase SDK Scripts -->
     <script type="module">
-      // Import Firebase SDK
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
       import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-      // Firebase configuration
+      // Firebase Configuration
       const firebaseConfig = {
         apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
         authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -55,12 +60,30 @@
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      const auth = getAuth();
 
-      // Elements for product rating
+      // Add event listener for the login button
+      document.getElementById("login-btn").addEventListener("click", () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            alert("Logged in successfully!");
+            document.getElementById("login").style.display = "none"; // Hide login form
+            document.getElementById("app").style.display = "block"; // Show app content
+          })
+          .catch((error) => {
+            const errorMessage = error.message;
+            alert(`Login failed: ${errorMessage}`);
+          });
+      });
+
+      // Product Rating Buttons
       const stashBtn = document.querySelector(".stash");
       const trashBtn = document.querySelector(".trash");
 
-      // Click handlers for stash/trash buttons
       stashBtn.addEventListener("click", () => rateProduct("stash"));
       trashBtn.addEventListener("click", () => rateProduct("trash"));
 
@@ -76,7 +99,7 @@
         }
       }
 
-      // Elements for AI rating
+      // AI Rating Buttons
       const durabilityBtn = document.querySelector(".rate-durability");
       const functionalityBtn = document.querySelector(".rate-functionality");
       const helpfulnessBtn = document.querySelector(".rate-helpfulness");
