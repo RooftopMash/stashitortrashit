@@ -24,7 +24,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 350px;
             text-align: center;
-            position: relative; /* Make container relative for absolute positioning of logout button */
+            position: relative;
         }
 
         h2 {
@@ -39,7 +39,7 @@
             margin: 8px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box; /* Prevents padding from affecting width */
+            box-sizing: border-box;
         }
 
         /* Button Styles */
@@ -50,39 +50,7 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
-            margin: 5px; /* Add some spacing between buttons */
-            width: 45%; /* Make buttons take up about half the width */
-            display: inline-block; /* Display buttons inline */
-        }
-
-        /* Specific styles for Stash and Trash buttons */
-        #stash-btn {
-            background-color: #5cb85c; /* Green */
-            color: white;
-        }
-
-        #stash-btn:hover {
-            background-color: #4cae4c;
-        }
-
-        #trash-btn {
-            background-color: #d9534f; /* Red */
-            color: white;
-        }
-
-        #trash-btn:hover {
-            background-color: #c9302c;
-        }
-
-        /* General Button Style for other buttons */
-        .general-button {
-            background-color: #5cb85c; /* Green */
-            color: white;
-            width: 100%;
-        }
-
-        .general-button:hover {
-            background-color: #4cae4c;
+            margin: 5px;
         }
 
         /* Form Section Styles */
@@ -133,7 +101,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: #6c757d; /* Grey */
+            background-color: #6c757d;
             color: white;
             padding: 8px 12px;
             border-radius: 4px;
@@ -145,16 +113,21 @@
             background-color: #5a6268;
         }
 
-        /* Main Section Layout */
-        #main {
-            display: none;
-            text-align: center;
+        /* Emojis Styling */
+        #main div[style*="inline-block"] {
+            cursor: pointer;
+        }
+
+        /* Specific styling for emojis */
+        #main div[style*="inline-block"] span:first-child {
+            font-size: 3em;
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <button id="logout-btn">Logout</button> <!-- Logout Button at the top right -->
+        <button id="logout-btn">Logout</button>
 
         <div id="auth-options">
             <h2>Welcome to Stash or Trash!</h2>
@@ -203,8 +176,14 @@
         <div id="main">
             <h2>Welcome to Stash or Trash!</h2>
             <p>Rate the items!</p>
-            <button id="stash-btn">Stash</button>
-            <button id="trash-btn">Trash</button>
+            <div style="display: inline-block; text-align: center; margin: 10px;">
+                <span style="font-size: 3em;">🪙💰</span><br>
+                <span>Stash</span>
+            </div>
+            <div style="display: inline-block; text-align: center; margin: 10px;">
+                <span style="font-size: 3em;">🗑️<span style="position: relative; bottom: 0.2em;">&#x1F4A9;</span></span><br>
+                <span>Trash</span>
+            </div>
         </div>
 
         <div id="user-info"></div>
@@ -365,7 +344,7 @@
 
         // --- Sign Up Functionality ---
         document.getElementById("signup-btn").addEventListener("click", () => {
-            clearErrors(); // Clear any previous errors
+            clearErrors();
             const email = document.getElementById("email-signup").value;
             const password = document.getElementById("password-signup").value;
 
@@ -409,23 +388,4 @@
         });
 
         // --- Login Functionality ---
-        document.getElementById("login-btn").addEventListener("click", () => {
-            clearErrors();
-            const email = document.getElementById("email-login").value;
-            const password = document.getElementById("password-login").value;
-
-            showLoader(loginLoader);
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    console.log("Login successful!"); // Optional: Add a console log
-                    // The onAuthStateChanged listener will handle the UI update
-                })
-                .catch((error) => {
-                    hideLoader(loginLoader);
-                    loginError.textContent = "Login Failed: " + error.message;
-                });
-        });
-
-        // --- Create Profile Functionality
+        document.getElementById
