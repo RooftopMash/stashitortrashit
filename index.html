@@ -35,29 +35,34 @@
       </footer>
     </div>
 
-    <!-- ✅ WORKING FIREBASE BUTTON FUNCTIONALITY -->
+    <!-- Firebase SDK integration -->
     <script type="module">
+      // Import Firebase SDK
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
       import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
+      // Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
         authDomain: "stashortrash-acbbf.firebaseapp.com",
         projectId: "stashortrash-acbbf",
-        storageBucket: "stashortrash-acbbf.appspot.com",
+        storageBucket: "stashortrash-acbbf.firebasestorage.app",
         messagingSenderId: "782905521538",
         appId: "1:782905521538:web:856d1e7789edd76882cb9b",
         measurementId: "G-8Y4ZXJTPM6"
       };
 
+      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // Elements for product rating
       const stashBtn = document.querySelector(".stash");
       const trashBtn = document.querySelector(".trash");
 
-      stashBtn?.addEventListener("click", () => rateProduct("stash"));
-      trashBtn?.addEventListener("click", () => rateProduct("trash"));
+      // Click handlers for stash/trash buttons
+      stashBtn.addEventListener("click", () => rateProduct("stash"));
+      trashBtn.addEventListener("click", () => rateProduct("trash"));
 
       async function rateProduct(rating) {
         const productRef = doc(db, "ratings", "CocaCola");
@@ -65,19 +70,20 @@
           await updateDoc(productRef, {
             [rating]: increment(1)
           });
-          alert(`You rated Coca-Cola as ${rating === 'stash' ? '🔥 Stash' : '🗑️ Trash'}`);
+          alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
         } catch (error) {
-          console.error("Error updating rating:", error);
+          console.error("Error updating product rating:", error);
         }
       }
 
+      // Elements for AI rating
       const durabilityBtn = document.querySelector(".rate-durability");
       const functionalityBtn = document.querySelector(".rate-functionality");
       const helpfulnessBtn = document.querySelector(".rate-helpfulness");
 
-      durabilityBtn?.addEventListener("click", () => rateAI("durability"));
-      functionalityBtn?.addEventListener("click", () => rateAI("functionality"));
-      helpfulnessBtn?.addEventListener("click", () => rateAI("helpfulness"));
+      durabilityBtn.addEventListener("click", () => rateAI("durability"));
+      functionalityBtn.addEventListener("click", () => rateAI("functionality"));
+      helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
 
       async function rateAI(ratingType) {
         const aiRef = doc(db, "ai_ratings", "assistant");
