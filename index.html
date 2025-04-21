@@ -54,12 +54,12 @@
         }
 
         /* Form Section Styles */
-        #auth-options, #signup, #login, #verify-email, #create-profile, #main {
+        #signup, #login, #verify-email, #create-profile, #main {
             display: none;
         }
 
-        #auth-options {
-            display: block;
+        #login {
+            display: block; /* Show the login form initially */
         }
 
         /* Error Message Styles */
@@ -169,30 +169,18 @@
             text-align: center; /* Center the content */
             margin-top: 20px; /* Add space above the buttons */
         }
+
+        /* Style for uploaded images */
+        .uploaded-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <button id="logout-btn">Logout</button>
-
-        <div id="auth-options">
-            <h2>Welcome to Stash or Trash!</h2>
-            <button id="show-signup" class="general-button">Sign Up</button>
-            <button id="show-login" class="general-button">Login</button>
-        </div>
-
-        <div id="signup">
-            <h2>Sign Up</h2>
-            <input type="email" id="email-signup" placeholder="Enter email" required />
-            <div class="error-message" id="email-error"></div>
-
-            <input type="password" id="password-signup" placeholder="Enter password" required />
-            <div class="password-strength" id="password-strength"></div>
-            <div class="error-message" id="password-error"></div>
-
-            <button id="signup-btn" class="general-button">Sign Up</button>
-            <div class="loader" id="signup-loader"></div>
-        </div>
 
         <div id="login">
             <h2>Login</h2>
@@ -203,36 +191,11 @@
             <div class="error-message" id="login-error"></div>
         </div>
 
-        <div id="verify-email">
-            <h2>Please verify your email</h2>
-            <p>Check your inbox for the verification link, and once confirmed, click the button below.</p>
-            <button id="show-create-profile" class="general-button">Create Profile</button>
-        </div>
-
-        <div id="create-profile">
-            <h2>Create Your Profile</h2>
-            <input type="text" id="username" placeholder="Enter username" required />
-            <input type="text" id="realname" placeholder="Enter your real name" />
-            <input type="tel" id="phone" placeholder="Enter your phone number" />
-            <button id="create-profile-btn" class="general-button">Create Profile</button>
-            <div class="loader" id="profile-loader"></div>
-            <div class="error-message" id="profile-error"></div>
-        </div>
-
         <div id="main">
             <h2>Welcome to Stash or Trash!</h2>
             <p>Rate the items!</p>
             <div id="products-container">
                 <!-- Products will be displayed here -->
-            </div>
-              <!-- Stash and Trash Emoji Buttons -->
-            <div class="emoji-container">
-                  <button class="emoji-btn" onclick="rateProduct(currentProductId, 'stash')">
-                       &#x1F4B0;<span>Stash</span>
-                  </button>
-                  <button class="emoji-btn" onclick="rateProduct(currentProductId, 'trash')">
-                       &#x1F6AE;<span>Trash</span>
-                  </button>
             </div>
         </div>
 
@@ -244,6 +207,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -260,30 +225,19 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth();
         const db = getFirestore(app);
+         const storage = getStorage(app);
 
         // --- UI Element References ---
-        const authOptionsDiv = document.getElementById("auth-options");
-        const signupDiv = document.getElementById("signup");
         const loginDiv = document.getElementById("login");
-        const verifyEmailDiv = document.getElementById("verify-email");
-        const createProfileDiv = document.getElementById("create-profile");
         const mainDiv = document.getElementById("main");
         const userInfoDiv = document.getElementById("user-info");
         const productsContainer = document.getElementById("products-container");
 
         // Error Message Elements
-        const emailError = document.getElementById("email-error");
-        const passwordError = document.getElementById("password-error");
         const loginError = document.getElementById("login-error");
-        const profileError = document.getElementById("profile-error");
 
         // Loading Indicator Elements
-        const signupLoader = document.getElementById("signup-loader");
         const loginLoader = document.getElementById("login-loader");
-        const profileLoader = document.getElementById("profile-loader");
-
-        // Password Strength Indicator
-        const passwordStrength = document.getElementById("password-strength");
 
         // --- Helper Functions ---
         function showLoader(loader) {
@@ -295,10 +249,7 @@
         }
 
         function clearErrors() {
-            emailError.textContent = "";
-            passwordError.textContent = "";
             loginError.textContent = "";
-            profileError.textContent = "";
         }
 
         function displayProducts(products) {
@@ -322,23 +273,10 @@
                 for (let i = 1; i <= 5; i++) {
                     const starSpan = document.createElement('span');
                     starSpan.innerHTML = '&#9734;'; // Unicode for star
-                    starSpan.addEventListener('click', () => rateProduct(product.id, i));
+                    starSpan.addEventListener('click', () => showRatingForm(product.id));
                     ratingDiv.appendChild(starSpan);
                 }
                 productDiv.appendChild(ratingDiv);
-
-                 // Add Stash and Trash Emoji Buttons
-                const stashBtn = document.createElement('button');
-                stashBtn.classList.add('emoji-btn');
-                stashBtn.innerHTML = '🪙💰<span>Stash</span>';
-                stashBtn.addEventListener('click', () => rateProduct(product.id, "stash"));
-                productDiv.appendChild(stashBtn);
-
-                const trashBtn = document.createElement('button');
-                trashBtn.classList.add('emoji-btn');
-                trashBtn.innerHTML = '🗑️<span style="position: relative; bottom: 0.2em;">&#x1F4A9;</span><span>Trash</span>';
-                trashBtn.addEventListener('click', () => rateProduct(product.id, "trash"));
-                productDiv.appendChild(trashBtn);
 
                 productsContainer.appendChild(productDiv);
             });
@@ -351,89 +289,146 @@
             displayProducts(products);
         }
 
-         async function rateProduct(productId, ratingValue) {
+        function showRatingForm(productId) {
+            // Clear the main content
+            mainDiv.innerHTML = '';
+
+            // Create a new form
+            const ratingForm = document.createElement('div');
+            ratingForm.innerHTML = `
+                <h2>Rate this product</h2>
+                <input type="file" id="media-upload" accept="image/*,video/*,application/pdf">
+                <textarea id="comment" placeholder="Add your comment"></textarea>
+                <button id="submit-rating">Submit Rating</button>
+            `;
+
+            // Append the form to the main content
+            mainDiv.appendChild(ratingForm);
+
+            // Attach event listener for submitting the rating
+            document.getElementById('submit-rating').addEventListener('click', () => {
+                submitRating(productId);
+            });
+        }
+
+        async function submitRating(productId) {
             const user = auth.currentUser;
             if (!user) {
                 alert("You must be logged in to rate products.");
                 return;
             }
 
-            // Create a new rating document in Firestore
-            await addDoc(collection(db, "ratings"), {
-                userId: user.uid,
-                productId: productId,
-                rating: ratingValue,
-                timestamp: serverTimestamp()
-            });
+            const fileInput = document.getElementById('media-upload');
+            const comment = document.getElementById('comment').value;
+            const file = fileInput.files[0]; // Get the selected file
 
-            alert("Rating submitted!");
-            // Optionally, refresh the product list to update the average rating
+            let mediaUrl = null;
+
+            if (file) {
+                // Upload the file to Firebase Storage
+                const storageRef = ref(storage, `ratings/${user.uid}/${productId}/${file.name}`);
+                const uploadTask = uploadBytesResumable(storageRef, file);
+
+                // Listen for state changes, errors, and completion of the upload.
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Observe state change events such as progress, pause, and resume:
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                    },
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        console.error("Error uploading file:", error);
+                        alert("Error uploading file. Please try again.");
+                    },
+                    () => {
+                        // Handle successful uploads on complete
+                        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                            console.log('File available at', downloadURL);
+                            mediaUrl = downloadURL;
+
+                             // Create a new rating document in Firestore
+                             await addDoc(collection(db, "ratings"), {
+                                userId: user.uid,
+                                productId: productId,
+                                rating: 0, // You might want to implement a separate star rating system
+                                comment: comment,
+                                mediaUrl: mediaUrl,
+                                timestamp: serverTimestamp()
+                            });
+
+                            alert("Rating submitted!");
+                            // Re-fetch the products
+                            fetchProducts();
+                        });
+                    }
+                );
+            } else {
+                 // Create a new rating document in Firestore
+                await addDoc(collection(db, "ratings"), {
+                    userId: user.uid,
+                    productId: productId,
+                    rating: 0, // You might want to implement a separate star rating system
+                    comment: comment,
+                    mediaUrl: null,
+                    timestamp: serverTimestamp()
+                });
+
+                alert("Rating submitted!");
+                 fetchProducts();
+            }
+
+            // Revert to the product list view
             fetchProducts();
         }
 
 
-        // --- Password Strength Validation ---
-        function checkPasswordStrength(password) {
-            const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
-            const mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+        // --- Login Functionality ---
+        document.getElementById("login-btn").addEventListener("click", () => {
+            clearErrors();
+            const email = document.getElementById("email-login").value;
+            const password = document.getElementById("password-login").value;
 
-            if (strongRegex.test(password)) {
-                passwordStrength.textContent = "Strong";
-                passwordStrength.className = "password-strength strong";
-            } else if (mediumRegex.test(password)) {
-                passwordStrength.textContent = "Medium";
-                passwordStrength.className = "password-strength medium";
-            } else {
-                passwordStrength.textContent = "Weak";
-                passwordStrength.className = "password-strength weak";
-            }
-        }
-
-        // --- Event Listeners ---
-        document.getElementById("password-signup").addEventListener("input", (event) => {
-            checkPasswordStrength(event.target.value);
+            showLoader(loginLoader);
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log("Login successful!"); // Optional: Add a console log
+                    // The onAuthStateChanged listener will handle the UI update
+                })
+                .catch((error) => {
+                    hideLoader(loginLoader);
+                    loginError.textContent = "Login Failed: " + error.message;
+                });
         });
 
-        document.getElementById("show-signup").addEventListener("click", () => {
-            authOptionsDiv.style.display = "none";
-            signupDiv.style.display = "block";
-            loginDiv.style.display = "none";
-        });
-
-        document.getElementById("show-login").addEventListener("click", () => {
-            authOptionsDiv.style.display = "none";
-            loginDiv.style.display = "block";
-            signupDiv.style.display = "none";
-        });
-
-        document.getElementById("show-create-profile").addEventListener("click", () => {
-            verifyEmailDiv.style.display = "none";
-            createProfileDiv.style.display = "block";
+        // --- Logout Functionality ---
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                // Sign-out successful.
+                console.log("Logout successful!");
+                // The onAuthStateChanged listener will handle the UI update
+            }).catch((error) => {
+                // An error happened.
+                alert(`Logout Failed: ${error.message}`);
+            });
         });
 
         // --- Firebase Auth State Listener ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // User is signed in
-                if (user.emailVerified) {
-                    // Email is verified, check for profile data
-                    const userRef = doc(db, "users", user.uid);
-                    getDoc(userRef)
-                        .then((docSnap) => {
-                            if (docSnap.exists()) {
-                                // Profile data exists, show main app
-                                const userData = docSnap.data();
-                                mainDiv.style.display = "block";
-                                loginDiv.style.display = "none";
-                                signupDiv.style.display = "none";
-                                verifyEmailDiv.style.display = "none";
-                                createProfileDiv.style.display = "none";
-                                authOptionsDiv.style.display = "none";
-                                userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${userData.username})`;
-
-                                 // Fetch and display products
-                                fetchProducts();
-                            } else {
-                                // No profile data, show create profile form
-                                verifyEmailDiv.style.display = "none";
-                                createProfileDiv.style.display = "block
+                  mainDiv.style.display = "block";
+                    loginDiv.style.display = "none";
+                   fetchProducts();
+            } else {
+                // User is signed out
+                loginDiv.style.display = "block";
+                mainDiv.style.display = "none";
+                userInfoDiv.textContent = "";
+            }
+        });
+    </script>
+</body>
+</html>
