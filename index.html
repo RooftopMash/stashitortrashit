@@ -231,7 +231,6 @@
     </div>
 
     <script type="module">
-        // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -293,9 +292,11 @@
         }
 
         async function fetchProducts() {
-            const productsRef = collection(db, "products");
-            const snapshot = await getDocs(productsRef);
-            const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const productsSnap = await getDocs(collection(db, "products"));
+            const products = [];
+            productsSnap.forEach(doc => {
+                products.push({ ...doc.data(), id: doc.id });
+            });
             displayProducts(products);
         }
 
@@ -305,145 +306,69 @@
             mainDiv.innerHTML = `
                 <h2>Rate this product</h2>
                 <p>Select an emoji to rate:</p>
-                <button class="emoji-btn" onclick="rateProduct('${productId}', '👍')">&#x1F4B0;<span>Stash</span></button>
-                <button class="emoji-btn" onclick="rateProduct('${productId}', '❤️')">🗑️<span style="position: relative; bottom: 0.2em;">&#x1F4A9;</span></button>
-                <button class="emoji-btn" onclick="rateProduct('${productId}', '🤔')">&#x1F914;</button>
-                <button class="emoji-btn" onclick="rateProduct('${productId}', '👎')">&#x1F44E;</button>
-                <button class="emoji-btn" onclick="rateProduct('${productId}', '😠')">&#x1F620;</button>
+                <div class="emoji-container">
+                    <button class="emoji-btn" onclick="rateProduct('${productId}', '💰')">💰<span>Stash</span></button>
+                    <button class="emoji-btn" onclick="rateProduct('${productId}', '🗑️💩')">🗑️<span>💩 Trash</span></button>
+                    <button class="emoji-btn" onclick="rateProduct('${productId}', '🤔')">🤔</button>
+                    <button class="emoji-btn" onclick="rateProduct('${productId}', '👎')">👎</button>
+                    <button class="emoji-btn" onclick="rateProduct('${productId}', '😠')">😠</button>
+                </div>
                 <input type="file" id="media-upload" accept="image/*,video/*,application/pdf">
                 <textarea id="comment" placeholder="Add your comment"></textarea>
                 <button id="submit-rating">Submit Rating</button>
             `;
-
-            document.getElementById('submit-rating').addEventListener('click', () => {
-                submitRating(productId);
-            });
         }
 
-        async function submitRating(productId) {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to rate products.");
-                return;
-            }
-
-            const fileInput = document.getElementById('media-upload');
-            const comment = document.getElementById('comment').value;
-            const file = fileInput.files[0]; // Get the selected file
-
-            let mediaUrl = null;
-
-            if (file) {
-                // Upload the file to Firebase Storage
-                const storageRef = ref(storage, `ratings/${user.uid}/${productId}/${file.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, file);
-
-                // Listen for state changes, errors, and completion of the upload.
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        // Observe state change events such as progress, pause, and resume:
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
-                    },
-                    (error) => {
-                        // Handle unsuccessful uploads
-                        console.error("Error uploading file:", error);
-                        alert("Error uploading file. Please try again.");
-                    },
-                    () => {
-                        // Handle successful uploads on complete
-                        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                            console.log('File available at', downloadURL);
-                            mediaUrl = downloadURL;
-
-                            // Create a new rating document in Firestore
-                            await addDoc(collection(db, "ratings"), {
-                                userId: user.uid,
-                                productId: productId,
-                                comment: comment,
-                                mediaUrl: mediaUrl,
-                                timestamp: serverTimestamp()
-                            });
-
-                            alert("Rating submitted!");
-                            // Re-fetch the products
-                            fetchProducts();
-                            //showProductSelection();
-                        });
-                    }
-                );
-            } else {
-                // Create a new rating document in Firestore
-                await addDoc(collection(db, "ratings"), {
-                    userId: user.uid,
-                    productId: productId,
-                    comment: comment,
-                    mediaUrl: null,
-                    timestamp: serverTimestamp()
-                });
-
-                alert("Rating submitted!");
-                 fetchProducts();
-                //showProductSelection();
-            }
-
-            // Revert to the product list view
-           // fetchProducts();
-           showProductSelection();
+        async function rateProduct(productId, emoji) {
+            // Function to handle rating submission
         }
 
-          function showProductSelection() {
-            mainDiv.style.display = "none";
-            productSelectionDiv.style.display = "block";
-        }
-
-        // --- Login Functionality ---
-        document.getElementById("login-btn").addEventListener("click", () => {
-            clearErrors();
+        // --- Sign In Function ---
+        document.getElementById("login-btn").addEventListener("click", async () => {
             const email = document.getElementById("email-login").value;
             const password = document.getElementById("password-login").value;
 
+            clearErrors();
             showLoader(loginLoader);
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    console.log("Login successful!"); // Optional: Add a console log
-                    // The onAuthStateChanged listener will handle the UI update
-                })
-                .catch((error) => {
-                    hideLoader(loginLoader);
-                    loginError.textContent = "Login Failed: " + error.message;
-                });
-        });
 
-        // --- Logout Functionality ---
-        document.getElementById("logout-btn").addEventListener("click", () => {
-            signOut(auth).then(() => {
-                // Sign-out successful.
-                console.log("Logout successful!");
-                // The onAuthStateChanged listener will handle the UI update
-            }).catch((error) => {
-                // An error happened.
-                alert(`Logout Failed: ${error.message}`);
-            });
-        });
-
-        // --- Firebase Auth State Listener ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in
-                loginDiv.style.display = "none";
-                productSelectionDiv.style.display = "block";
-                fetchProducts();
-            } else {
-                // User is signed out
-                loginDiv.style.display = "block";
-                productSelectionDiv.style.display = "none";
-                mainDiv.style.display = "none";
-                userInfoDiv.textContent = "";
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("Logged in successfully!");
+                fetchProducts(); // Load products after login
+            } catch (error) {
+                loginError.textContent = error.message;
+            } finally {
+                hideLoader(loginLoader);
             }
         });
+
+        // --- Log Out Function ---
+        document.getElementById("logout-btn").addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                alert("Logged out successfully!");
+                loginDiv.style.display = "block";
+                mainDiv.style.display = "none";
+                productSelectionDiv.style.display = "none";
+            } catch (error) {
+                alert("Error logging out: " + error.message);
+            }
+        });
+
+        // --- Auth State Change Listener ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                userInfoDiv.textContent = `Logged in as: ${user.email}`;
+                loginDiv.style.display = "none";
+                fetchProducts(); // Fetch products once logged in
+            } else {
+                userInfoDiv.textContent = "";
+                loginDiv.style.display = "block";
+            }
+        });
+
+        // Initial fetch products
+        fetchProducts();
     </script>
 </body>
 </html>
