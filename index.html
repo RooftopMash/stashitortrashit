@@ -24,6 +24,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 350px;
             text-align: center;
+            position: relative; /* Make container relative for absolute positioning of logout button */
         }
 
         h2 {
@@ -50,8 +51,11 @@
             font-size: 16px;
             transition: background-color 0.3s ease;
             margin: 5px; /* Add some spacing between buttons */
+            width: 45%; /* Make buttons take up about half the width */
+            display: inline-block; /* Display buttons inline */
         }
 
+        /* Specific styles for Stash and Trash buttons */
         #stash-btn {
             background-color: #5cb85c; /* Green */
             color: white;
@@ -71,13 +75,13 @@
         }
 
         /* General Button Style for other buttons */
-        button {
+        .general-button {
             background-color: #5cb85c; /* Green */
             color: white;
             width: 100%;
         }
 
-        button:hover {
+        .general-button:hover {
             background-color: #4cae4c;
         }
 
@@ -146,10 +150,6 @@
             display: none;
             text-align: center;
         }
-
-        #main button {
-            width: auto; /* Adjust width to fit content */
-        }
     </style>
 </head>
 <body>
@@ -158,8 +158,8 @@
 
         <div id="auth-options">
             <h2>Welcome to Stash or Trash!</h2>
-            <button id="show-signup">Sign Up</button>
-            <button id="show-login">Login</button>
+            <button id="show-signup" class="general-button">Sign Up</button>
+            <button id="show-login" class="general-button">Login</button>
         </div>
 
         <div id="signup">
@@ -171,7 +171,7 @@
             <div class="password-strength" id="password-strength"></div>
             <div class="error-message" id="password-error"></div>
 
-            <button id="signup-btn">Sign Up</button>
+            <button id="signup-btn" class="general-button">Sign Up</button>
             <div class="loader" id="signup-loader"></div>
         </div>
 
@@ -179,7 +179,7 @@
             <h2>Login</h2>
             <input type="email" id="email-login" placeholder="Enter email" required />
             <input type="password" id="password-login" placeholder="Enter password" required />
-            <button id="login-btn">Login</button>
+            <button id="login-btn" class="general-button">Login</button>
             <div class="loader" id="login-loader"></div>
             <div class="error-message" id="login-error"></div>
         </div>
@@ -187,7 +187,7 @@
         <div id="verify-email">
             <h2>Please verify your email</h2>
             <p>Check your inbox for the verification link, and once confirmed, click the button below.</p>
-            <button id="show-create-profile">Create Profile</button>
+            <button id="show-create-profile" class="general-button">Create Profile</button>
         </div>
 
         <div id="create-profile">
@@ -195,7 +195,7 @@
             <input type="text" id="username" placeholder="Enter username" required />
             <input type="text" id="realname" placeholder="Enter your real name" />
             <input type="tel" id="phone" placeholder="Enter your phone number" />
-            <button id="create-profile-btn">Create Profile</button>
+            <button id="create-profile-btn" class="general-button">Create Profile</button>
             <div class="loader" id="profile-loader"></div>
             <div class="error-message" id="profile-error"></div>
         </div>
@@ -428,17 +428,4 @@
                 });
         });
 
-        // --- Create Profile Functionality ---
-        document.getElementById("create-profile-btn").addEventListener("click", () => {
-            clearErrors();
-            const username = document.getElementById("username").value;
-            const realname = document.getElementById("realname").value;
-            const phone = document.getElementById("phone").value;
-
-            showLoader(profileLoader);
-            const user = auth.currentUser;
-
-            // Save user profile to Firestore
-            setDoc(doc(db, "users", user.uid), {
-                username: username,
-                realname: realname
+        // --- Create Profile Functionality
