@@ -4,29 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stash or Trash???</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- Add a basic login form -->
-    <div id="login">
-      <input type="email" id="email" placeholder="Enter email" />
-      <input type="password" id="password" placeholder="Enter password" />
-      <button id="login-btn">Log In</button>
-    </div>
-
-    <div id="app" style="display: none;"> <!-- Initially hidden until login -->
+    <div id="app">
       <header>
         <h1>Stash or Trash???</h1>
+        <p>Rate brands, products, and companies — Your voice matters!</p>
       </header>
 
       <main>
-        <div class="rating-card">
+        <!-- Sign Up Form -->
+        <div id="signup">
+          <h2>Sign Up</h2>
+          <input type="email" id="signup-email" placeholder="Enter email" />
+          <input type="password" id="signup-password" placeholder="Enter password" />
+          <button id="signup-btn">Sign Up</button>
+        </div>
+
+        <!-- Login Form (Initially hidden) -->
+        <div id="login" style="display: none;">
+          <h2>Log In</h2>
+          <input type="email" id="login-email" placeholder="Enter email" />
+          <input type="password" id="login-password" placeholder="Enter password" />
+          <button id="login-btn">Log In</button>
+        </div>
+
+        <div class="rating-card" style="display: none;">
           <h2>What do you think of Coca-Cola?</h2>
           <button class="stash">🔥 Stash</button>
           <button class="trash">🗑️ Trash</button>
         </div>
 
-        <!-- New section to rate the AI -->
-        <section class="rate-ai">
+        <section class="rate-ai" style="display: none;">
           <h2>Rate Your AI Assistant!</h2>
           <p>How helpful was the AI?</p>
           <button class="rate-durability">💪 Durability</button>
@@ -40,13 +50,13 @@
       </footer>
     </div>
 
-    <!-- Firebase SDK Scripts -->
+    <!-- Firebase SDK -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
       import { getFirestore, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-      // Firebase Configuration
+      // Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
         authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -59,34 +69,54 @@
 
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
       const auth = getAuth();
+      const db = getFirestore(app);
 
-      // Add event listener for the login button
+      // Handle sign up
+      document.getElementById("signup-btn").addEventListener("click", () => {
+        const email = document.getElementById("signup-email").value;
+        const password = document.getElementById("signup-password").value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            alert("Account created successfully!");
+            document.getElementById("signup").style.display = "none";
+            document.getElementById("login").style.display = "block"; // Show login form after sign-up
+          })
+          .catch((error) => {
+            alert(`Sign up failed: ${error.message}`);
+          });
+      });
+
+      // Handle login
       document.getElementById("login-btn").addEventListener("click", () => {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+        const email = document.getElementById("login-email").value;
+        const password = document.getElementById("login-password").value;
 
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
             const user = userCredential.user;
             alert("Logged in successfully!");
-            document.getElementById("login").style.display = "none"; // Hide login form
-            document.getElementById("app").style.display = "block"; // Show app content
+            document.getElementById("login").style.display = "none"; // Hide login form after successful login
+            // Show main app interface
+            document.querySelector(".rating-card").style.display = "block";
+            document.querySelector(".rate-ai").style.display = "block";
           })
           .catch((error) => {
-            const errorMessage = error.message;
-            alert(`Login failed: ${errorMessage}`);
+            alert(`Login failed: ${error.message}`);
           });
       });
 
-      // Product Rating Buttons
+      // Elements for product rating
       const stashBtn = document.querySelector(".stash");
       const trashBtn = document.querySelector(".trash");
 
+      // Click handlers for stash/trash buttons
       stashBtn.addEventListener("click", () => rateProduct("stash"));
       trashBtn.addEventListener("click", () => rateProduct("trash"));
 
+      // Function to save the product rating to Firestore
       async function rateProduct(rating) {
         const productRef = doc(db, "ratings", "CocaCola");
         try {
@@ -95,19 +125,21 @@
           });
           alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
         } catch (error) {
-          console.error("Error updating product rating:", error);
+          alert(`Error updating product rating: ${error.message}`);
         }
       }
 
-      // AI Rating Buttons
+      // Elements for rating the AI
       const durabilityBtn = document.querySelector(".rate-durability");
       const functionalityBtn = document.querySelector(".rate-functionality");
       const helpfulnessBtn = document.querySelector(".rate-helpfulness");
 
+      // Click handlers for AI rating buttons
       durabilityBtn.addEventListener("click", () => rateAI("durability"));
       functionalityBtn.addEventListener("click", () => rateAI("functionality"));
       helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
 
+      // Function to save the AI rating to Firestore
       async function rateAI(ratingType) {
         const aiRef = doc(db, "ai_ratings", "assistant");
         try {
@@ -116,7 +148,7 @@
           });
           alert(`You rated the AI's ${ratingType} as 👍!`);
         } catch (error) {
-          console.error("Error updating AI rating:", error);
+          alert(`Error updating AI rating: ${error.message}`);
         }
       }
     </script>
