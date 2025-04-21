@@ -63,7 +63,7 @@
             display: none;
         }
 
-        #signup {
+        #auth-options {
             display: block;
         }
 
@@ -100,10 +100,21 @@
         .weak { color: red; }
         .medium { color: orange; }
         .strong { color: green; }
+
+        /* Auth Options Style */
+        #auth-options {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div id="auth-options">
+            <h2>Welcome to Stash or Trash!</h2>
+            <button id="show-signup">Sign Up</button>
+            <button id="show-login">Login</button>
+        </div>
+
         <div id="signup">
             <h2>Sign Up</h2>
             <input type="email" id="email-signup" placeholder="Enter email" required />
@@ -169,6 +180,7 @@
         const db = getFirestore(app);
 
         // --- UI Element References ---
+        const authOptionsDiv = document.getElementById("auth-options");
         const signupDiv = document.getElementById("signup");
         const loginDiv = document.getElementById("login");
         const verifyEmailDiv = document.getElementById("verify-email");
@@ -227,6 +239,18 @@
             checkPasswordStrength(event.target.value);
         });
 
+        document.getElementById("show-signup").addEventListener("click", () => {
+            authOptionsDiv.style.display = "none";
+            signupDiv.style.display = "block";
+            loginDiv.style.display = "none";
+        });
+
+        document.getElementById("show-login").addEventListener("click", () => {
+            authOptionsDiv.style.display = "none";
+            loginDiv.style.display = "block";
+            signupDiv.style.display = "none";
+        });
+
         // --- Firebase Auth State Listener ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -237,6 +261,7 @@
                     loginDiv.style.display = "none";
                     signupDiv.style.display = "none";
                     verifyEmailDiv.style.display = "none";
+                    authOptionsDiv.style.display = "none";
                     userInfoDiv.textContent = `Logged in as: ${user.email}`;
                 } else {
                     // Email not verified
@@ -244,11 +269,13 @@
                     loginDiv.style.display = "none";
                     signupDiv.style.display = "none";
                     mainDiv.style.display = "none";
+                    authOptionsDiv.style.display = "none";
                     userInfoDiv.textContent = "Please verify your email.";
                 }
             } else {
                 // User is signed out
-                loginDiv.style.display = "block";
+                authOptionsDiv.style.display = "block";
+                loginDiv.style.display = "none";
                 signupDiv.style.display = "none";
                 verifyEmailDiv.style.display = "none";
                 mainDiv.style.display = "none";
@@ -285,6 +312,7 @@
                             signupDiv.style.display = "none";
                             verifyEmailDiv.style.display = "block";
                             loginDiv.style.display = "none";
+                            authOptionsDiv.style.display = "none";
                         })
                         .finally(() => {
                             hideLoader(signupLoader);
@@ -336,6 +364,8 @@
                     verifyEmailDiv.style.display = "none";
                     mainDiv.style.display = "block";
                     loginDiv.style.display = "none";
+                    signupDiv.style.display = "none";
+                    authOptionsDiv.style.display = "none";
                     userInfoDiv.textContent = `Logged in as: ${user.email} (Username: ${username})`;
                 })
                 .catch((error) => {
