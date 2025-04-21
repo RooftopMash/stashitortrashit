@@ -1,63 +1,58 @@
-// Firebase Configuration
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+
+// Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis", 
+  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis", // Your actual API Key here
   authDomain: "stashortrash-acbbf.firebaseapp.com",
   projectId: "stashortrash-acbbf",
-  storageBucket: "stashortrash-acbbf.firebasestorage.app",
+  storageBucket: "stashortrash-acbbf.appspot.com",
   messagingSenderId: "782905521538",
   appId: "1:782905521538:web:856d1e7789edd76882cb9b",
   measurementId: "G-8Y4ZXJTPM6"
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
 
-const db = firebase.firestore();
+// Sign Up functionality
+document.getElementById("signup-btn").addEventListener("click", () => {
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
 
-// Elements for product rating
-const stashBtn = document.querySelector(".stash");
-const trashBtn = document.querySelector(".trash");
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // User signed up successfully
+      const user = userCredential.user;
+      alert("Sign Up successful!");
+      // Optionally redirect to another page or show logged-in screen
+      document.getElementById("signup").style.display = "none";  // Hide sign up form
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(`Sign Up Failed: ${errorMessage}`);
+    });
+});
 
-// Click handlers for stash/trash buttons
-stashBtn.addEventListener("click", () => rateProduct("stash"));
-trashBtn.addEventListener("click", () => rateProduct("trash"));
+// Log In functionality
+document.getElementById("login-btn").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-// Function to save the rating to Firestore
-function rateProduct(rating) {
-  const productRef = db.collection("ratings").doc("CocaCola");
-
-  productRef.update({
-    [rating]: firebase.firestore.FieldValue.increment(1)
-  })
-  .then(() => {
-    alert(`You rated Coca-Cola as ${rating === 'stash' ? 'Stash' : 'Trash'}`);
-  })
-  .catch((error) => {
-    console.error("Error adding document: ", error);
-  });
-}
-
-// Elements for rating the AI
-const durabilityBtn = document.querySelector(".rate-durability");
-const functionalityBtn = document.querySelector(".rate-functionality");
-const helpfulnessBtn = document.querySelector(".rate-helpfulness");
-
-// Click handlers for AI rating buttons
-durabilityBtn.addEventListener("click", () => rateAI("durability"));
-functionalityBtn.addEventListener("click", () => rateAI("functionality"));
-helpfulnessBtn.addEventListener("click", () => rateAI("helpfulness"));
-
-// Function to save the AI rating to Firestore
-function rateAI(ratingType) {
-  const aiRef = db.collection("ai_ratings").doc("assistant");
-
-  aiRef.update({
-    [ratingType]: firebase.firestore.FieldValue.increment(1)
-  })
-  .then(() => {
-    alert(`You rated the AI's ${ratingType} as 👍!`);
-  })
-  .catch((error) => {
-    console.error("Error adding document: ", error);
-  });
-}
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // User logged in successfully
+      const user = userCredential.user;
+      alert("Log In successful!");
+      // Hide login form and show main app
+      document.getElementById("login").style.display = "none";  // Hide login form
+      // Optionally show user-specific features after login
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      alert(`Login Failed: ${errorMessage}`);
+    });
+});
