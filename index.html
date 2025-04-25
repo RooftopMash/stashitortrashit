@@ -1,536 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stash or Trash?</title>
-    <style>
-        /* General Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #FAFAFA;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
-            text-align: center;
-            position: relative;
-            /* Make container relative for absolute positioning of logout button */
-        }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        /* Input Styles */
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Button Styles */
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin: 5px;
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        button:hover {
-            background-color: #388E3C;
-        }
-
-        /* Form Section Styles */
-        #signup,
-        #login,
-        #verify-email,
-        #create-profile,
-        #main,
-        #product-selection {
-            display: none;
-        }
-
-        #login {
-            display: block;
-            /* Show the login form initially */
-        }
-
-        /* Error Message Styles */
-        .error-message {
-            color: #F44336;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        /* Loading Indicator Styles */
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #4CAF50;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
-            margin: 0 auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Password Strength Indicator */
-        .password-strength {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .weak {
-            color: red;
-        }
-
-        .medium {
-            color: orange;
-        }
-
-        .strong {
-            color: green;
-        }
-
-        /* Logout Button Styling */
-        #logout-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        #logout-btn:hover {
-            background-color: #5a6268;
-        }
-
-        /* Product display styles */
-        .product {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: left;
-        }
-
-        .product h3 {
-            margin-top: 0;
-            margin-bottom: 5px;
-        }
-
-        .product p {
-            margin: 5px 0;
-        }
-
-        .rating {
-            margin-top: 10px;
-            font-size: 20px;
-            color: #aaa;
-        }
-
-        .rating span {
-            cursor: pointer;
-        }
-
-        .rating .active {
-            color: #ffc107;
-        }
-
-        /* Stash and Trash Icon Buttons */
-        .emoji-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 3em;
-            margin: 10px;
-            padding: 0;
-            outline: none;
-            display: inline-block;
-            vertical-align: middle;
-            transition: transform 0.2s ease-in-out;
-        }
-
-        .emoji-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .emoji-btn span {
-            display: block;
-            font-size: 0.5em;
-            color: #555;
-        }
-
-        /* Style for the container holding the emoji buttons */
-        .emoji-container {
-            text-align: center;
-            /* Center the content */
-            margin-top: 20px;
-            /* Add space above the buttons */
-        }
-
-        /* Style for uploaded images */
-        .uploaded-image {
-            max-width: 200px;
-            max-height: 200px;
-            margin-top: 10px;
-        }
-
-        /* Product Selection Styles */
-        #product-selection {
-            display: none;
-        }
-
-        #product-list {
-            margin-top: 20px;
-        }
-
-        .product-item {
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .product-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Trash Button Specific Styles */
-        .trash-btn {
-            color: #F44336;
-            /* Red - Secondary color for trash */
-            font-size: 3.2em;
-            /* Slightly larger than other emojis, if desired */
-        }
-
-        .trash-btn:hover {
-            transform: scale(1.3);
-            /* Slightly more pronounced scaling on hover */
-            opacity: 0.8;
-            /* Add a slight transparency on hover */
-        }
-
-        /* Stash Button Specific Styles */
-        .stash-btn {
-            color: #4CAF50;
-            /* Green - Primary color for stash */
-            font-size: 3.2em;
-            /* Slightly larger than other emojis, if desired */
-        }
-
-        .stash-btn:hover {
-            transform: scale(1.3);
-            /* Slightly more pronounced scaling on hover */
-            opacity: 0.8;
-            /* Add a slight transparency on hover */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stash or Trash???</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+    .hidden { display: none; }
+    .product { margin: 20px 0; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .emoji-btn { font-size: 24px; margin-right: 10px; cursor: pointer; }
+    input, button, textarea { padding: 8px; margin: 5px 0; width: 100%; max-width: 300px; }
+    button { cursor: pointer; background-color: #333; color: white; border: none; border-radius: 5px; }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <button id="logout-btn">Logout</button>
 
-        <div id="login">
-            <h2>Login</h2>
-            <input type="email" id="email-login" placeholder="Enter email" required />
-            <input type="password" id="password-login" placeholder="Enter password" required />
-            <button id="login-btn" class="general-button">Login</button>
-            <div class="loader" id="login-loader"></div>
-            <div class="error-message" id="login-error"></div>
-        </div>
+  <h1>Stash or Trash???</h1>
 
-        <!-- INSERTED HTML CODE HERE -->
-        <div id="add-product">
-            <h2>Add New Product</h2>
-            <input type="text" id="product-name" placeholder="Product Name" required />
-            <button id="add-product-btn">Add Product</button>
-        </div>
+  <!-- Auth Section -->
+  <div id="auth-section">
+    <input type="email" id="email" placeholder="Email" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
 
-        <div id="product-selection">
-            <h2>Select a Product to Rate</h2>
-            <div id="product-list">
-                <!-- Products will be listed here -->
-            </div>
-        </div>
+  <!-- Welcome & Rules -->
+  <div id="welcome-section" class="hidden">
+    <h2>Welcome to Stash or Trash??? 🎉</h2>
+    <p>Please be respectful. All uploads are user-generated content, and we do not endorse or moderate the submissions unless reported. Misuse may result in account suspension.</p>
+    <button onclick="enterApp()">I Understand, Enter the App</button>
+  </div>
 
-        <div id="main">
-            <h2>Welcome to Stash or Trash!</h2>
-            <p>Rate the items!</p>
-            <div id="products-container">
-                <!-- Products will be displayed here -->
-            </div>
-        </div>
+  <!-- Main App Section -->
+  <div id="app-section" class="hidden">
+    <button onclick="logout()">Logout</button>
 
-        <div id="user-info"></div>
+    <h2>Select a Product</h2>
+    <div id="product-list">
+      <div class="product" onclick="selectProduct('Nike Shoes')">Nike Shoes</div>
+      <div class="product" onclick="selectProduct('Coca-Cola')">Coca-Cola</div>
+      <div class="product" onclick="selectProduct('Samsung Phone')">Samsung Phone</div>
     </div>
 
-    <script type="module">
-        // Import Firebase SDKs
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {
-            getAuth,
-            createUserWithEmailAndPassword,
-            sendEmailVerification,
-            signInWithEmailAndPassword,
-            onAuthStateChanged,
-            signOut,
-            updateProfile
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore,
-            doc,
-            setDoc,
-            getDoc,
-            collection,
-            getDocs,
-            addDoc,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import {
-            getStorage,
-            ref,
-            uploadBytesResumable,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+    <div id="rating-section" class="hidden">
+      <h3 id="selected-product-name"></h3>
+      <div>
+        <span class="emoji-btn" onclick="submitRating('💰')">💰 Stash</span>
+        <span class="emoji-btn" onclick="submitRating('🚮')">🚮 Trash</span>
+      </div>
+      <textarea id="comment" placeholder="Leave a comment..."></textarea><br />
+      <input type="file" id="media" accept="image/*,video/*" /><br />
+    </div>
+  </div>
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-            authDomain: "stashortrash-acbbf.firebaseapp.com",
-            projectId: "stashortrash-acbbf",
-            storageBucket: "stashortrash-acbbf.firebasestorage.app",
-            messagingSenderId: "782905521538",
-            appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-            measurementId: "G-8Y4ZXJTPM6"
-        };
+  <!-- Firebase + Script -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+      authDomain: "stashortrash-acbbf.firebaseapp.com",
+      projectId: "stashortrash-acbbf",
+      storageBucket: "stashortrash-acbbf.appspot.com",
+      messagingSenderId: "782905521538",
+      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+      measurementId: "G-8Y4ZXJTPM6"
+    };
 
-        // --- UI Element References ---
-        const loginDiv = document.getElementById("login");
-        const mainDiv = document.getElementById("main");
-        const userInfoDiv = document.getElementById("user-info");
-        const productSelectionDiv = document.getElementById("product-selection");
-        const productListDiv = document.getElementById("product-list");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+    const storage = getStorage();
 
-        // Error Message Elements
-        const loginError = document.getElementById("login-error");
+    // Elements
+    const authSection = document.getElementById("auth-section");
+    const welcomeSection = document.getElementById("welcome-section");
+    const appSection = document.getElementById("app-section");
+    const ratingSection = document.getElementById("rating-section");
+    const selectedProductName = document.getElementById("selected-product-name");
 
-        // Loading Indicator Elements
-        const loginLoader = document.getElementById("login-loader");
+    let currentUser = null;
+    let selectedProduct = "";
 
-        // --- Helper Functions ---
-        function showLoader(loader) {
-            loader.style.display = "block";
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        authSection.classList.add("hidden");
+        welcomeSection.classList.remove("hidden");
+      } else {
+        currentUser = null;
+        authSection.classList.remove("hidden");
+        welcomeSection.classList.add("hidden");
+        appSection.classList.add("hidden");
+      }
+    });
+
+    window.login = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("Login error: " + e.message);
+      }
+    };
+
+    window.signup = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("Signup error: " + e.message);
+      }
+    };
+
+    window.logout = async () => {
+      await signOut(auth);
+    };
+
+    window.enterApp = () => {
+      welcomeSection.classList.add("hidden");
+      appSection.classList.remove("hidden");
+    };
+
+    window.selectProduct = (name) => {
+      selectedProduct = name;
+      selectedProductName.textContent = `Rate: ${name}`;
+      ratingSection.classList.remove("hidden");
+    };
+
+    window.submitRating = async (emoji) => {
+      const comment = document.getElementById("comment").value;
+      const fileInput = document.getElementById("media");
+      const file = fileInput.files[0];
+
+      let fileURL = "";
+
+      if (file) {
+        try {
+          const fileRef = ref(storage, `uploads/${currentUser.uid}/${Date.now()}_${file.name}`);
+          await uploadBytes(fileRef, file);
+          fileURL = await getDownloadURL(fileRef);
+        } catch (e) {
+          alert("File upload failed: " + e.message);
         }
+      }
 
-        function hideLoader(loader) {
-            loader.style.display = "none";
-        }
-
-        function clearErrors() {
-            loginError.textContent = "";
-        }
-
-        function displayProducts(products) {
-            productListDiv.innerHTML = ''; // Clear existing content
-
-            products.forEach(product => {
-                const productItem = document.createElement('div');
-                productItem.classList.add('product-item');
-                productItem.textContent = product.name;
-                productItem.addEventListener('click', () => showRatingInterface(product.id));
-                productListDiv.appendChild(productItem);
-            });
-        }
-
-        async function fetchProducts() {
-            const productsRef = collection(db, "products");
-            const snapshot = await getDocs(productsRef);
-            const products = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            displayProducts(products);
-        }
-
-        // Define your emoji array
-        const emojis = ["💰", "🚮", "🤔", "👎", "😠", "🌟", "🔥", "💯"]; // Example emojis
-        let selectedEmoji = null; // Store the selected emoji
-
-        function showRatingInterface(productId) {
-            productSelectionDiv.style.display = "none";
-            mainDiv.style.display = "block";
-
-            // Generate emoji buttons dynamically
-            let emojiButtonsHTML = emojis.map(emoji => {
-                let buttonClass = "emoji-btn";
-                if (emoji === "🚮") {
-                    buttonClass += " trash-btn"; // Add the trash-btn class
-                } else if (emoji === "💰") {
-                    buttonClass += " stash-btn"; // Add the stash-btn class
-                }
-                return `<button class="${buttonClass}" onclick="rateProduct('${productId}', '${emoji}')">${emoji}</button>`;
-            }).join(''); // Join the array elements into a single HTML string
-
-            mainDiv.innerHTML = `
-        <h2>Rate this product</h2>
-        <p>Select an emoji to rate:</p>
-        <div class="emoji-container">
-            ${emojiButtonsHTML}
-        </div>
-        <input type="file" id="media-upload" accept="image/*,video/*,application/pdf">
-        <textarea id="comment" placeholder="Add your comment"></textarea>
-        <button id="submit-rating">Submit Rating</button>
-    `;
-
-            document.getElementById('submit-rating').addEventListener('click', () => {
-                submitRating(productId);
-            });
-        }
-
-        function rateProduct(productId, emoji) {
-            console.log(`Product ${productId} rated with emoji: ${emoji}`);
-            selectedEmoji = emoji; // Store the selected emoji
-        }
-
-        async function submitRating(productId) {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to rate products.");
-                return;
-            }
-
-            if (!selectedEmoji) {
-                alert("Please select an emoji before submitting.");
-                return;
-            }
-
-            const fileInput = document.getElementById('media-upload');
-            const comment = document.getElementById('comment').value;
-            const file = fileInput.files[0];
-
-            let mediaUrl = null;
-
-            try { // Added try...catch for error handling
-                if (file) {
-                    const storageRef = ref(storage, `ratings/${user.uid}/${productId}/${file.name}`);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
-
-                    uploadTask.on('state_changed',
-                        (snapshot) => {
-                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            console.log('Upload is ' + progress + '% done');
-                        },
-                        (error) => {
-                            console.error("Error uploading file:", error);
-                            alert("Error uploading file. Please try again.");
-                        },
-                        async () => {
-                            try {
-                                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                                mediaUrl = downloadURL;
-
-                                // Create a new rating document in Firestore
-                                await addDoc(collection(db, "ratings"), {
-                                    userId: user.uid,
-                                    productId: productId,
-                                    comment: comment,
-                                    mediaUrl: mediaUrl,
-                                    emoji: selectedEmoji, // Store the emoji
-                                    timestamp: serverTimestamp()
-                                });
-
-                                alert("Rating submitted!");
-                                showProductSelection();
-                            } catch (error) {
-                                console.error("Error during upload or Firestore write:", error);
-                                alert("Error submitting rating.  Please try again.");
-                            } finally {
-                                selectedEmoji = null; // Reset the selected emoji
-                            }
-                        }
-                    );
-                } else {
-                    // No file upload
-                    await addDoc(collection(db, "ratings"), {
-                        userId: user.uid,
-                        productId: productId,
-                        comment: comment,
-                        mediaUrl: null,
-                        emoji: selectedEmoji, // Store the emoji
-                        timestamp: serverTimestamp()
-                    });
-
-                    alert("Rating submitted!");
-                    showProductSelection();
-                    selectedEmoji = null; // Reset the selected emoji
-                }
-            } catch (error) {
-                console.error("Error submitting rating:", error);
-                alert("Error submitting rating. Please try again.");
-                selectedEmoji = null; // Reset the selected emoji
-            }
-        }
-
-        function showProductSelection() {
-            mainDiv.style.display = "none";
-            productSelectionDiv.style.display = "block";
-        }
-
-        // --- Login Functionality ---
-        document.getElementById("login-btn").addEventListener("click", () => {
-            clearErrors();
-            const email = document.getElementById("email-login").value;
-            const password = document.getElementById("password-login").value;
-
-            showLoader(loginLoader);
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signed in
-                    const user = userCredential.user;
-                    console.log("Login successful!"); // Optional: Add
+      try {
+        await addDoc(collection(db, "ratings"), {
+          userId: currentUser.uid,
+          product: selectedProduct,
+          rating: emoji,
+          comment: comment,
+          mediaURL: fileURL,
+          timestamp: serverTimestamp()
+        });
+        alert("Rating submitted successfully!");
+        document.getElementById("comment").value = "";
+        fileInput.value = "";
+        ratingSection.classList.add("hidden");
+      } catch (e) {
+        alert("Error saving rating: " + e.message);
+      }
+    };
+  </script>
+</body>
+</html>
