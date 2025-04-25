@@ -1,77 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stash or Trash???</title>
-  <script type="module" src="app.js" defer></script>
-  <link rel="stylesheet" href="styles.css"> <!-- Assuming you have a styles file -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stash or Trash???</title>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-storage.js"></script>
 </head>
 <body>
 
-  <!-- Welcome/Regulations Page -->
-  <div id="welcomePage">
-    <h1>Welcome to Stash or Trash???</h1>
-    <p>Before you proceed, please note that all posts are user-generated content, not from the platform.</p>
-    <button id="continueToRate">Continue</button>
-  </div>
-
-  <!-- Login Page -->
-  <div id="loginPage" style="display: none;">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Enter your email" />
-    <input type="password" id="password" placeholder="Enter your password" />
-    <button id="loginButton">Login</button>
-    <button id="signUpButton">Sign Up</button>
-  </div>
-
-  <!-- Brand Selection Page -->
-  <div id="brandPage" style="display: none;">
-    <h2>Select a Brand</h2>
-    <div id="brandList"></div>
-    <button id="continueToProduct">Next</button>
-  </div>
-
-  <!-- Product Rating Interface -->
-  <div id="ratingPage" style="display: none;">
-    <h2>Rate Product</h2>
-    <input type="text" id="productName" placeholder="Enter Product Name" />
-    <div id="emojiButtons">
-      <button id="stashButton">💰</button>
-      <button id="trashButton">🚮</button>
+    <!-- Welcome Page -->
+    <div id="welcomePage">
+        <h1>Welcome to Stash or Trash???</h1>
+        <p>Before you proceed, please note that all posts are user-generated content, not from the platform.</p>
+        <button id="continueToRate">Continue</button>
     </div>
-    <textarea id="commentBox" placeholder="Add a comment"></textarea>
-    <input type="file" id="mediaUpload" />
-    <button id="submitRating">Submit Rating</button>
-  </div>
 
-  <div id="userInfo" style="display: none;">
-    <p>Welcome, <span id="userEmail"></span>!</p>
-  </div>
+    <!-- Product List Page (hidden by default) -->
+    <div id="productPage" style="display: none;">
+        <h2>Choose a Brand and Product</h2>
+        <ul id="brandList"></ul>
+        <button id="logoutButton">Log Out</button>
+    </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
+    <!-- Firebase Config -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
 
-  <script>
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-      authDomain: "stashortrash-acbbf.firebaseapp.com",
-      projectId: "stashortrash-acbbf",
-      storageBucket: "stashortrash-acbbf.firebasestorage.app",
-      messagingSenderId: "782905521538",
-      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-      measurementId: "G-8Y4ZXJTPM6"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+            authDomain: "stashortrash-acbbf.firebaseapp.com",
+            projectId: "stashortrash-acbbf",
+            storageBucket: "stashortrash-acbbf.firebasestorage.app",
+            messagingSenderId: "782905521538",
+            appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+            measurementId: "G-8Y4ZXJTPM6"
+        };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-  </script>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore(app);
 
+        // Show product list after login
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('welcomePage').style.display = 'none';
+                document.getElementById('productPage').style.display = 'block';
+                loadBrands();
+            }
+        });
+
+        // Load brands from Firestore
+        async function loadBrands() {
+            const querySnapshot = await getDocs(collection(db, "brands"));
+            const brandListElement = document.getElementById("brandList");
+
+            querySnapshot.forEach((doc) => {
+                const brandData = doc.data();
+                const li = document.createElement("li");
+                li.textContent = brandData.name;  // Assuming 'name' is the field for brand name
+                brandListElement.appendChild(li);
+            });
+        }
+
+        // Log out the user
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                document.getElementById('productPage').style.display = 'none';
+                document.getElementById('welcomePage').style.display = 'block';
+            });
+        });
+
+        // Handle continue button click
+        document.getElementById('continueToRate').addEventListener('click', () => {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('productPage').style.display = 'block';
+        });
+    </script>
 </body>
 </html>
