@@ -1,85 +1,176 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stash or Trash???</title>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.9.0/firebase-storage.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stash or Trash???</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
+    .hidden { display: none; }
+    .product { margin: 20px 0; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .emoji-btn { font-size: 24px; margin-right: 10px; cursor: pointer; }
+    input, button, textarea { padding: 8px; margin: 5px 0; width: 100%; max-width: 300px; }
+    button { cursor: pointer; background-color: #333; color: white; border: none; border-radius: 5px; }
+  </style>
 </head>
 <body>
 
-    <!-- Welcome Page -->
-    <div id="welcomePage">
-        <h1>Welcome to Stash or Trash???</h1>
-        <p>Before you proceed, please note that all posts are user-generated content, not from the platform.</p>
-        <button id="continueToRate">Continue</button>
+  <h1>Stash or Trash???</h1>
+
+  <!-- Auth Section -->
+  <div id="auth-section">
+    <input type="email" id="email" placeholder="Email" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+
+  <!-- Welcome & Rules -->
+  <div id="welcome-section" class="hidden">
+    <h2>Welcome to Stash or Trash??? 🎉</h2>
+    <p>Please be respectful. All uploads are user-generated content, and we do not endorse or moderate the submissions unless reported. Misuse may result in account suspension.</p>
+    <button onclick="enterApp()">I Understand, Enter the App</button>
+  </div>
+
+  <!-- Main App Section -->
+  <div id="app-section" class="hidden">
+    <button onclick="logout()">Logout</button>
+
+    <h2>Select a Product</h2>
+    <div id="product-list">
+      <div class="product" onclick="selectProduct('Nike Shoes')">Nike Shoes</div>
+      <div class="product" onclick="selectProduct('Coca-Cola')">Coca-Cola</div>
+      <div class="product" onclick="selectProduct('Samsung Phone')">Samsung Phone</div>
     </div>
 
-    <!-- Product List Page (hidden by default) -->
-    <div id="productPage" style="display: none;">
-        <h2>Choose a Brand and Product</h2>
-        <ul id="brandList"></ul>
-        <button id="logoutButton">Log Out</button>
+    <div id="rating-section" class="hidden">
+      <h3 id="selected-product-name"></h3>
+      <div>
+        <span class="emoji-btn" onclick="submitRating('💰')">💰 Stash</span>
+        <span class="emoji-btn" onclick="submitRating('🚮')">🚮 Trash</span>
+      </div>
+      <textarea id="comment" placeholder="Leave a comment..."></textarea><br />
+      <input type="file" id="media" accept="image/*,video/*" /><br />
     </div>
+  </div>
 
-    <!-- Firebase Config -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
-        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
+  <!-- Firebase + Script -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-            authDomain: "stashortrash-acbbf.firebaseapp.com",
-            projectId: "stashortrash-acbbf",
-            storageBucket: "stashortrash-acbbf.firebasestorage.app",
-            messagingSenderId: "782905521538",
-            appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-            measurementId: "G-8Y4ZXJTPM6"
-        };
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+      authDomain: "stashortrash-acbbf.firebaseapp.com",
+      projectId: "stashortrash-acbbf",
+      storageBucket: "stashortrash-acbbf.appspot.com",
+      messagingSenderId: "782905521538",
+      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+      measurementId: "G-8Y4ZXJTPM6"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth();
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+    const storage = getStorage();
 
-        // Show product list after login
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('welcomePage').style.display = 'none';
-                document.getElementById('productPage').style.display = 'block';
-                loadBrands();
-            }
-        });
+    // Elements
+    const authSection = document.getElementById("auth-section");
+    const welcomeSection = document.getElementById("welcome-section");
+    const appSection = document.getElementById("app-section");
+    const ratingSection = document.getElementById("rating-section");
+    const selectedProductName = document.getElementById("selected-product-name");
 
-        // Load brands from Firestore
-        async function loadBrands() {
-            const querySnapshot = await getDocs(collection(db, "brands"));
-            const brandListElement = document.getElementById("brandList");
+    let currentUser = null;
+    let selectedProduct = "";
 
-            querySnapshot.forEach((doc) => {
-                const brandData = doc.data();
-                const li = document.createElement("li");
-                li.textContent = brandData.name;  // Assuming 'name' is the field for brand name
-                brandListElement.appendChild(li);
-            });
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        authSection.classList.add("hidden");
+        welcomeSection.classList.remove("hidden");
+      } else {
+        currentUser = null;
+        authSection.classList.remove("hidden");
+        welcomeSection.classList.add("hidden");
+        appSection.classList.add("hidden");
+      }
+    });
+
+    window.login = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("Login error: " + e.message);
+      }
+    };
+
+    window.signup = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (e) {
+        alert("Signup error: " + e.message);
+      }
+    };
+
+    window.logout = async () => {
+      await signOut(auth);
+    };
+
+    window.enterApp = () => {
+      welcomeSection.classList.add("hidden");
+      appSection.classList.remove("hidden");
+    };
+
+    window.selectProduct = (name) => {
+      selectedProduct = name;
+      selectedProductName.textContent = `Rate: ${name}`;
+      ratingSection.classList.remove("hidden");
+    };
+
+    window.submitRating = async (emoji) => {
+      const comment = document.getElementById("comment").value;
+      const fileInput = document.getElementById("media");
+      const file = fileInput.files[0];
+
+      let fileURL = "";
+
+      if (file) {
+        try {
+          const fileRef = ref(storage, `uploads/${currentUser.uid}/${Date.now()}_${file.name}`);
+          await uploadBytes(fileRef, file);
+          fileURL = await getDownloadURL(fileRef);
+        } catch (e) {
+          alert("File upload failed: " + e.message);
         }
+      }
 
-        // Log out the user
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                document.getElementById('productPage').style.display = 'none';
-                document.getElementById('welcomePage').style.display = 'block';
-            });
+      try {
+        await addDoc(collection(db, "ratings"), {
+          userId: currentUser.uid,
+          product: selectedProduct,
+          rating: emoji,
+          comment: comment,
+          mediaURL: fileURL,
+          timestamp: serverTimestamp()
         });
-
-        // Handle continue button click
-        document.getElementById('continueToRate').addEventListener('click', () => {
-            document.getElementById('welcomePage').style.display = 'none';
-            document.getElementById('productPage').style.display = 'block';
-        });
-    </script>
+        alert("Rating submitted successfully!");
+        document.getElementById("comment").value = "";
+        fileInput.value = "";
+        ratingSection.classList.add("hidden");
+      } catch (e) {
+        alert("Error saving rating: " + e.message);
+      }
+    };
+  </script>
 </body>
 </html>
