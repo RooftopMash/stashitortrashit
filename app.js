@@ -1,139 +1,119 @@
-import {
-    initializeApp
-} from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-} from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
-import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs
-} from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
-
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis", // Your actual API Key here
-    authDomain: "stashortrash-acbbf.firebaseapp.com",
-    projectId: "stashortrash-acbbf",
-    storageBucket: "stashortrash-acbbf.appspot.com",
-    messagingSenderId: "782905521538",
-    appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-    measurementId: "G-8Y4ZXJTPM6"
-};
-
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); // Pass app instance to getAuth
-const db = getFirestore(app); // Initialize Firestore
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
 
-// UI element references
-const loginDiv = document.getElementById("login");
-const productSelectionDiv = document.getElementById("product-selection");
-const productListDiv = document.getElementById("product-list");
+// Welcome page logic
+document.getElementById('continueToRate').addEventListener('click', () => {
+  document.getElementById('welcomePage').style.display = 'none';
+  showBrandSelection();
+});
 
-// --- Helper Functions ---
-async function fetchProducts() {
-    const productsRef = collection(db, "products");
-    const snapshot = await getDocs(productsRef);
-    const products = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-    }));
-    displayProducts(products);
-}
+// Brand selection logic
+let brands = ["Coca-Cola", "Nike", "Apple", "Samsung", "Pepsi"]; // Example brands
 
-function displayProducts(products) {
-    productListDiv.innerHTML = ''; // Clear existing content
-
-    products.forEach(product => {
-        const productItem = document.createElement('div');
-        productItem.classList.add('product-item');
-        productItem.textContent = product.name;
-        productListDiv.appendChild(productItem);
+function showBrandSelection() {
+  const brandList = document.getElementById('brandList');
+  brands.forEach((brand) => {
+    const brandButton = document.createElement('button');
+    brandButton.textContent = brand;
+    brandButton.addEventListener('click', () => {
+      localStorage.setItem('selectedBrand', brand);
+      showProductRatingInterface();
     });
+    brandList.appendChild(brandButton);
+  });
+  document.getElementById('brandPage').style.display = 'block';
 }
 
-// Sign Up functionality
-document.getElementById("signup-btn").addEventListener("click", () => {
-    const email = document.getElementById("signup-email").value;
-    const password = document.getElementById("signup-password").value;
+function showProductRatingInterface() {
+  document.getElementById('brandPage').style.display = 'none';
+  document.getElementById('ratingPage').style.display = 'block';
+}
 
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // User signed up successfully
-            const user = userCredential.user;
-            alert("Sign Up successful!");
-            // Optionally redirect to another page or show logged-in screen
-            document.getElementById("signup").style.display = "none"; // Hide sign up form
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(`Sign Up Failed: ${errorMessage}`);
-        });
+// Handle user login
+document.getElementById('loginButton').addEventListener('click', () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('userInfo').style.display = 'block';
+      showBrandSelection();
+    })
+    .catch((error) => {
+      console.error(error.message);
+    });
 });
 
-// Log In functionality
-document.getElementById("login-btn").addEventListener("click", () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // User logged in successfully
-            const user = userCredential.user;
-            alert("Log In successful!");
-            // Hide login form and show main app
-            document.getElementById("login").style.display = "none"; // Hide login form
-            productSelectionDiv.style.display = "block"; // Show product selection
-            fetchProducts(); // Load products
-            // Optionally show user-specific features after login
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(`Login Failed: ${errorMessage}`);
-        });
+// Handle user signup
+document.getElementById('signUpButton').addEventListener('click', () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('userInfo').style.display = 'block';
+      showBrandSelection();
+    })
+    .catch((error) => {
+      console.error(error.message);
+    });
 });
 
-// --- Add Product Functionality ---
-document.getElementById("add-product-btn").addEventListener("click", async () => {
-    const productName = document.getElementById("product-name").value;
+// Submit rating
+document.getElementById('submitRating').addEventListener('click', () => {
+  const productName = document.getElementById('productName').value;
+  const emojiRating = document.querySelector('button.selected').textContent; // 💰 or 🚮
+  const comment = document.getElementById('commentBox').value;
+  const file = document.getElementById('mediaUpload').files[0];
+  const userId = auth.currentUser.uid;
+  const brand = localStorage.getItem('selectedBrand');
 
-    if (!productName) {
-        alert("Please enter a product name.");
-        return;
-    }
-
-    try {
-        // Add a new document with a generated id.
-        const docRef = await addDoc(collection(db, "products"), {
-            name: productName
-        });
-        console.log("Document written with ID: ", docRef.id);
-        document.getElementById("product-name").value = ""; // Clear the input
-        fetchProducts(); // Refresh the product list
-    } catch (e) {
-        console.error("Error adding document: ", e);
-        alert("Error adding product. Please check the console.");
-    }
+  // Upload media to Firebase Storage
+  let mediaUrl = '';
+  if (file) {
+    const storageRef = storage.ref().child(`media/${file.name}`);
+    storageRef.put(file).then(() => {
+      storageRef.getDownloadURL().then((url) => {
+        mediaUrl = url;
+        saveRatingToFirestore(productName, emojiRating, comment, mediaUrl, brand, userId);
+      });
+    });
+  } else {
+    saveRatingToFirestore(productName, emojiRating, comment, mediaUrl, brand, userId);
+  }
 });
 
-// --- Firebase Auth State Listener --- (Optional but recommended)
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // User is signed in
-        loginDiv.style.display = "none";
-        productSelectionDiv.style.display = "block";
-        fetchProducts(); // Load products
-    } else {
-        // User is signed out
-        loginDiv.style.display = "block";
-        productSelectionDiv.style.display = "none";
-    }
-});
+// Save rating to Firestore
+function saveRatingToFirestore(productName, emojiRating, comment, mediaUrl, brand, userId) {
+  db.collection('ratings').add({
+    productName,
+    emojiRating,
+    comment,
+    mediaUrl,
+    brand,
+    userId,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    alert('Rating submitted!');
+    resetRatingInterface();
+  }).catch((error) => {
+    console.error('Error submitting rating: ', error);
+  });
+}
+
+// Reset the rating interface
+function resetRatingInterface() {
+  document.getElementById('productName').value = '';
+  document.getElementById('commentBox').value = '';
+  document.getElementById('mediaUpload').value = '';
+  document.getElementById('ratingPage').style.display = 'none';
+  document.getElementById('brandPage').style.display = 'block';
+}
