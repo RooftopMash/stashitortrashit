@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,11 +36,13 @@
   <div id="app-section" class="hidden">
     <button onclick="logout()">Logout</button>
 
-    <h2>Select a Product</h2>
+    <h2>Select a Brand and Product</h2>
+    <div id="brand-list">
+      <!-- Brand names will be dynamically added here -->
+    </div>
+
     <div id="product-list">
-      <div class="product" onclick="selectProduct('Nike Shoes')">Nike Shoes</div>
-      <div class="product" onclick="selectProduct('Coca-Cola')">Coca-Cola</div>
-      <div class="product" onclick="selectProduct('Samsung Phone')">Samsung Phone</div>
+      <!-- Product list for a selected brand will show here -->
     </div>
 
     <div id="rating-section" class="hidden">
@@ -85,9 +86,16 @@
     const appSection = document.getElementById("app-section");
     const ratingSection = document.getElementById("rating-section");
     const selectedProductName = document.getElementById("selected-product-name");
+    const brandList = document.getElementById("brand-list");
+    const productList = document.getElementById("product-list");
 
     let currentUser = null;
     let selectedProduct = "";
+    const brands = {
+      "Nike": ["Nike Shoes", "Nike T-Shirt", "Nike Hat"],
+      "Coca-Cola": ["Coca-Cola", "Diet Coke", "Sprite"],
+      "Samsung": ["Samsung Phone", "Samsung TV", "Samsung Fridge"]
+    };
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -129,7 +137,29 @@
     window.enterApp = () => {
       welcomeSection.classList.add("hidden");
       appSection.classList.remove("hidden");
+      displayBrands();
     };
+
+    function displayBrands() {
+      brandList.innerHTML = '';
+      for (const brand in brands) {
+        const brandBtn = document.createElement("button");
+        brandBtn.textContent = brand;
+        brandBtn.onclick = () => displayProducts(brand);
+        brandList.appendChild(brandBtn);
+      }
+    }
+
+    function displayProducts(brand) {
+      productList.innerHTML = '';
+      brands[brand].forEach((product) => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product");
+        productDiv.textContent = product;
+        productDiv.onclick = () => selectProduct(product);
+        productList.appendChild(productDiv);
+      });
+    }
 
     window.selectProduct = (name) => {
       selectedProduct = name;
