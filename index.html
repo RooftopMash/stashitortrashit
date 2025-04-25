@@ -30,20 +30,21 @@
     <h2>Welcome to Stash or Trash??? 🎉</h2>
     <p>Please be respectful. All uploads are user-generated content, and we do not endorse or moderate the submissions unless reported. Misuse may result in account suspension.</p>
     <button onclick="enterApp()">I Understand, Enter the App</button>
+    <button onclick="goBack()">Go Back</button> <!-- Back Button -->
   </div>
 
   <!-- Main App Section -->
   <div id="app-section" class="hidden">
     <button onclick="logout()">Logout</button>
+    <button onclick="goBack()">Go Back</button> <!-- Back Button -->
 
-    <h2>Select a Brand and Product</h2>
-    <div id="brand-list">
-      <!-- Brand names will be dynamically added here -->
-    </div>
+    <h2>Suggest a Product or Brand</h2>
+    <input type="text" id="brandName" placeholder="Brand Name" /><br />
+    <input type="text" id="productName" placeholder="Product Name" /><br />
+    <button onclick="submitProductSuggestion()">Submit Product</button>
 
-    <div id="product-list">
-      <!-- Product list for a selected brand will show here -->
-    </div>
+    <h2>Select a Product</h2>
+    <div id="product-list"></div>
 
     <div id="rating-section" class="hidden">
       <h3 id="selected-product-name"></h3>
@@ -52,7 +53,7 @@
         <span class="emoji-btn" onclick="submitRating('🚮')">🚮 Trash</span>
       </div>
       <textarea id="comment" placeholder="Leave a comment..."></textarea><br />
-      <input type="file" id="media" accept="image/*,video/*" /><br />
+      <input type="file" id="media" accept="image/*,video/*,audio/*" /><br />
     </div>
   </div>
 
@@ -86,16 +87,10 @@
     const appSection = document.getElementById("app-section");
     const ratingSection = document.getElementById("rating-section");
     const selectedProductName = document.getElementById("selected-product-name");
-    const brandList = document.getElementById("brand-list");
     const productList = document.getElementById("product-list");
 
     let currentUser = null;
     let selectedProduct = "";
-    const brands = {
-      "Nike": ["Nike Shoes", "Nike T-Shirt", "Nike Hat"],
-      "Coca-Cola": ["Coca-Cola", "Diet Coke", "Sprite"],
-      "Samsung": ["Samsung Phone", "Samsung TV", "Samsung Fridge"]
-    };
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -137,34 +132,29 @@
     window.enterApp = () => {
       welcomeSection.classList.add("hidden");
       appSection.classList.remove("hidden");
-      displayBrands();
     };
 
-    function displayBrands() {
-      brandList.innerHTML = '';
-      for (const brand in brands) {
-        const brandBtn = document.createElement("button");
-        brandBtn.textContent = brand;
-        brandBtn.onclick = () => displayProducts(brand);
-        brandList.appendChild(brandBtn);
+    window.goBack = () => {
+      welcomeSection.classList.add("hidden");
+      authSection.classList.remove("hidden");
+      appSection.classList.add("hidden");
+    };
+
+    window.submitProductSuggestion = async () => {
+      const brand = document.getElementById("brandName").value;
+      const product = document.getElementById("productName").value;
+
+      try {
+        await addDoc(collection(db, "productSuggestions"), {
+          userId: currentUser.uid,
+          brand: brand,
+          product: product,
+          timestamp: serverTimestamp()
+        });
+        alert("Product suggestion submitted!");
+      } catch (e) {
+        alert("Error submitting product suggestion: " + e.message);
       }
-    }
-
-    function displayProducts(brand) {
-      productList.innerHTML = '';
-      brands[brand].forEach((product) => {
-        const productDiv = document.createElement("div");
-        productDiv.classList.add("product");
-        productDiv.textContent = product;
-        productDiv.onclick = () => selectProduct(product);
-        productList.appendChild(productDiv);
-      });
-    }
-
-    window.selectProduct = (name) => {
-      selectedProduct = name;
-      selectedProductName.textContent = `Rate: ${name}`;
-      ratingSection.classList.remove("hidden");
     };
 
     window.submitRating = async (emoji) => {
