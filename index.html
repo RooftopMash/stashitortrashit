@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
     .hidden { display: none; }
-    .product { margin: 20px 0; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .product { margin: 20px 0; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); cursor: pointer; }
     .emoji-btn { font-size: 24px; margin-right: 10px; cursor: pointer; }
     input, button, textarea { padding: 8px; margin: 5px 0; width: 100%; max-width: 300px; }
     button { cursor: pointer; background-color: #333; color: white; border: none; border-radius: 5px; }
@@ -30,21 +30,18 @@
     <h2>Welcome to Stash or Trash??? 🎉</h2>
     <p>Please be respectful. All uploads are user-generated content, and we do not endorse or moderate the submissions unless reported. Misuse may result in account suspension.</p>
     <button onclick="enterApp()">I Understand, Enter the App</button>
-    <button onclick="goBack()">Go Back</button> <!-- Back Button -->
   </div>
 
   <!-- Main App Section -->
   <div id="app-section" class="hidden">
     <button onclick="logout()">Logout</button>
-    <button onclick="goBack()">Go Back</button> <!-- Back Button -->
-
-    <h2>Suggest a Product or Brand</h2>
-    <input type="text" id="brandName" placeholder="Brand Name" /><br />
-    <input type="text" id="productName" placeholder="Product Name" /><br />
-    <button onclick="submitProductSuggestion()">Submit Product</button>
 
     <h2>Select a Product</h2>
-    <div id="product-list"></div>
+    <div id="product-list">
+      <div class="product" onclick="selectProduct('Nike Shoes')">Nike Shoes</div>
+      <div class="product" onclick="selectProduct('Coca-Cola')">Coca-Cola</div>
+      <div class="product" onclick="selectProduct('Samsung Phone')">Samsung Phone</div>
+    </div>
 
     <div id="rating-section" class="hidden">
       <h3 id="selected-product-name"></h3>
@@ -54,6 +51,7 @@
       </div>
       <textarea id="comment" placeholder="Leave a comment..."></textarea><br />
       <input type="file" id="media" accept="image/*,video/*,audio/*" /><br />
+      <button onclick="submitRating()">Submit Rating</button>
     </div>
   </div>
 
@@ -87,7 +85,6 @@
     const appSection = document.getElementById("app-section");
     const ratingSection = document.getElementById("rating-section");
     const selectedProductName = document.getElementById("selected-product-name");
-    const productList = document.getElementById("product-list");
 
     let currentUser = null;
     let selectedProduct = "";
@@ -134,27 +131,10 @@
       appSection.classList.remove("hidden");
     };
 
-    window.goBack = () => {
-      welcomeSection.classList.add("hidden");
-      authSection.classList.remove("hidden");
-      appSection.classList.add("hidden");
-    };
-
-    window.submitProductSuggestion = async () => {
-      const brand = document.getElementById("brandName").value;
-      const product = document.getElementById("productName").value;
-
-      try {
-        await addDoc(collection(db, "productSuggestions"), {
-          userId: currentUser.uid,
-          brand: brand,
-          product: product,
-          timestamp: serverTimestamp()
-        });
-        alert("Product suggestion submitted!");
-      } catch (e) {
-        alert("Error submitting product suggestion: " + e.message);
-      }
+    window.selectProduct = (name) => {
+      selectedProduct = name;
+      selectedProductName.textContent = `Rate: ${name}`;
+      ratingSection.classList.remove("hidden");
     };
 
     window.submitRating = async (emoji) => {
