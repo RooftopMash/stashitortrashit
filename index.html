@@ -138,6 +138,8 @@
     };
 
     window.submitRating = async (emoji) => {
+      if (!emoji) return alert("Please select a rating emoji!");
+
       const comment = document.getElementById("comment").value;
       const fileInput = document.getElementById("media");
       const file = fileInput.files[0];
