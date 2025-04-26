@@ -36,15 +36,23 @@
   <div id="app-section" class="hidden">
     <button onclick="logout()">Logout</button>
 
-    <h2>Select a Product</h2>
-    <div id="product-list">
-      <div class="product" onclick="selectProduct('Nike Shoes')">Nike Shoes</div>
-      <div class="product" onclick="selectProduct('Coca-Cola')">Coca-Cola</div>
-      <div class="product" onclick="selectProduct('Samsung Phone')">Samsung Phone</div>
-    </div>
+    <h2>Submit a Product Rating</h2>
 
+    <!-- Select Brand -->
+    <label for="brand">Select a Brand: </label>
+    <select id="brand">
+      <option value="Nike">Nike</option>
+      <option value="Coca-Cola">Coca-Cola</option>
+      <option value="Samsung">Samsung</option>
+      <option value="Other">Other</option>
+    </select><br />
+
+    <!-- Enter Product Name -->
+    <input type="text" id="product-name" placeholder="Enter Product Name" /><br />
+
+    <!-- Rating Section -->
     <div id="rating-section" class="hidden">
-      <h3 id="selected-product-name"></h3>
+      <h3>Rate the Product</h3>
       <div>
         <span class="emoji-btn" onclick="submitRating('💰')">💰 Stash</span>
         <span class="emoji-btn" onclick="submitRating('🚮')">🚮 Trash</span>
@@ -84,9 +92,9 @@
     const welcomeSection = document.getElementById("welcome-section");
     const appSection = document.getElementById("app-section");
     const ratingSection = document.getElementById("rating-section");
-    const selectedProductName = document.getElementById("selected-product-name");
 
     let currentUser = null;
+    let selectedBrand = "";
     let selectedProduct = "";
 
     onAuthStateChanged(auth, (user) => {
@@ -131,10 +139,16 @@
       appSection.classList.remove("hidden");
     };
 
-    window.selectProduct = (name) => {
-      selectedProduct = name;
-      selectedProductName.textContent = `Rate: ${name}`;
-      ratingSection.classList.remove("hidden");
+    window.submitProduct = () => {
+      selectedBrand = document.getElementById("brand").value;
+      selectedProduct = document.getElementById("product-name").value;
+      
+      if (!selectedProduct) {
+        alert("Please enter the product name!");
+        return;
+      }
+
+      document.getElementById("rating-section").classList.remove("hidden");
     };
 
     window.submitRating = async (emoji) => {
@@ -159,6 +173,7 @@
       try {
         await addDoc(collection(db, "ratings"), {
           userId: currentUser.uid,
+          brand: selectedBrand,
           product: selectedProduct,
           rating: emoji,
           comment: comment,
