@@ -11,13 +11,39 @@
 <body>
   <h1>Stash or Trash???</h1>
 
-  <div id="authSection">
-    <h2>Login or Signup</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Signup</button>
-  </div>
+  <!-- Auth Section (Updated) -->
+<div id="auth-section">
+  <h2>Sign Up or Log In</h2>
+  <input type="text" id="full-name" placeholder="Full Name" /><br />
+  <input type="text" id="username" placeholder="Username" /><br />
+  <input type="email" id="email" placeholder="Email" /><br />
+  <input type="password" id="password" placeholder="Password" /><br />
+
+  <label for="country">Country:</label><br />
+  <select id="country">
+    <option value="USA">USA 🇺🇸</option>
+    <option value="United Kingdom">United Kingdom 🇬🇧</option>
+    <option value="South Africa">South Africa 🇿🇦</option>
+    <option value="Canada">Canada 🇨🇦</option>
+    <option value="Australia">Australia 🇦🇺</option>
+    <option value="Germany">Germany 🇩🇪</option>
+    <option value="France">France 🇫🇷</option>
+    <option value="India">India 🇮🇳</option>
+    <option value="Japan">Japan 🇯🇵</option>
+    <option value="Brazil">Brazil 🇧🇷</option>
+    <option value="Mexico">Mexico 🇲🇽</option>
+    <option value="China">China 🇨🇳</option>
+  </select><br />
+
+  <input type="text" id="address" placeholder="Physical Address (Optional)" /><br />
+  <input type="text" id="cellphone" placeholder="Cellphone Number" /><br />
+
+  <label for="profile-pic">Upload Profile Picture (Optional):</label><br />
+  <input type="file" id="profile-pic" accept="image/*" /><br /><br />
+
+  <button onclick="login()">Login</button>
+  <button onclick="signup()">Sign Up</button>
+</div>
 
   <div id="welcomeSection" class="hidden">
     <h2>Welcome!</h2>
