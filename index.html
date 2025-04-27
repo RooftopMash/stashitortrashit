@@ -11,48 +11,51 @@
 <body>
   <h1>Stash or Trash???</h1>
 
-  <!-- Auth Section (Updated) -->
-<div id="auth-section">
-  <h2>Sign Up or Log In</h2>
-  <input type="text" id="full-name" placeholder="Full Name" /><br />
-  <input type="text" id="username" placeholder="Username" /><br />
-  <input type="email" id="email" placeholder="Email" /><br />
-  <input type="password" id="password" placeholder="Password" /><br />
+  <!-- Auth Section -->
+  <div id="auth-section">
+    <h2>Sign Up or Log In</h2>
+    <input type="text" id="full-name" placeholder="Full Name" /><br />
+    <input type="text" id="username" placeholder="Username" /><br />
+    <input type="email" id="email" placeholder="Email" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
 
-  <label for="country">Country:</label><br />
-  <select id="country">
-    <option value="USA">USA 🇺🇸</option>
-    <option value="United Kingdom">United Kingdom 🇬🇧</option>
-    <option value="South Africa">South Africa 🇿🇦</option>
-    <option value="Canada">Canada 🇨🇦</option>
-    <option value="Australia">Australia 🇦🇺</option>
-    <option value="Germany">Germany 🇩🇪</option>
-    <option value="France">France 🇫🇷</option>
-    <option value="India">India 🇮🇳</option>
-    <option value="Japan">Japan 🇯🇵</option>
-    <option value="Brazil">Brazil 🇧🇷</option>
-    <option value="Mexico">Mexico 🇲🇽</option>
-    <option value="China">China 🇨🇳</option>
-  </select><br />
+    <label for="country">Country:</label><br />
+    <select id="country">
+      <option value="USA">USA 🇺🇸</option>
+      <option value="United Kingdom">United Kingdom 🇬🇧</option>
+      <option value="South Africa">South Africa 🇿🇦</option>
+      <option value="Canada">Canada 🇨🇦</option>
+      <option value="Australia">Australia 🇦🇺</option>
+      <option value="Germany">Germany 🇩🇪</option>
+      <option value="France">France 🇫🇷</option>
+      <option value="India">India 🇮🇳</option>
+      <option value="Japan">Japan 🇯🇵</option>
+      <option value="Brazil">Brazil 🇧🇷</option>
+      <option value="Mexico">Mexico 🇲🇽</option>
+      <option value="China">China 🇨🇳</option>
+    </select><br />
 
-  <input type="text" id="address" placeholder="Physical Address (Optional)" /><br />
-  <input type="text" id="cellphone" placeholder="Cellphone Number" /><br />
+    <input type="text" id="address" placeholder="Physical Address (Optional)" /><br />
+    <input type="text" id="cellphone" placeholder="Cellphone Number" /><br />
 
-  <label for="profile-pic">Upload Profile Picture (Optional):</label><br />
-  <input type="file" id="profile-pic" accept="image/*" /><br /><br />
+    <label for="profile-pic">Upload Profile Picture (Optional):</label><br />
+    <input type="file" id="profile-pic" accept="image/*" /><br /><br />
 
-  <button onclick="login()">Login</button>
-  <button onclick="signup()">Sign Up</button>
-</div>
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Sign Up</button>
+  </div>
 
-  <div id="welcomeSection" class="hidden">
+  <!-- Welcome Section -->
+  <div id="welcome-section" class="hidden">
     <h2>Welcome!</h2>
     <button onclick="logout()">Logout</button>
     <button onclick="showRatingSection()">Submit a Product Rating</button>
   </div>
 
-  <div id="ratingSection" class="hidden">
+  <!-- Rating Section -->
+  <div id="rating-section" class="hidden">
     <h3>Submit Your Rating</h3>
+
     <label>Select a Brand:</label>
     <select id="brand" onchange="selectBrand()">
       <option value="">--Select Brand--</option>
@@ -61,9 +64,9 @@
       <option value="Nike">Nike</option>
     </select>
 
-    <div id="productSection" class="hidden">
+    <div id="product-section" class="hidden">
       <label>Enter Product:</label>
-      <input type="text" id="product" placeholder="Product Name">
+      <input type="text" id="product" placeholder="Product Name" /><br><br>
 
       <div>
         <span class="emoji-btn" onclick="selectRating('💰')">💰 Stash</span>
@@ -71,18 +74,20 @@
       </div>
 
       <textarea id="comment" placeholder="Add a comment (optional)"></textarea><br>
-      <input type="file" id="media"><br><br>
+      <input type="file" id="media" accept="image/*,video/*" /><br><br>
+
       <button onclick="submitRating()">Submit Rating</button>
     </div>
   </div>
 
-  <!-- Firebase scripts -->
+  <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
+    // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
       authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -93,21 +98,25 @@
       measurementId: "G-8Y4ZXJTPM6"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+    // DOM elements
+    const authSection = document.getElementById("auth-section");
+    const welcomeSection = document.getElementById("welcome-section");
+    const ratingSection = document.getElementById("rating-section");
+    const productSection = document.getElementById("product-section");
+
+    // Global states
     let currentUser = null;
     let selectedBrand = "";
     let selectedProduct = "";
     let selectedRating = "";
 
-    const authSection = document.getElementById("authSection");
-    const welcomeSection = document.getElementById("welcomeSection");
-    const ratingSection = document.getElementById("ratingSection");
-    const productSection = document.getElementById("productSection");
-
+    // Signup Function
     window.signup = async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -121,6 +130,7 @@
       }
     };
 
+    // Login Function
     window.login = async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
@@ -134,6 +144,7 @@
       }
     };
 
+    // Logout Function
     window.logout = async () => {
       try {
         await signOut(auth);
@@ -145,10 +156,12 @@
       }
     };
 
+    // Show Rating Section
     window.showRatingSection = () => {
       ratingSection.classList.remove("hidden");
     };
 
+    // Select Brand
     window.selectBrand = () => {
       selectedBrand = document.getElementById("brand").value;
       if (selectedBrand) {
@@ -158,11 +171,13 @@
       }
     };
 
+    // Select Rating (Emoji)
     window.selectRating = (emoji) => {
       selectedRating = emoji;
       alert(`You selected: ${emoji}`);
     };
 
+    // Submit Rating
     window.submitRating = async () => {
       if (!selectedBrand) {
         return alert("Please select a brand first!");
