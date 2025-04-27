@@ -1,80 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Stash or Trash???</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f0f0; }
     .hidden { display: none; }
-    .product { margin: 20px 0; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); cursor: pointer; }
-    .emoji-btn { font-size: 24px; margin-right: 10px; cursor: pointer; }
-    input, button, textarea { padding: 8px; margin: 5px 0; width: 100%; max-width: 300px; }
-    button { cursor: pointer; background-color: #333; color: white; border: none; border-radius: 5px; }
+    .emoji-btn { font-size: 2rem; cursor: pointer; margin: 10px; }
   </style>
 </head>
 <body>
-
   <h1>Stash or Trash???</h1>
 
-  <!-- Auth Section -->
-  <div id="auth-section">
-    <input type="email" id="email" placeholder="Email" /><br />
-    <input type="password" id="password" placeholder="Password" /><br />
+  <div id="authSection">
+    <h2>Login or Signup</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
+    <button onclick="signup()">Signup</button>
   </div>
 
-  <!-- Welcome & Rules -->
-  <div id="welcome-section" class="hidden">
-    <h2>Welcome to Stash or Trash??? 🎉</h2>
-    <p>Please be respectful. All uploads are user-generated content, and we do not endorse or moderate the submissions unless reported. Misuse may result in account suspension.</p>
-    <button onclick="enterApp()">I Understand, Enter the App</button>
-  </div>
-
-  <!-- Main App Section -->
-  <div id="app-section" class="hidden">
+  <div id="welcomeSection" class="hidden">
+    <h2>Welcome!</h2>
     <button onclick="logout()">Logout</button>
+    <button onclick="showRatingSection()">Submit a Product Rating</button>
+  </div>
 
-    <h2>Submit a Product Rating</h2>
-
-    <!-- Select Brand -->
-    <label for="brand">Select a Brand: </label>
-    <select id="brand">
-      <option value="Nike">Nike</option>
-      <option value="Coca-Cola">Coca-Cola</option>
+  <div id="ratingSection" class="hidden">
+    <h3>Submit Your Rating</h3>
+    <label>Select a Brand:</label>
+    <select id="brand" onchange="selectBrand()">
+      <option value="">--Select Brand--</option>
       <option value="Samsung">Samsung</option>
-      <option value="Other">Other</option>
-    </select><br />
+      <option value="Apple">Apple</option>
+      <option value="Nike">Nike</option>
+    </select>
 
-    <!-- Enter Product Name -->
-    <input type="text" id="product-name" placeholder="Enter Product Name" /><br />
-    
-    <!-- Submit Product Button -->
-    <button onclick="submitProduct()">Submit Product</button>
+    <div id="productSection" class="hidden">
+      <label>Enter Product:</label>
+      <input type="text" id="product" placeholder="Product Name">
 
-    <!-- Rating Section -->
-    <div id="rating-section" class="hidden">
-      <h3>Rate the Product</h3>
       <div>
-        <span class="emoji-btn" onclick="submitRating('💰')">💰 Stash</span>
-        <span class="emoji-btn" onclick="submitRating('🚮')">🚮 Trash</span>
+        <span class="emoji-btn" onclick="selectRating('💰')">💰 Stash</span>
+        <span class="emoji-btn" onclick="selectRating('🚮')">🚮 Trash</span>
       </div>
-      <textarea id="comment" placeholder="Leave a comment..."></textarea><br />
-      <input type="file" id="media" accept="image/*,video/*,audio/*" /><br />
+
+      <textarea id="comment" placeholder="Add a comment (optional)"></textarea><br>
+      <input type="file" id="media"><br><br>
       <button onclick="submitRating()">Submit Rating</button>
     </div>
   </div>
 
-  <!-- Firebase + Script -->
+  <!-- Firebase scripts -->
   <script type="module">
-    // Firebase imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
       authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -86,76 +68,86 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore();
-    const storage = getStorage();
-
-    // Elements
-    const authSection = document.getElementById("auth-section");
-    const welcomeSection = document.getElementById("welcome-section");
-    const appSection = document.getElementById("app-section");
-    const ratingSection = document.getElementById("rating-section");
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
     let currentUser = null;
     let selectedBrand = "";
     let selectedProduct = "";
+    let selectedRating = "";
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        authSection.classList.add("hidden");
-        welcomeSection.classList.remove("hidden");
-      } else {
-        currentUser = null;
-        authSection.classList.remove("hidden");
-        welcomeSection.classList.add("hidden");
-        appSection.classList.add("hidden");
-      }
-    });
-
-    window.login = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (e) {
-        alert("Login error: " + e.message);
-      }
-    };
+    const authSection = document.getElementById("authSection");
+    const welcomeSection = document.getElementById("welcomeSection");
+    const ratingSection = document.getElementById("ratingSection");
+    const productSection = document.getElementById("productSection");
 
     window.signup = async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user;
+        authSection.classList.add("hidden");
+        welcomeSection.classList.remove("hidden");
       } catch (e) {
         alert("Signup error: " + e.message);
       }
     };
 
-    window.logout = async () => {
-      await signOut(auth);
-    };
-
-    window.enterApp = () => {
-      welcomeSection.classList.add("hidden");
-      appSection.classList.remove("hidden");
-    };
-
-    window.submitProduct = () => {
-      selectedBrand = document.getElementById("brand").value;
-      selectedProduct = document.getElementById("product-name").value;
-      
-      if (!selectedProduct) {
-        alert("Please enter the product name!");
-        return;
+    window.login = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        currentUser = userCredential.user;
+        authSection.classList.add("hidden");
+        welcomeSection.classList.remove("hidden");
+      } catch (e) {
+        alert("Login error: " + e.message);
       }
-
-      document.getElementById("rating-section").classList.remove("hidden");
     };
 
-    window.submitRating = async (emoji) => {
-      if (!emoji) return alert("Please select a rating emoji!");
+    window.logout = async () => {
+      try {
+        await signOut(auth);
+        currentUser = null;
+        welcomeSection.classList.add("hidden");
+        authSection.classList.remove("hidden");
+      } catch (e) {
+        alert("Logout error: " + e.message);
+      }
+    };
+
+    window.showRatingSection = () => {
+      ratingSection.classList.remove("hidden");
+    };
+
+    window.selectBrand = () => {
+      selectedBrand = document.getElementById("brand").value;
+      if (selectedBrand) {
+        productSection.classList.remove("hidden");
+      } else {
+        productSection.classList.add("hidden");
+      }
+    };
+
+    window.selectRating = (emoji) => {
+      selectedRating = emoji;
+      alert(`You selected: ${emoji}`);
+    };
+
+    window.submitRating = async () => {
+      if (!selectedBrand) {
+        return alert("Please select a brand first!");
+      }
+      selectedProduct = document.getElementById("product").value.trim();
+      if (!selectedProduct) {
+        return alert("Please enter a product name!");
+      }
+      if (!selectedRating) {
+        return alert("Please select Stash or Trash!");
+      }
 
       const comment = document.getElementById("comment").value;
       const fileInput = document.getElementById("media");
@@ -170,6 +162,7 @@
           fileURL = await getDownloadURL(fileRef);
         } catch (e) {
           alert("File upload failed: " + e.message);
+          return;
         }
       }
 
@@ -178,7 +171,7 @@
           userId: currentUser.uid,
           brand: selectedBrand,
           product: selectedProduct,
-          rating: emoji,
+          rating: selectedRating,
           comment: comment,
           mediaURL: fileURL,
           timestamp: serverTimestamp()
@@ -186,6 +179,7 @@
         alert("Rating submitted successfully!");
         document.getElementById("comment").value = "";
         fileInput.value = "";
+        selectedRating = "";
         ratingSection.classList.add("hidden");
       } catch (e) {
         alert("Error saving rating: " + e.message);
