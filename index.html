@@ -4,228 +4,293 @@
   <meta charset="UTF-8">
   <title>Stash or Trash???</title>
   <style>
-    .hidden { display: none; }
-    .emoji-btn { font-size: 2rem; cursor: pointer; margin: 10px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 50px;
+    }
+    h1 {
+      color: #fff;
+      text-shadow: 1px 1px 3px #000;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .emoji-btn {
+      font-size: 2rem;
+      cursor: pointer;
+      margin: 10px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .link-btn {
+      background: none;
+      border: none;
+      color: #3498db;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h1>Stash or Trash???</h1>
 
-  <!-- Auth Section -->
-  <div id="auth-section">
-    <h2>Sign Up or Log In</h2>
-    <input type="text" id="full-name" placeholder="Full Name" /><br />
-    <input type="text" id="username" placeholder="Username" /><br />
-    <input type="email" id="email" placeholder="Email" /><br />
-    <input type="password" id="password" placeholder="Password" /><br />
+<h1>Stash or Trash???</h1>
 
-    <label for="country">Country:</label><br />
-    <select id="country">
-      <option value="USA">USA 🇺🇸</option>
-      <option value="United Kingdom">United Kingdom 🇬🇧</option>
-      <option value="South Africa">South Africa 🇿🇦</option>
-      <option value="Canada">Canada 🇨🇦</option>
-      <option value="Australia">Australia 🇦🇺</option>
-      <option value="Germany">Germany 🇩🇪</option>
-      <option value="France">France 🇫🇷</option>
-      <option value="India">India 🇮🇳</option>
-      <option value="Japan">Japan 🇯🇵</option>
-      <option value="Brazil">Brazil 🇧🇷</option>
-      <option value="Mexico">Mexico 🇲🇽</option>
-      <option value="China">China 🇨🇳</option>
-    </select><br />
+<!-- Login Page -->
+<div id="login-page" class="container">
+  <h2>Login</h2>
+  <input type="email" id="login-email" placeholder="Email" />
+  <input type="password" id="login-password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <button class="link-btn" onclick="showSignupPage()">New Here??? Sign Up</button>
+</div>
 
-    <input type="text" id="address" placeholder="Physical Address (Optional)" /><br />
-    <input type="text" id="cellphone" placeholder="Cellphone Number" /><br />
+<!-- Signup Page -->
+<div id="signup-page" class="container hidden">
+  <h2>Sign Up</h2>
+  <input type="text" id="full-name" placeholder="Full Name" />
+  <input type="text" id="username" placeholder="Username" />
+  <input type="email" id="signup-email" placeholder="Email" />
+  <input type="password" id="signup-password" placeholder="Password" />
+  
+  <label for="country">Country:</label>
+  <select id="country">
+    <option value="">--Select Country--</option>
+    <option value="USA">USA 🇺🇸</option>
+    <option value="United Kingdom">United Kingdom 🇬🇧</option>
+    <option value="South Africa">South Africa 🇿🇦</option>
+    <option value="Canada">Canada 🇨🇦</option>
+    <option value="Australia">Australia 🇦🇺</option>
+    <option value="Germany">Germany 🇩🇪</option>
+    <option value="France">France 🇫🇷</option>
+    <option value="India">India 🇮🇳</option>
+    <option value="Japan">Japan 🇯🇵</option>
+    <option value="Brazil">Brazil 🇧🇷</option>
+    <option value="Mexico">Mexico 🇲🇽</option>
+    <option value="China">China 🇨🇳</option>
+  </select>
 
-    <label for="profile-pic">Upload Profile Picture (Optional):</label><br />
-    <input type="file" id="profile-pic" accept="image/*" /><br /><br />
+  <input type="text" id="address" placeholder="Physical Address (Optional)" />
+  <input type="text" id="cellphone" placeholder="Cellphone Number" />
+  <label for="profile-pic">Upload Profile Picture (Optional):</label>
+  <input type="file" id="profile-pic" accept="image/*" />
 
-    <button onclick="login()">Login</button>
-    <button onclick="signup()">Sign Up</button>
-  </div>
+  <button onclick="signup()">Sign Up</button>
+  <button class="link-btn" onclick="showLoginPage()">Already have an account? Log In</button>
+</div>
 
-  <!-- Welcome Section -->
-  <div id="welcome-section" class="hidden">
-    <h2>Welcome!</h2>
-    <button onclick="logout()">Logout</button>
-    <button onclick="showRatingSection()">Submit a Product Rating</button>
-  </div>
+<!-- Welcome Section -->
+<div id="welcome-section" class="container hidden">
+  <h2>Welcome!</h2>
+  <button onclick="logout()">Logout</button>
+  <button onclick="showRatingSection()">Submit a Product Rating</button>
+</div>
 
-  <!-- Rating Section -->
-  <div id="rating-section" class="hidden">
-    <h3>Submit Your Rating</h3>
+<!-- Rating Section -->
+<div id="rating-section" class="container hidden">
+  <h3>Submit Your Rating</h3>
 
-    <label>Select a Brand:</label>
-    <select id="brand" onchange="selectBrand()">
-      <option value="">--Select Brand--</option>
-      <option value="Samsung">Samsung</option>
-      <option value="Apple">Apple</option>
-      <option value="Nike">Nike</option>
-    </select>
+  <label>Select a Brand:</label>
+  <select id="brand" onchange="selectBrand()">
+    <option value="">--Select Brand--</option>
+    <option value="Samsung">Samsung</option>
+    <option value="Apple">Apple</option>
+    <option value="Nike">Nike</option>
+  </select>
 
-    <div id="product-section" class="hidden">
-      <label>Enter Product:</label>
-      <input type="text" id="product" placeholder="Product Name" /><br><br>
+  <div id="product-section" class="hidden">
+    <label>Enter Product:</label>
+    <input type="text" id="product" placeholder="Product Name" />
 
-      <div>
-        <span class="emoji-btn" onclick="selectRating('💰')">💰 Stash</span>
-        <span class="emoji-btn" onclick="selectRating('🚮')">🚮 Trash</span>
-      </div>
-
-      <textarea id="comment" placeholder="Add a comment (optional)"></textarea><br>
-      <input type="file" id="media" accept="image/*,video/*" /><br><br>
-
-      <button onclick="submitRating()">Submit Rating</button>
+    <div style="text-align: center; margin-top: 20px;">
+      <span class="emoji-btn" onclick="selectRating('💰')">💰 Stash</span>
+      <span class="emoji-btn" onclick="selectRating('🚮')">🚮 Trash</span>
     </div>
+
+    <textarea id="comment" placeholder="Add a comment (optional)"></textarea>
+    <input type="file" id="media" accept="image/*,video/*" />
+
+    <button onclick="submitRating()">Submit Rating</button>
   </div>
+</div>
 
-  <!-- Firebase Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+<!-- Firebase Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-      authDomain: "stashortrash-acbbf.firebaseapp.com",
-      projectId: "stashortrash-acbbf",
-      storageBucket: "stashortrash-acbbf.appspot.com",
-      messagingSenderId: "782905521538",
-      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-      measurementId: "G-8Y4ZXJTPM6"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+    authDomain: "stashortrash-acbbf.firebaseapp.com",
+    projectId: "stashortrash-acbbf",
+    storageBucket: "stashortrash-acbbf.appspot.com",
+    messagingSenderId: "782905521538",
+    appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+    measurementId: "G-8Y4ZXJTPM6"
+  };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
 
-    // DOM elements
-    const authSection = document.getElementById("auth-section");
-    const welcomeSection = document.getElementById("welcome-section");
-    const ratingSection = document.getElementById("rating-section");
-    const productSection = document.getElementById("product-section");
+  const loginPage = document.getElementById("login-page");
+  const signupPage = document.getElementById("signup-page");
+  const welcomeSection = document.getElementById("welcome-section");
+  const ratingSection = document.getElementById("rating-section");
+  const productSection = document.getElementById("product-section");
 
-    // Global states
-    let currentUser = null;
-    let selectedBrand = "";
-    let selectedProduct = "";
-    let selectedRating = "";
+  let currentUser = null;
+  let selectedBrand = "";
+  let selectedRating = "";
 
-    // Signup Function
-    window.signup = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+  window.showSignupPage = () => {
+    loginPage.classList.add("hidden");
+    signupPage.classList.remove("hidden");
+  };
+
+  window.showLoginPage = () => {
+    signupPage.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+  };
+
+  window.signup = async () => {
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      currentUser = userCredential.user;
+      signupPage.classList.add("hidden");
+      welcomeSection.classList.remove("hidden");
+    } catch (e) {
+      alert("Signup error: " + e.message);
+    }
+  };
+
+  window.login = async () => {
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      currentUser = userCredential.user;
+      loginPage.classList.add("hidden");
+      welcomeSection.classList.remove("hidden");
+    } catch (e) {
+      alert("Login error: " + e.message);
+    }
+  };
+
+  window.logout = async () => {
+    try {
+      await signOut(auth);
+      currentUser = null;
+      welcomeSection.classList.add("hidden");
+      loginPage.classList.remove("hidden");
+    } catch (e) {
+      alert("Logout error: " + e.message);
+    }
+  };
+
+  window.showRatingSection = () => {
+    ratingSection.classList.remove("hidden");
+  };
+
+  window.selectBrand = () => {
+    selectedBrand = document.getElementById("brand").value;
+    if (selectedBrand) {
+      productSection.classList.remove("hidden");
+    } else {
+      productSection.classList.add("hidden");
+    }
+  };
+
+  window.selectRating = (emoji) => {
+    selectedRating = emoji;
+    alert(`You selected: ${emoji}`);
+  };
+
+  window.submitRating = async () => {
+    if (!selectedBrand) {
+      return alert("Please select a brand first!");
+    }
+    const selectedProduct = document.getElementById("product").value.trim();
+    if (!selectedProduct) {
+      return alert("Please enter a product name!");
+    }
+    if (!selectedRating) {
+      return alert("Please select Stash or Trash!");
+    }
+
+    const comment = document.getElementById("comment").value;
+    const fileInput = document.getElementById("media");
+    const file = fileInput.files[0];
+    let fileURL = "";
+
+    if (file) {
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        currentUser = userCredential.user;
-        authSection.classList.add("hidden");
-        welcomeSection.classList.remove("hidden");
+        const fileRef = ref(storage, `uploads/${currentUser.uid}/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        fileURL = await getDownloadURL(fileRef);
       } catch (e) {
-        alert("Signup error: " + e.message);
+        alert("File upload failed: " + e.message);
+        return;
       }
-    };
+    }
 
-    // Login Function
-    window.login = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        currentUser = userCredential.user;
-        authSection.classList.add("hidden");
-        welcomeSection.classList.remove("hidden");
-      } catch (e) {
-        alert("Login error: " + e.message);
-      }
-    };
+    try {
+      await addDoc(collection(db, "ratings"), {
+        userId: currentUser.uid,
+        brand: selectedBrand,
+        product: selectedProduct,
+        rating: selectedRating,
+        comment: comment,
+        mediaURL: fileURL,
+        timestamp: serverTimestamp()
+      });
+      alert("Rating submitted successfully!");
+      document.getElementById("comment").value = "";
+      fileInput.value = "";
+      selectedRating = "";
+      ratingSection.classList.add("hidden");
+    } catch (e) {
+      alert("Error saving rating: " + e.message);
+    }
+  };
+</script>
 
-    // Logout Function
-    window.logout = async () => {
-      try {
-        await signOut(auth);
-        currentUser = null;
-        welcomeSection.classList.add("hidden");
-        authSection.classList.remove("hidden");
-      } catch (e) {
-        alert("Logout error: " + e.message);
-      }
-    };
-
-    // Show Rating Section
-    window.showRatingSection = () => {
-      ratingSection.classList.remove("hidden");
-    };
-
-    // Select Brand
-    window.selectBrand = () => {
-      selectedBrand = document.getElementById("brand").value;
-      if (selectedBrand) {
-        productSection.classList.remove("hidden");
-      } else {
-        productSection.classList.add("hidden");
-      }
-    };
-
-    // Select Rating (Emoji)
-    window.selectRating = (emoji) => {
-      selectedRating = emoji;
-      alert(`You selected: ${emoji}`);
-    };
-
-    // Submit Rating
-    window.submitRating = async () => {
-      if (!selectedBrand) {
-        return alert("Please select a brand first!");
-      }
-      selectedProduct = document.getElementById("product").value.trim();
-      if (!selectedProduct) {
-        return alert("Please enter a product name!");
-      }
-      if (!selectedRating) {
-        return alert("Please select Stash or Trash!");
-      }
-
-      const comment = document.getElementById("comment").value;
-      const fileInput = document.getElementById("media");
-      const file = fileInput.files[0];
-
-      let fileURL = "";
-
-      if (file) {
-        try {
-          const fileRef = ref(storage, `uploads/${currentUser.uid}/${Date.now()}_${file.name}`);
-          await uploadBytes(fileRef, file);
-          fileURL = await getDownloadURL(fileRef);
-        } catch (e) {
-          alert("File upload failed: " + e.message);
-          return;
-        }
-      }
-
-      try {
-        await addDoc(collection(db, "ratings"), {
-          userId: currentUser.uid,
-          brand: selectedBrand,
-          product: selectedProduct,
-          rating: selectedRating,
-          comment: comment,
-          mediaURL: fileURL,
-          timestamp: serverTimestamp()
-        });
-        alert("Rating submitted successfully!");
-        document.getElementById("comment").value = "";
-        fileInput.value = "";
-        selectedRating = "";
-        ratingSection.classList.add("hidden");
-      } catch (e) {
-        alert("Error saving rating: " + e.message);
-      }
-    };
-  </script>
 </body>
 </html>
