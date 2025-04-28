@@ -86,7 +86,7 @@
   <input type="password" id="signup-password" placeholder="Password" />
   
   <label for="country">Country:</label>
-  <select id="country">
+  <select id="country" onchange="updateBrandList()">
     <option value="">--Select Country--</option>
     <option value="USA">USA 🇺🇸</option>
     <option value="United Kingdom">United Kingdom 🇬🇧</option>
@@ -125,9 +125,7 @@
   <label>Select a Brand:</label>
   <select id="brand" onchange="selectBrand()">
     <option value="">--Select Brand--</option>
-    <option value="Samsung">Samsung</option>
-    <option value="Apple">Apple</option>
-    <option value="Nike">Nike</option>
+    <!-- The brand list will be populated based on the country selected -->
   </select>
 
   <div id="product-section" class="hidden">
@@ -173,10 +171,27 @@
   const welcomeSection = document.getElementById("welcome-section");
   const ratingSection = document.getElementById("rating-section");
   const productSection = document.getElementById("product-section");
+  const brandSelect = document.getElementById("brand");
 
   let currentUser = null;
   let selectedBrand = "";
   let selectedRating = "";
+
+  // Country-based brand data
+  const brandsByCountry = {
+    "USA": ["Nike", "Apple", "Coca-Cola", "McDonald's", "Amazon"],
+    "United Kingdom": ["Tesco", "ASDA", "Sainsbury's", "Aldi", "Apple"],
+    "South Africa": ["Shoprite", "Pick n Pay", "Game", "Woolworths", "Mr Price"],
+    "Canada": ["Tim Hortons", "Lululemon", "RBC", "Air Canada"],
+    "Australia": ["Woolworths", "Coles", "Qantas", "ANZ"],
+    "Germany": ["BMW", "Volkswagen", "Adidas", "Mercedes-Benz"],
+    "France": ["L'Oréal", "Carrefour", "Renault", "Danone"],
+    "India": ["Tata", "Reliance", "Bajaj", "Flipkart"],
+    "Japan": ["Sony", "Toyota", "Honda", "Nintendo"],
+    "Brazil": ["Havaianas", "Petrobras", "Itaú", "Embraer"],
+    "Mexico": ["Bimbo", "Corona", "Telmex", "Cemex"],
+    "China": ["Huawei", "Alibaba", "Tencent", "BYD"]
+  };
 
   window.showSignupPage = () => {
     loginPage.classList.add("hidden");
@@ -230,7 +245,7 @@
   };
 
   window.selectBrand = () => {
-    selectedBrand = document.getElementById("brand").value;
+    selectedBrand = brandSelect.value;
     if (selectedBrand) {
       productSection.classList.remove("hidden");
     } else {
@@ -239,58 +254,3 @@
   };
 
   window.selectRating = (emoji) => {
-    selectedRating = emoji;
-    alert(`You selected: ${emoji}`);
-  };
-
-  window.submitRating = async () => {
-    if (!selectedBrand) {
-      return alert("Please select a brand first!");
-    }
-    const selectedProduct = document.getElementById("product").value.trim();
-    if (!selectedProduct) {
-      return alert("Please enter a product name!");
-    }
-    if (!selectedRating) {
-      return alert("Please select Stash or Trash!");
-    }
-
-    const comment = document.getElementById("comment").value;
-    const fileInput = document.getElementById("media");
-    const file = fileInput.files[0];
-    let fileURL = "";
-
-    if (file) {
-      try {
-        const fileRef = ref(storage, `uploads/${currentUser.uid}/${Date.now()}_${file.name}`);
-        await uploadBytes(fileRef, file);
-        fileURL = await getDownloadURL(fileRef);
-      } catch (e) {
-        alert("File upload failed: " + e.message);
-        return;
-      }
-    }
-
-    try {
-      await addDoc(collection(db, "ratings"), {
-        userId: currentUser.uid,
-        brand: selectedBrand,
-        product: selectedProduct,
-        rating: selectedRating,
-        comment: comment,
-        mediaURL: fileURL,
-        timestamp: serverTimestamp()
-      });
-      alert("Rating submitted successfully!");
-      document.getElementById("comment").value = "";
-      fileInput.value = "";
-      selectedRating = "";
-      ratingSection.classList.add("hidden");
-    } catch (e) {
-      alert("Error saving rating: " + e.message);
-    }
-  };
-</script>
-
-</body>
-</html>
