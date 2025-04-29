@@ -16,6 +16,7 @@
   </header>
 
   <main>
+    <!-- LOGIN FORM -->
     <div id="auth-section">
       <div id="login-form">
         <h2>Login</h2>
@@ -25,12 +26,13 @@
         <p>New here? <a href="#" id="show-signup">Sign up</a></p>
       </div>
 
+      <!-- SIGNUP FORM -->
       <div id="signup-form" style="display:none;">
         <h2>Sign Up</h2>
         <input type="text" id="signup-name" placeholder="Full Name" />
-        <input type="text" id="country" placeholder="Country (Optional)" />
-        <input type="text" id="address" placeholder="Address (Optional)" />
-        <input type="text" id="phone" placeholder="Phone Number (Optional)" />
+        <input type="text" id="signup-country" placeholder="Country (Optional)" />
+        <input type="text" id="signup-address" placeholder="Address (Optional)" />
+        <input type="text" id="signup-phone" placeholder="Phone Number (Optional)" />
         <input type="email" id="signup-email" placeholder="Email" />
         <input type="password" id="signup-password" placeholder="Password" />
         <button id="signup-btn">Create Account</button>
@@ -38,12 +40,14 @@
       </div>
     </div>
 
+    <!-- WELCOME SCREEN -->
     <div id="welcome-screen" style="display:none;">
       <h2>Welcome to Stash or Trash???</h2>
       <p>⚠️ All posts are user-generated content. The platform does not endorse or verify uploads. Be respectful and honest. Ratings affect real brands. 🚫 No spam, hate speech or false claims.</p>
       <button id="continue-btn">Continue</button>
     </div>
 
+    <!-- MAIN CONTENT -->
     <section id="main-content" style="display:none;">
       <h2>Rate a Product</h2>
       <select id="brand">
@@ -56,6 +60,7 @@
       </div>
     </section>
 
+    <!-- PROFILE SECTION -->
     <section id="profile-section" style="display:none;">
       <h2>User Profile</h2>
       <img id="profile-pic-preview" src="" alt="Profile Picture" />
@@ -67,7 +72,7 @@
     </section>
   </main>
 
-  <!-- Firebase SDK -->
+  <!-- LOAD APP.JS -->
   <script type="module" src="App.js"></script>
 </body>
 </html>
