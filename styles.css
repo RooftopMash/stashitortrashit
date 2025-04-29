@@ -1,146 +1,91 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fdfdfd;
-    margin: 0;
-    padding: 0;
-    color: #333;
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
 }
 
-header {
-    background-color: #facc15;
-    /* golden yellow for attention */
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 2px solid #e5e7eb;
+.hidden {
+  display: none;
 }
 
-h1 {
-    margin: 0;
-    font-size: 2.5rem;
+.container {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.rating-card {
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    text-align: center;
-    background: #fff;
+h1, h2 {
+  text-align: center;
+  color: #333;
 }
 
-button.stash {
-    background-color: #4ade80;
-    /* green for stash */
-    color: white;
-    padding: 0.8rem 1.2rem;
-    margin: 1rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-button.trash {
-    background-color: #ef4444;
-    /* red for trash */
-    color: white;
-    padding: 0.8rem 1.2rem;
-    margin: 1rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-footer {
-    margin-top: 3rem;
-    text-align: center;
-    padding: 1rem;
-    background: #f3f4f6;
-    font-size: 0.9rem;
+button:hover {
+  background-color: #0056b3;
 }
 
-/* Add Product Section Styles */
-#add-product {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    text-align: center;
+.emoji-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin: 15px 0;
 }
 
-#add-product input[type="text"] {
-    width: 80%;
-    padding: 8px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.emoji-buttons button {
+  font-size: 24px;
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  transition: background-color 0.3s ease;
 }
 
-#add-product button {
-    background-color: #5bc0de;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.emoji-buttons button:hover {
+  background-color: #ddd;
 }
 
-#add-product button:hover {
-    background-color: #46b8da;
+nav {
+  background-color: #333;
+  padding: 12px;
+  color: white;
+  text-align: center;
 }
 
-/* Product List Styles */
-#product-selection {
-    margin-top: 20px;
+nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: bold;
 }
 
-#product-list {
-    list-style: none;
-    padding: 0;
-}
-
-.product-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 0.5rem 0;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-align: left;
-}
-
-.product-item:hover {
-    background-color: #f0f0f0;
-}
-
-/* Emoji Button Styles */
-.emoji-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 3em;
-    margin: 10px;
-    padding: 0;
-    outline: none;
-    display: inline-block;
-    vertical-align: middle;
-    transition: transform 0.2s ease-in-out;
-}
-
-.emoji-btn:hover {
-    transform: scale(1.2);
-}
-
-/* Trash and Stash Button Specific Styles - Overriding general emoji-btn styles */
-.emoji-btn.trash {
-    color: #ef4444;
-    /* red for trash */
-    font-size: 3.2em;
-}
-
-.emoji-btn.stash {
-    color: #4ade80;
-    /* green for stash */
-    font-size: 3.2em;
+nav a:hover {
+  text-decoration: underline;
 }
