@@ -1,256 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Stash or Trash???</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2980b9, #6dd5fa, #ffffff);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding-top: 50px;
-    }
-    h1 {
-      color: #fff;
-      text-shadow: 1px 1px 3px #000;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 400px;
-      margin-top: 20px;
-    }
-    .hidden {
-      display: none;
-    }
-    .emoji-btn {
-      font-size: 2rem;
-      cursor: pointer;
-      margin: 10px;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    .link-btn {
-      background: none;
-      border: none;
-      color: #3498db;
-      text-decoration: underline;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stash or Trash???</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header>
+        <h1>Stash or Trash???</h1>
+    </header>
 
-<h1>Stash or Trash???</h1>
-
-<!-- Login Page -->
-<div id="login-page" class="container">
-  <h2>Login</h2>
-  <input type="email" id="login-email" placeholder="Email" />
-  <input type="password" id="login-password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <button class="link-btn" onclick="showSignupPage()">New Here??? Sign Up</button>
-</div>
-
-<!-- Signup Page -->
-<div id="signup-page" class="container hidden">
-  <h2>Sign Up</h2>
-  <input type="text" id="full-name" placeholder="Full Name" />
-  <input type="text" id="username" placeholder="Username" />
-  <input type="email" id="signup-email" placeholder="Email" />
-  <input type="password" id="signup-password" placeholder="Password" />
-  
-  <label for="country">Country:</label>
-  <select id="country" onchange="updateBrandList()">
-    <option value="">--Select Country--</option>
-    <option value="USA">USA 🇺🇸</option>
-    <option value="United Kingdom">United Kingdom 🇬🇧</option>
-    <option value="South Africa">South Africa 🇿🇦</option>
-    <option value="Canada">Canada 🇨🇦</option>
-    <option value="Australia">Australia 🇦🇺</option>
-    <option value="Germany">Germany 🇩🇪</option>
-    <option value="France">France 🇫🇷</option>
-    <option value="India">India 🇮🇳</option>
-    <option value="Japan">Japan 🇯🇵</option>
-    <option value="Brazil">Brazil 🇧🇷</option>
-    <option value="Mexico">Mexico 🇲🇽</option>
-    <option value="China">China 🇨🇳</option>
-  </select>
-
-  <input type="text" id="address" placeholder="Physical Address (Optional)" />
-  <input type="text" id="cellphone" placeholder="Cellphone Number" />
-  <label for="profile-pic">Upload Profile Picture (Optional):</label>
-  <input type="file" id="profile-pic" accept="image/*" />
-
-  <button onclick="signup()">Sign Up</button>
-  <button class="link-btn" onclick="showLoginPage()">Already have an account? Log In</button>
-</div>
-
-<!-- Welcome Section -->
-<div id="welcome-section" class="container hidden">
-  <h2>Welcome!</h2>
-  <button onclick="logout()">Logout</button>
-  <button onclick="showRatingSection()">Submit a Product Rating</button>
-</div>
-
-<!-- Rating Section -->
-<div id="rating-section" class="container hidden">
-  <h3>Submit Your Rating</h3>
-
-  <label>Select a Brand:</label>
-  <select id="brand" onchange="selectBrand()">
-    <option value="">--Select Brand--</option>
-    <!-- The brand list will be populated based on the country selected -->
-  </select>
-
-  <div id="product-section" class="hidden">
-    <label>Enter Product:</label>
-    <input type="text" id="product" placeholder="Product Name" />
-
-    <div style="text-align: center; margin-top: 20px;">
-      <span class="emoji-btn" onclick="selectRating('💰')">💰 Stash</span>
-      <span class="emoji-btn" onclick="selectRating('🚮')">🚮 Trash</span>
+    <!-- Login Section -->
+    <div id="login">
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button id="login-btn">Login</button>
+        <p>New here? <button id="toggle-signup">Sign Up</button></p>
     </div>
 
-    <textarea id="comment" placeholder="Add a comment (optional)"></textarea>
-    <input type="file" id="media" accept="image/*,video/*" />
+    <!-- Signup Section -->
+    <div id="signup" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="email" id="signup-email" placeholder="Email"><br>
+        <input type="password" id="signup-password" placeholder="Password"><br>
+        <button id="signup-btn">Register</button>
+    </div>
 
-    <button onclick="submitRating()">Submit Rating</button>
-  </div>
-</div>
+    <!-- Main App Section -->
+    <div id="product-selection" style="display: none;">
+        <section id="add-product">
+            <h2>Add Product to Rate</h2>
+            <input type="text" id="product-name" placeholder="Enter product name">
+            <button id="add-product-btn">Add Product</button>
+        </section>
 
-<!-- Firebase Scripts -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+        <section id="product-list-section">
+            <h2>Rate Products</h2>
+            <div id="product-list"></div>
+        </section>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-    authDomain: "stashortrash-acbbf.firebaseapp.com",
-    projectId: "stashortrash-acbbf",
-    storageBucket: "stashortrash-acbbf.appspot.com",
-    messagingSenderId: "782905521538",
-    appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-    measurementId: "G-8Y4ZXJTPM6"
-  };
+        <footer>
+            <p><a href="#" id="view-profile">My Profile</a> | &copy; 2025 PSCC Media</p>
+        </footer>
+    </div>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-
-  const loginPage = document.getElementById("login-page");
-  const signupPage = document.getElementById("signup-page");
-  const welcomeSection = document.getElementById("welcome-section");
-  const ratingSection = document.getElementById("rating-section");
-  const productSection = document.getElementById("product-section");
-  const brandSelect = document.getElementById("brand");
-
-  let currentUser = null;
-  let selectedBrand = "";
-  let selectedRating = "";
-
-  // Country-based brand data
-  const brandsByCountry = {
-    "USA": ["Nike", "Apple", "Coca-Cola", "McDonald's", "Amazon"],
-    "United Kingdom": ["Tesco", "ASDA", "Sainsbury's", "Aldi", "Apple"],
-    "South Africa": ["Shoprite", "Pick n Pay", "Game", "Woolworths", "Mr Price"],
-    "Canada": ["Tim Hortons", "Lululemon", "RBC", "Air Canada"],
-    "Australia": ["Woolworths", "Coles", "Qantas", "ANZ"],
-    "Germany": ["BMW", "Volkswagen", "Adidas", "Mercedes-Benz"],
-    "France": ["L'Oréal", "Carrefour", "Renault", "Danone"],
-    "India": ["Tata", "Reliance", "Bajaj", "Flipkart"],
-    "Japan": ["Sony", "Toyota", "Honda", "Nintendo"],
-    "Brazil": ["Havaianas", "Petrobras", "Itaú", "Embraer"],
-    "Mexico": ["Bimbo", "Corona", "Telmex", "Cemex"],
-    "China": ["Huawei", "Alibaba", "Tencent", "BYD"]
-  };
-
-  window.showSignupPage = () => {
-    loginPage.classList.add("hidden");
-    signupPage.classList.remove("hidden");
-  };
-
-  window.showLoginPage = () => {
-    signupPage.classList.add("hidden");
-    loginPage.classList.remove("hidden");
-  };
-
-  window.signup = async () => {
-    const email = document.getElementById("signup-email").value;
-    const password = document.getElementById("signup-password").value;
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      currentUser = userCredential.user;
-      signupPage.classList.add("hidden");
-      welcomeSection.classList.remove("hidden");
-    } catch (e) {
-      alert("Signup error: " + e.message);
-    }
-  };
-
-  window.login = async () => {
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      currentUser = userCredential.user;
-      loginPage.classList.add("hidden");
-      welcomeSection.classList.remove("hidden");
-    } catch (e) {
-      alert("Login error: " + e.message);
-    }
-  };
-
-  window.logout = async () => {
-    try {
-      await signOut(auth);
-      currentUser = null;
-      welcomeSection.classList.add("hidden");
-      loginPage.classList.remove("hidden");
-    } catch (e) {
-      alert("Logout error: " + e.message);
-    }
-  };
-
-  window.showRatingSection = () => {
-    ratingSection.classList.remove("hidden");
-  };
-
-  window.selectBrand = () => {
-    selectedBrand = brandSelect.value;
-    if (selectedBrand) {
-      productSection.classList.remove("hidden");
-    } else {
-      productSection.classList.add("hidden");
-    }
-  };
-
-  window.selectRating = (emoji) => {
+    <!-- Firebase SDKs -->
+    <script type="module" src="App.js"></script>
+</body>
+</html>
