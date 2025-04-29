@@ -1,8 +1,13 @@
-// Firebase and App logic for Stash or Trash???
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
@@ -15,178 +20,144 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const auth = getAuth();
+const db = getFirestore();
+const storage = getStorage();
 
-const loginPage = document.getElementById("login-page");
-const signupPage = document.getElementById("signup-page");
-const welcomeSection = document.getElementById("welcome-section");
-const ratingSection = document.getElementById("rating-section");
-const productSection = document.getElementById("product-section");
+const loginForm = document.getElementById("login-form");
+const signupForm = document.getElementById("signup-form");
+const welcomeScreen = document.getElementById("welcome-screen");
+const mainContent = document.getElementById("main-content");
 const brandSelect = document.getElementById("brand");
 
-let currentUser = null;
-let selectedBrand = "";
-let selectedRating = "";
-
-// Country-based brand data
-const brandsByCountry = {
-  "USA": ["Nike", "Apple", "Coca-Cola", "McDonald's", "Amazon"],
-  "United Kingdom": ["Tesco", "ASDA", "Sainsbury's", "Aldi", "Apple"],
-  "South Africa": ["Shoprite", "Pick n Pay", "Game", "Woolworths", "Mr Price"],
-  "Canada": ["Tim Hortons", "Lululemon", "RBC", "Air Canada"],
-  "Australia": ["Woolworths", "Coles", "Qantas", "ANZ"],
-  "Germany": ["BMW", "Volkswagen", "Adidas", "Mercedes-Benz"],
-  "France": ["L'Oréal", "Carrefour", "Renault", "Danone"],
-  "India": ["Tata", "Reliance", "Bajaj", "Flipkart"],
-  "Japan": ["Sony", "Toyota", "Honda", "Nintendo"],
-  "Brazil": ["Havaianas", "Petrobras", "Itaú", "Embraer"],
-  "Mexico": ["Bimbo", "Corona", "Telmex", "Cemex"],
-  "China": ["Huawei", "Alibaba", "Tencent", "BYD"]
-};
-
-window.showSignupPage = () => {
-  loginPage.classList.add("hidden");
-  signupPage.classList.remove("hidden");
-};
-
-window.showLoginPage = () => {
-  signupPage.classList.add("hidden");
-  loginPage.classList.remove("hidden");
-};
+const topBrands = [
+  "Apple", "Amazon", "Google", "Microsoft", "Samsung", "Toyota", "Coca-Cola", "Nike",
+  "Mercedes-Benz", "McDonald's", "Tesla", "Netflix", "Visa", "Adidas", "Intel", "Facebook",
+  "Sony", "Starbucks", "Pepsi", "BMW", "Nestlé", "Huawei", "Zara", "YouTube", "Gucci",
+  "Colgate", "Unilever", "IKEA", "TikTok", "Ford", "KFC", "Shell", "Canon", "LinkedIn"
+];
 
 window.updateBrandList = () => {
-  const country = document.getElementById("country").value;
-  brandSelect.innerHTML = '<option value="">--Select Brand--</option>';
-  if (brandsByCountry[country]) {
-    brandsByCountry[country].forEach(brand => {
-      const option = document.createElement("option");
-      option.value = brand;
-      option.textContent = brand;
-      brandSelect.appendChild(option);
-    });
-  }
+  brandSelect.innerHTML = "<option value=''>--Select Brand--</option>";
+  topBrands.forEach(brand => {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    brandSelect.appendChild(option);
+  });
+};
+updateBrandList();
+
+document.getElementById("show-signup").onclick = () => {
+  signupForm.style.display = "block";
+  loginForm.style.display = "none";
+};
+document.getElementById("show-login").onclick = () => {
+  signupForm.style.display = "none";
+  loginForm.style.display = "block";
 };
 
-window.signup = async () => {
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const name = document.getElementById("full-name").value;
-  const username = document.getElementById("username").value;
+document.getElementById("signup-btn").onclick = async () => {
+  const name = document.getElementById("signup-name").value;
   const country = document.getElementById("country").value;
   const address = document.getElementById("address").value;
-  const cellphone = document.getElementById("cellphone").value;
-  const profilePicFile = document.getElementById("profile-pic").files[0];
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    let profilePicUrl = "";
-    if (profilePicFile) {
-      const picRef = ref(storage, 'profile_pics/' + user.uid + '_' + profilePicFile.name);
-      await uploadBytes(picRef, profilePicFile);
-      profilePicUrl = await getDownloadURL(picRef);
-    }
-
-    await addDoc(collection(db, "users"), {
-      uid: user.uid,
-      name,
-      username,
-      email,
-      country,
-      address,
-      cellphone,
-      profilePicUrl,
-      createdAt: serverTimestamp()
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      name, country, address, phone, email
     });
-
-    currentUser = user;
-    signupPage.classList.add("hidden");
-    welcomeSection.classList.remove("hidden");
-  } catch (e) {
-    alert("Signup error: " + e.message);
+    welcomeScreen.style.display = "block";
+    signupForm.style.display = "none";
+  } catch (err) {
+    alert("Signup Error: " + err.message);
   }
 };
 
-window.login = async () => {
+document.getElementById("login-btn").onclick = async () => {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    currentUser = userCredential.user;
-    loginPage.classList.add("hidden");
-    welcomeSection.classList.remove("hidden");
-  } catch (e) {
-    alert("Login error: " + e.message);
-  }
-};
-
-window.logout = async () => {
-  try {
-    await signOut(auth);
-    currentUser = null;
-    welcomeSection.classList.add("hidden");
-    ratingSection.classList.add("hidden");
-    loginPage.classList.remove("hidden");
-  } catch (e) {
-    alert("Logout error: " + e.message);
-  }
-};
-
-window.showRatingSection = () => {
-  ratingSection.classList.remove("hidden");
-};
-
-window.selectBrand = () => {
-  selectedBrand = brandSelect.value;
-  if (selectedBrand) {
-    productSection.classList.remove("hidden");
-  } else {
-    productSection.classList.add("hidden");
-  }
-};
-
-window.selectRating = (emoji) => {
-  selectedRating = emoji;
-};
-
-window.submitRating = async () => {
-  const product = document.getElementById("product").value.trim();
-  const comment = document.getElementById("comment").value.trim();
-  const mediaFile = document.getElementById("media").files[0];
-
-  if (!selectedBrand || !product || !selectedRating) {
-    alert("Please fill out all required fields and select a rating.");
-    return;
-  }
-
-  let mediaUrl = "";
-  if (mediaFile) {
-    const mediaRef = ref(storage, 'ratings/' + currentUser.uid + '_' + mediaFile.name);
-    await uploadBytes(mediaRef, mediaFile);
-    mediaUrl = await getDownloadURL(mediaRef);
-  }
 
   try {
-    await addDoc(collection(db, "ratings"), {
-      userId: currentUser.uid,
-      brand: selectedBrand,
-      product,
-      rating: selectedRating,
-      comment,
-      mediaUrl,
-      timestamp: serverTimestamp()
-    });
-    alert("Rating submitted successfully!");
-    document.getElementById("product").value = "";
-    document.getElementById("comment").value = "";
-    document.getElementById("media").value = "";
-    selectedRating = "";
-    ratingSection.classList.add("hidden");
-    welcomeSection.classList.remove("hidden");
-  } catch (e) {
-    alert("Error submitting rating: " + e.message);
+    await signInWithEmailAndPassword(auth, email, password);
+    welcomeScreen.style.display = "block";
+    loginForm.style.display = "none";
+  } catch (err) {
+    alert("Login Error: " + err.message);
   }
 };
+
+document.getElementById("continue-btn").onclick = () => {
+  welcomeScreen.style.display = "none";
+  mainContent.style.display = "block";
+};
+
+document.getElementById("logout").onclick = () => signOut(auth);
+document.getElementById("profile-btn").onclick = () => {
+  mainContent.style.display = "none";
+  showUserProfile();
+};
+
+async function showUserProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const docSnap = await getDoc(doc(db, "users", user.uid));
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    document.getElementById("profile-section").style.display = "block";
+    document.getElementById("edit-country").value = data.country || "";
+    document.getElementById("edit-address").value = data.address || "";
+    document.getElementById("edit-phone").value = data.phone || "";
+    document.getElementById("profile-pic-preview").src = data.profilePicURL || "";
+  }
+}
+
+document.getElementById("save-profile").onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const country = document.getElementById("edit-country").value;
+  const address = document.getElementById("edit-address").value;
+  const phone = document.getElementById("edit-phone").value;
+  const file = document.getElementById("profile-pic-upload").files[0];
+
+  let profilePicURL = "";
+
+  if (file && file.size <= 5 * 1024 * 1024) {
+    const storageRef = ref(storage, `profilePics/${user.uid}`);
+    await uploadBytes(storageRef, file);
+    profilePicURL = await getDownloadURL(storageRef);
+  }
+
+  await updateDoc(doc(db, "users", user.uid), {
+    country, address, phone, profilePicURL
+  });
+
+  alert("Profile updated!");
+  document.getElementById("profile-section").style.display = "none";
+  mainContent.style.display = "block";
+};
+
+document.querySelectorAll(".emoji-btn").forEach(button => {
+  button.onclick = () => {
+    const brand = brandSelect.value;
+    const product = document.getElementById("product-name").value.trim();
+    const rating = button.dataset.rating;
+    if (!brand || !product) {
+      alert("Please select brand and enter product name.");
+      return;
+    }
+    alert(`${rating === "stash" ? "💰 Stashed" : "🚮 Trashed"} ${product} from ${brand}`);
+  };
+});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById("auth-section").style.display = "none";
+    welcomeScreen.style.display = "block";
+  }
+});
