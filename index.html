@@ -7,40 +7,101 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
+
+  <div id="auth-container">
     <h1>Stash or Trash???</h1>
-    <nav>
-      <button id="logout">Logout</button>
-    </nav>
-  </header>
 
-  <main>
-    <section id="rating-section">
-      <h2>Rate a Product</h2>
-
-      <label for="brand">Brand:</label>
-      <select id="brand">
-        <option value="">--Select Brand--</option>
-        <!-- Brands will load here dynamically -->
-      </select>
-
-      <label for="product">Product:</label>
-      <input type="text" id="product" placeholder="Enter product name"/>
-
-      <div class="rating-buttons">
-        <button class="rate-button" data-rating="stash">💰 Stash</button>
-        <button class="rate-button" data-rating="trash">🚮 Trash</button>
-      </div>
-    </section>
-
-    <section id="login-section">
+    <div id="login-form">
       <h2>Login</h2>
       <input type="email" id="login-email" placeholder="Email" />
       <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-btn">Login</button>
-    </section>
-  </main>
+      <button onclick="login()">Login</button>
+      <p>New here? <a href="#" onclick="showSignup()">Sign up</a></p>
+    </div>
 
-  <script type="module" src="App.js"></script>
+    <div id="signup-form" class="hidden">
+      <h2>Sign Up</h2>
+      <input type="email" id="signup-email" placeholder="Email" />
+      <input type="password" id="signup-password" placeholder="Password" />
+      <select id="signup-country">
+        <option value="" disabled selected>Select country</option>
+        <option value="South Africa">South Africa</option>
+        <option value="USA">USA</option>
+        <option value="UK">UK</option>
+        <!-- Add more countries as needed -->
+      </select>
+      <button onclick="signup()">Sign Up</button>
+      <p>Already registered? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
+    <nav>
+      <span id="welcome-user"></span>
+      <button onclick="showProfile()">👤 Profile</button>
+      <button onclick="logout()">🚪 Logout</button>
+    </nav>
+
+    <section id="welcome-screen">
+      <h2>Welcome to Stash or Trash???</h2>
+      <p>Rate products honestly. Keep it respectful. All ratings are public and user-generated.</p>
+    </section>
+
+    <section id="rating-section">
+      <h3>Select a brand:</h3>
+      <select id="brand-select">
+        <option value="">Loading brands...</option>
+      </select>
+
+      <h4>Rate it:</h4>
+      <button onclick="rateProduct('stash')">💰 Stash</button>
+      <button onclick="rateProduct('trash')">🚮 Trash</button>
+    </section>
+
+    <section id="profile-section" class="hidden">
+      <h3>Your Profile</h3>
+      <input type="file" id="profile-photo" accept="image/*" />
+      <input type="text" id="profile-address" placeholder="Address" />
+      <input type="text" id="profile-phone" placeholder="Phone Number" />
+      <button onclick="saveProfile()">Save Profile</button>
+      <div id="profile-preview"></div>
+    </section>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+      signInWithEmailAndPassword, signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, getDocs, collection
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+      authDomain: "stashortrash-acbbf.firebaseapp.com",
+      projectId: "stashortrash-acbbf",
+      storageBucket: "stashortrash-acbbf.appspot.com",
+      messagingSenderId: "782905521538",
+      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+      measurementId: "G-8Y4ZXJTPM6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+    const storage = getStorage();
+
+    window.firebaseApp = { auth, db, storage };
+  </script>
+
+  <!-- App Logic -->
+  <script src="App.js" type="module"></script>
+
 </body>
 </html>
