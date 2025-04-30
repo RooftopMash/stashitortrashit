@@ -1,170 +1,126 @@
+// App.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import {
-  auth,
-  db,
-  storage
-} from "./index.html".firebaseApp;
-
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
   signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 import {
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
+  getFirestore,
   collection,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
+  getDocs,
+  addDoc,
+  query,
+  where,
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import {
+  getStorage,
   ref,
   uploadBytes,
   getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-// DOM Elements
-const loginForm = document.getElementById("login-form");
-const signupForm = document.getElementById("signup-form");
-const appSection = document.getElementById("app");
-const welcomeUser = document.getElementById("welcome-user");
-const brandSelect = document.getElementById("brand-select");
-const profileSection = document.getElementById("profile-section");
-
-// Show login or signup
-window.showSignup = () => {
-  loginForm.classList.add("hidden");
-  signupForm.classList.remove("hidden");
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+  authDomain: "stashortrash-acbbf.firebaseapp.com",
+  projectId: "stashortrash-acbbf",
+  storageBucket: "stashortrash-acbbf.appspot.com",
+  messagingSenderId: "782905521538",
+  appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+  measurementId: "G-8Y4ZXJTPM6"
 };
 
-window.showLogin = () => {
-  signupForm.classList.add("hidden");
-  loginForm.classList.remove("hidden");
-};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Auth
-window.signup = async () => {
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
-  const country = document.getElementById("signup-country").value;
+const brandListContainer = document.getElementById("brandList");
+const logoutBtn = document.getElementById("logoutBtn");
+const profilePhotoInput = document.getElementById("profilePhotoInput");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
+const countryDisplay = document.getElementById("countryDisplay");
 
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCred.user.uid;
+// Load brands from Firestore dynamically
+async function loadBrands(userCountry = null) {
+  brandListContainer.innerHTML = "";
+  const brandRef = collection(db, "brands");
+  const q = userCountry
+    ? query(brandRef, where("country", "==", userCountry))
+    : brandRef;
 
-    await setDoc(doc(db, "users", uid), {
-      email,
-      country,
-      createdAt: new Date()
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    const brandName = doc.data().name;
+    const div = document.createElement("div");
+    div.className = "brand-entry";
+    div.innerHTML = `
+      <strong>${brandName}</strong>
+      <button class="rateBtn" data-brand="${brandName}" data-rating="stash">💰</button>
+      <button class="rateBtn" data-brand="${brandName}" data-rating="trash">🚮</button>
+    `;
+    brandListContainer.appendChild(div);
+  });
+
+  attachRatingListeners();
+}
+
+function attachRatingListeners() {
+  document.querySelectorAll(".rateBtn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const brand = e.target.getAttribute("data-brand");
+      const rating = e.target.getAttribute("data-rating");
+      const user = auth.currentUser;
+      if (!user) return alert("Please log in to rate.");
+      await addDoc(collection(db, "ratings"), {
+        brand,
+        rating,
+        userId: user.uid,
+        timestamp: new Date()
+      });
+      alert(`Rated ${brand} as ${rating.toUpperCase()}`);
     });
-
-    alert("Signup successful!");
-  } catch (e) {
-    alert("Signup error: " + e.message);
-  }
-};
-
-window.login = async () => {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (e) {
-    alert("Login failed: " + e.message);
-  }
-};
-
-window.logout = async () => {
-  await signOut(auth);
-  location.reload();
-};
-
-// Auth state
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginForm.classList.add("hidden");
-    signupForm.classList.add("hidden");
-    appSection.classList.remove("hidden");
-
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const userData = userDoc.data();
-    welcomeUser.textContent = `Welcome, ${userData?.email || "User"} (${userData?.country || ""})`;
-
-    loadBrands();
-    loadProfile();
-  }
-});
-
-// Load brands
-async function loadBrands() {
-  const brandsSnap = await getDocs(collection(db, "brands"));
-  brandSelect.innerHTML = '<option value="">Select a brand</option>';
-  brandsSnap.forEach(doc => {
-    const brand = doc.data().name;
-    const option = document.createElement("option");
-    option.value = brand;
-    option.textContent = brand;
-    brandSelect.appendChild(option);
   });
 }
 
-// Rate product
-window.rateProduct = async (type) => {
-  const brand = brandSelect.value;
-  if (!brand) return alert("Please select a brand.");
-
-  const uid = auth.currentUser.uid;
-  const ratingRef = doc(db, "ratings", `${uid}_${brand}`);
-
-  await setDoc(ratingRef, {
-    user: uid,
-    brand,
-    type,
-    ratedAt: new Date()
-  });
-
-  alert(`You rated ${brand} as ${type === "stash" ? "💰 Stash" : "🚮 Trash"}`);
-};
-
-// Profile Section
-window.showProfile = () => {
-  profileSection.classList.toggle("hidden");
-};
-
-window.saveProfile = async () => {
-  const address = document.getElementById("profile-address").value;
-  const phone = document.getElementById("profile-phone").value;
-  const photo = document.getElementById("profile-photo").files[0];
-  const uid = auth.currentUser.uid;
-
-  const updates = { address, phone };
-
-  if (photo) {
-    const storageRef = ref(storage, `profile_photos/${uid}`);
-    await uploadBytes(storageRef, photo);
-    const photoURL = await getDownloadURL(storageRef);
-    updates.photoURL = photoURL;
-    document.getElementById("profile-preview").innerHTML = `<img src="${photoURL}" width="100" />`;
-  }
-
-  await updateDoc(doc(db, "users", uid), updates);
-  alert("Profile updated!");
-};
-
-async function loadProfile() {
-  const uid = auth.currentUser.uid;
-  const docSnap = await getDoc(doc(db, "users", uid));
-
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    document.getElementById("profile-address").value = data.address || "";
-    document.getElementById("profile-phone").value = data.phone || "";
-    if (data.photoURL) {
-      document.getElementById("profile-preview").innerHTML = `<img src="${data.photoURL}" width="100" />`;
+// Handle profile upload
+if (saveProfileBtn) {
+  saveProfileBtn.addEventListener("click", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file || file.size > 5 * 1024 * 1024) {
+      return alert("Please select a valid image under 5MB.");
     }
+    const user = auth.currentUser;
+    if (!user) return;
+    const storageRef = ref(storage, `profiles/${user.uid}/photo.jpg`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    document.getElementById("profilePic").src = downloadURL;
+    alert("Profile photo updated.");
+  });
+}
+
+// Auth state
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById("authSection").style.display = "none";
+    document.getElementById("appSection").style.display = "block";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+    loadBrands(); // You can replace with loadBrands('South Africa') if using country targeting
+  } else {
+    document.getElementById("authSection").style.display = "block";
+    document.getElementById("appSection").style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "none";
   }
+});
+
+// Logout
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.reload();
+    });
+  });
 }
