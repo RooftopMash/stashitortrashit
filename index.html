@@ -4,65 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stash or Trash???</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <script type="module" src="App.js" defer></script>
 </head>
 <body>
-  <div id="auth-section">
-    <div id="login-section">
-      <h2>Login</h2>
-      <input type="email" id="login-email" placeholder="Email" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-btn">Login</button>
-      <p>New here? <a href="#" id="show-signup">Sign up</a></p>
-    </div>
-
-    <div id="signup-section" style="display: none;">
-      <h2>Sign Up</h2>
-      <input type="email" id="signup-email" placeholder="Email" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <input type="text" id="signup-country" placeholder="Country" />
-      <button id="signup-btn">Sign Up</button>
-      <p><a href="#" id="show-login">Already have an account? Log in</a></p>
-    </div>
+  <!-- LOGIN -->
+  <div id="loginScreen" class="auth-screen">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email"/>
+    <input type="password" id="loginPassword" placeholder="Password"/>
+    <button id="loginBtn">Login</button>
+    <p>New here? <a href="#" id="goToSignup">Sign up</a></p>
   </div>
 
-  <div id="app-section" style="display: none;">
-    <div id="navbar">
-      <span id="user-email"></span>
-      <button id="profile-btn">Profile</button>
-      <button id="logout-btn">Logout</button>
-    </div>
+  <!-- SIGNUP -->
+  <div id="signupScreen" class="auth-screen hidden">
+    <h2>Sign Up</h2>
+    <input type="email" id="signupEmail" placeholder="Email"/>
+    <input type="password" id="signupPassword" placeholder="Password"/>
+    <input type="text" id="signupCountry" placeholder="Country"/>
+    <button id="signupBtn">Create Account</button>
+    <p>Already have an account? <a href="#" id="goToLogin">Login</a></p>
+  </div>
 
-    <div id="welcome-screen">
-      <h3>Welcome to Stash or Trash???</h3>
-      <p>This platform is for compliments and complaints. Posts are user-generated and not official brand content.</p>
-      <button id="continue-btn">Continue</button>
-    </div>
+  <!-- WELCOME SCREEN -->
+  <div id="welcomeScreen" class="hidden">
+    <h2>Welcome to Stash or Trash???</h2>
+    <p>⚠️ All ratings and uploads are user-generated. This platform holds no liability for posted content.</p>
+    <button id="continueBtn">Continue</button>
+  </div>
 
-    <div id="main-app" style="display: none;">
-      <h2>Select a Brand</h2>
-      <select id="brand-select"></select>
+  <!-- MAIN APP -->
+  <div id="appScreen" class="hidden">
+    <header>
+      <h1>Stash or Trash???</h1>
+      <button id="logoutBtn">Logout</button>
+    </header>
 
-      <div id="rating-buttons">
-        <button class="emoji-btn" data-value="stash">💰 Stash</button>
-        <button class="emoji-btn" data-value="trash">🚮 Trash</button>
+    <!-- Profile Section -->
+    <section id="profileSection">
+      <h3>Your Profile</h3>
+      <img id="profilePicPreview" src="default-profile.png" alt="Profile Picture" width="100"/>
+      <input type="file" id="profilePicInput" accept="image/png, image/jpeg"/>
+      <input type="text" id="userCountry" placeholder="Country"/>
+      <input type="text" id="userPhone" placeholder="Phone Number"/>
+      <input type="text" id="userAddress" placeholder="Address"/>
+      <button id="updateProfileBtn">Update Profile</button>
+    </section>
+
+    <!-- Rating Section -->
+    <section id="ratingSection">
+      <h3>Rate a Brand</h3>
+      <select id="brandDropdown">
+        <option value="">Select a brand...</option>
+        <!-- Brands from Firestore will appear here -->
+      </select>
+      <div id="ratingButtons" class="hidden">
+        <button data-rating="stash">💰 Stash</button>
+        <button data-rating="trash">🚮 Trash</button>
       </div>
-
-      <div id="result-message"></div>
-    </div>
+    </section>
   </div>
-
-  <div id="profile-section" style="display: none;">
-    <h2>Your Profile</h2>
-    <input type="file" id="profile-photo" accept="image/png, image/jpeg" />
-    <img id="profile-img" src="" alt="Profile Photo" />
-    <input type="text" id="profile-country" placeholder="Country" />
-    <input type="text" id="profile-address" placeholder="Address" />
-    <input type="text" id="profile-phone" placeholder="Phone Number" />
-    <button id="save-profile-btn">Save Profile</button>
-    <button id="back-to-app">Back</button>
-  </div>
-
-  <script type="module" src="App.js"></script>
 </body>
 </html>
