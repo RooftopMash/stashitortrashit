@@ -11,68 +11,36 @@
     <h1>Stash or Trash???</h1>
     <nav>
       <button id="logout">Logout</button>
-      <button id="profile-btn">Profile</button>
     </nav>
   </header>
 
   <main>
-    <!-- LOGIN FORM -->
-    <div id="auth-section">
-      <div id="login-form">
-        <h2>Login</h2>
-        <input type="email" id="login-email" placeholder="Email" />
-        <input type="password" id="login-password" placeholder="Password" />
-        <button id="login-btn">Login</button>
-        <p>New here? <a href="#" id="show-signup">Sign up</a></p>
-      </div>
-
-      <!-- SIGNUP FORM -->
-      <div id="signup-form" style="display:none;">
-        <h2>Sign Up</h2>
-        <input type="text" id="signup-name" placeholder="Full Name" />
-        <input type="text" id="signup-country" placeholder="Country (Optional)" />
-        <input type="text" id="signup-address" placeholder="Address (Optional)" />
-        <input type="text" id="signup-phone" placeholder="Phone Number (Optional)" />
-        <input type="email" id="signup-email" placeholder="Email" />
-        <input type="password" id="signup-password" placeholder="Password" />
-        <button id="signup-btn">Create Account</button>
-        <p>Already registered? <a href="#" id="show-login">Log in</a></p>
-      </div>
-    </div>
-
-    <!-- WELCOME SCREEN -->
-    <div id="welcome-screen" style="display:none;">
-      <h2>Welcome to Stash or Trash???</h2>
-      <p>⚠️ All posts are user-generated content. The platform does not endorse or verify uploads. Be respectful and honest. Ratings affect real brands. 🚫 No spam, hate speech or false claims.</p>
-      <button id="continue-btn">Continue</button>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <section id="main-content" style="display:none;">
+    <section id="rating-section">
       <h2>Rate a Product</h2>
+
+      <label for="brand">Brand:</label>
       <select id="brand">
         <option value="">--Select Brand--</option>
+        <!-- Brands will load here dynamically -->
       </select>
-      <input type="text" id="product-name" placeholder="Enter Product Name" />
-      <div id="rating-buttons">
-        <button class="emoji-btn" data-rating="stash">💰 Stash</button>
-        <button class="emoji-btn" data-rating="trash">🚮 Trash</button>
+
+      <label for="product">Product:</label>
+      <input type="text" id="product" placeholder="Enter product name"/>
+
+      <div class="rating-buttons">
+        <button class="rate-button" data-rating="stash">💰 Stash</button>
+        <button class="rate-button" data-rating="trash">🚮 Trash</button>
       </div>
     </section>
 
-    <!-- PROFILE SECTION -->
-    <section id="profile-section" style="display:none;">
-      <h2>User Profile</h2>
-      <img id="profile-pic-preview" src="" alt="Profile Picture" />
-      <input type="file" id="profile-pic-upload" accept="image/*" />
-      <input type="text" id="edit-country" placeholder="Country" />
-      <input type="text" id="edit-address" placeholder="Address" />
-      <input type="text" id="edit-phone" placeholder="Phone Number" />
-      <button id="save-profile">Save Changes</button>
+    <section id="login-section">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button id="login-btn">Login</button>
     </section>
   </main>
 
-  <!-- LOAD APP.JS -->
   <script type="module" src="App.js"></script>
 </body>
 </html>
