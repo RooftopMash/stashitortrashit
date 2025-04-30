@@ -7,101 +7,62 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <div id="auth-container">
-    <h1>Stash or Trash???</h1>
-
-    <div id="login-form">
+  <div id="auth-section">
+    <div id="login-section">
       <h2>Login</h2>
       <input type="email" id="login-email" placeholder="Email" />
       <input type="password" id="login-password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <p>New here? <a href="#" onclick="showSignup()">Sign up</a></p>
+      <button id="login-btn">Login</button>
+      <p>New here? <a href="#" id="show-signup">Sign up</a></p>
     </div>
 
-    <div id="signup-form" class="hidden">
+    <div id="signup-section" style="display: none;">
       <h2>Sign Up</h2>
       <input type="email" id="signup-email" placeholder="Email" />
       <input type="password" id="signup-password" placeholder="Password" />
-      <select id="signup-country">
-        <option value="" disabled selected>Select country</option>
-        <option value="South Africa">South Africa</option>
-        <option value="USA">USA</option>
-        <option value="UK">UK</option>
-        <!-- Add more countries as needed -->
-      </select>
-      <button onclick="signup()">Sign Up</button>
-      <p>Already registered? <a href="#" onclick="showLogin()">Login</a></p>
+      <input type="text" id="signup-country" placeholder="Country" />
+      <button id="signup-btn">Sign Up</button>
+      <p><a href="#" id="show-login">Already have an account? Log in</a></p>
     </div>
   </div>
 
-  <div id="app" class="hidden">
-    <nav>
-      <span id="welcome-user"></span>
-      <button onclick="showProfile()">👤 Profile</button>
-      <button onclick="logout()">🚪 Logout</button>
-    </nav>
+  <div id="app-section" style="display: none;">
+    <div id="navbar">
+      <span id="user-email"></span>
+      <button id="profile-btn">Profile</button>
+      <button id="logout-btn">Logout</button>
+    </div>
 
-    <section id="welcome-screen">
-      <h2>Welcome to Stash or Trash???</h2>
-      <p>Rate products honestly. Keep it respectful. All ratings are public and user-generated.</p>
-    </section>
+    <div id="welcome-screen">
+      <h3>Welcome to Stash or Trash???</h3>
+      <p>This platform is for compliments and complaints. Posts are user-generated and not official brand content.</p>
+      <button id="continue-btn">Continue</button>
+    </div>
 
-    <section id="rating-section">
-      <h3>Select a brand:</h3>
-      <select id="brand-select">
-        <option value="">Loading brands...</option>
-      </select>
+    <div id="main-app" style="display: none;">
+      <h2>Select a Brand</h2>
+      <select id="brand-select"></select>
 
-      <h4>Rate it:</h4>
-      <button onclick="rateProduct('stash')">💰 Stash</button>
-      <button onclick="rateProduct('trash')">🚮 Trash</button>
-    </section>
+      <div id="rating-buttons">
+        <button class="emoji-btn" data-value="stash">💰 Stash</button>
+        <button class="emoji-btn" data-value="trash">🚮 Trash</button>
+      </div>
 
-    <section id="profile-section" class="hidden">
-      <h3>Your Profile</h3>
-      <input type="file" id="profile-photo" accept="image/*" />
-      <input type="text" id="profile-address" placeholder="Address" />
-      <input type="text" id="profile-phone" placeholder="Phone Number" />
-      <button onclick="saveProfile()">Save Profile</button>
-      <div id="profile-preview"></div>
-    </section>
+      <div id="result-message"></div>
+    </div>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
-      signInWithEmailAndPassword, signOut
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import {
-      getFirestore, doc, setDoc, getDoc, getDocs, collection
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import {
-      getStorage, ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+  <div id="profile-section" style="display: none;">
+    <h2>Your Profile</h2>
+    <input type="file" id="profile-photo" accept="image/png, image/jpeg" />
+    <img id="profile-img" src="" alt="Profile Photo" />
+    <input type="text" id="profile-country" placeholder="Country" />
+    <input type="text" id="profile-address" placeholder="Address" />
+    <input type="text" id="profile-phone" placeholder="Phone Number" />
+    <button id="save-profile-btn">Save Profile</button>
+    <button id="back-to-app">Back</button>
+  </div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-      authDomain: "stashortrash-acbbf.firebaseapp.com",
-      projectId: "stashortrash-acbbf",
-      storageBucket: "stashortrash-acbbf.appspot.com",
-      messagingSenderId: "782905521538",
-      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-      measurementId: "G-8Y4ZXJTPM6"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const db = getFirestore();
-    const storage = getStorage();
-
-    window.firebaseApp = { auth, db, storage };
-  </script>
-
-  <!-- App Logic -->
-  <script src="App.js" type="module"></script>
-
+  <script type="module" src="App.js"></script>
 </body>
 </html>
