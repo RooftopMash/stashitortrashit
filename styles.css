@@ -1,55 +1,48 @@
+/* General Page Styling */
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
+  background-color: #f7f9fc;
+  color: #333;
   padding: 20px;
-  background: #f4f4f4;
+  margin: 0;
 }
 
-input, select, button {
+h2, h3 {
+  color: #444;
+}
+
+input, button {
   display: block;
   margin: 10px 0;
   padding: 10px;
+  font-size: 16px;
   width: 100%;
   max-width: 400px;
 }
 
 button {
-  background-color: #007BFF;
+  background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #45a049;
 }
 
-#rating-buttons {
-  margin: 20px 0;
+#profileContainer {
+  border: 2px solid #ddd;
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #fff;
+  max-width: 500px;
 }
 
-.emoji-btn {
-  font-size: 2em;
-  margin: 0 10px;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-#profile-img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-#navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #333;
-  color: white;
-  padding: 10px;
-  margin-bottom: 20px;
+#brandRatingSection {
+  margin-top: 30px;
+  background-color: #e9f5ff;
+  padding: 20px;
+  border-radius: 8px;
 }
