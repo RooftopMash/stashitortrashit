@@ -1,8 +1,14 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js";
+// App.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+// ✅ Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
   authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -12,103 +18,99 @@ const firebaseConfig = {
   appId: "1:782905521538:web:856d1e7789edd76882cb9b",
   measurementId: "G-8Y4ZXJTPM6"
 };
-
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-document.getElementById("loginBtn").addEventListener("click", loginUser);
-document.getElementById("signupBtn").addEventListener("click", signupUser);
-document.getElementById("logoutBtn").addEventListener("click", logoutUser);
-document.getElementById("goToAppBtn").addEventListener("click", goToApp);
-
-document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
-document.getElementById("profilePicUpload").addEventListener("change", handleProfilePicUpload);
-
-let currentUser = null;
-
-// Load Brands from Firestore
-async function loadBrands() {
-  const brandsRef = collection(db, "brands");
-  const querySnapshot = await getDocs(brandsRef);
-  const brandDropdown = document.getElementById("brandDropdown");
-
-  querySnapshot.forEach((doc) => {
-    const option = document.createElement("option");
-    option.value = doc.id;
-    option.textContent = doc.data().name;
-    brandDropdown.appendChild(option);
-  });
-}
-
-// Sign up user
-async function signupUser() {
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
-
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    document.getElementById("signupScreen").classList.add("hidden");
-    document.getElementById("welcomeScreen").classList.remove("hidden");
-  } catch (error) {
-    alert(error.message);
+// ✅ Save user data to Firestore if not exists
+async function saveUserProfile(user) {
+  const userRef = doc(db, "users", user.uid);
+  const existing = await getDoc(userRef);
+  if (!existing.exists()) {
+    await setDoc(userRef, {
+      uid: user.uid,
+      email: user.email,
+      country: "",
+      phone: "",
+      address: "",
+      socialLinks: {
+        linkedin: "",
+        facebook: "",
+        twitter: "",
+        instagram: ""
+      },
+      authLevel: 0,
+      createdAt: new Date().toISOString()
+    });
+    console.log("✅ New user profile created in Firestore");
+  } else {
+    console.log("📄 User already exists — Firestore document not overwritten");
   }
 }
 
-// Log in user
-async function loginUser() {
+// ✅ Load profile after login
+async function loadUserProfile(uid) {
+  const userRef = doc(db, "users", uid);
+  const docSnap = await getDoc(userRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    document.getElementById("profileContainer").style.display = "block";
+    document.getElementById("profileEmail").textContent = data.email || "";
+    document.getElementById("profileCountry").textContent = data.country || "";
+    document.getElementById("profilePhone").textContent = data.phone || "";
+
+    // Calculate Auth %
+    let filled = 0;
+    for (let key in data.socialLinks) {
+      if (data.socialLinks[key]) filled++;
+    }
+    const authPercent = Math.round((filled / 4) * 100);
+    document.getElementById("profileAuth").textContent = `${authPercent}%`;
+  } else {
+    console.log("⚠️ User profile not found");
+  }
+}
+
+// ✅ Auth state listener
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await saveUserProfile(user);
+    loadUserProfile(user.uid);
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("mainSection").style.display = "block";
+  } else {
+    console.log("❌ No user logged in");
+    document.getElementById("mainSection").style.display = "none";
+    document.getElementById("loginSection").style.display = "block";
+  }
+});
+
+// ✅ Login Function
+document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
-
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("welcomeScreen").classList.remove("hidden");
-  } catch (error) {
-    alert(error.message);
+    console.log("✅ Logged in");
+  } catch (err) {
+    alert("❌ Login error: " + err.message);
   }
-}
+});
 
-// Log out user
-function logoutUser() {
-  signOut(auth).then(() => {
-    document.getElementById("appScreen").classList.add("hidden");
-    document.getElementById("loginScreen").classList.remove("hidden");
-  }).catch((error) => {
-    alert(error.message);
-  });
-}
-
-// Go to App
-function goToApp() {
-  document.getElementById("welcomeScreen").classList.add("hidden");
-  document.getElementById("appScreen").classList.remove("hidden");
-  loadBrands();
-}
-
-// Save profile
-async function saveProfile() {
-  const profilePic = document.getElementById("profilePicPreview").src;
-  const country = document.getElementById("profileCountry").value;
-
-  if (currentUser) {
-    await setDoc(doc(db, "users", currentUser.uid), {
-      profilePic,
-      country
-    });
-    alert("Profile saved!");
-  } else {
-    alert("Please log in first.");
+// ✅ Sign Up Function
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    console.log("✅ Signed up and logged in");
+  } catch (err) {
+    alert("❌ Signup error: " + err.message);
   }
-}
+});
 
-// Handle Profile Pic Upload
-async function handleProfilePicUpload(event) {
-  const file = event.target.files[0];
-  const storageRef = ref(storage, `profilePics/${file.name}`);
-  
-  await uploadBytes(storageRef, file);
-  const downloadURL = await getDownloadURL(storageRef);
-  document.getElementById("profilePicPreview").src = downloadURL;
-}
+// ✅ Logout Function
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  console.log("👋 Logged out");
+});
