@@ -7,69 +7,38 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- AUTH SCREENS -->
-  <div id="auth-container">
-    <div id="login-screen">
-      <h2>Login</h2>
-      <input type="email" id="login-email" placeholder="Email" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <button id="login-btn">Login</button>
-      <p>New here? <a href="#" id="go-to-signup">Sign up</a></p>
-    </div>
+  <!-- 🔐 Login / Signup Section -->
+  <div id="loginSection">
+    <h2>Welcome to Stash or Trash???</h2>
+    <h3>Login</h3>
+    <input type="email" id="loginEmail" placeholder="Email" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
 
-    <div id="signup-screen" style="display: none;">
-      <h2>Sign Up</h2>
-      <input type="text" id="signup-name" placeholder="Full Name" />
-      <input type="email" id="signup-email" placeholder="Email" />
-      <input type="password" id="signup-password" placeholder="Password" />
-      <select id="signup-country">
-        <option value="">Select Country</option>
-        <option value="South Africa">South Africa</option>
-        <option value="USA">USA</option>
-        <!-- Add more as needed -->
-      </select>
-      <input type="text" id="signup-linkedin" placeholder="LinkedIn URL (optional)" />
-      <input type="text" id="signup-twitter" placeholder="Twitter Handle (optional)" />
-      <input type="file" id="signup-photo" />
-      <button id="signup-btn">Create Account</button>
-      <p><a href="#" id="go-to-login">Back to Login</a></p>
-    </div>
+    <h3>New here? Sign Up</h3>
+    <input type="email" id="signupEmail" placeholder="Email" />
+    <input type="password" id="signupPassword" placeholder="Password" />
+    <button id="signupBtn">Sign Up</button>
   </div>
 
-  <!-- MAIN APP UI -->
-  <div id="main-app" style="display: none;">
-    <header>
-      <h1>Welcome to Stash or Trash???</h1>
-      <button id="logout-btn">Logout</button>
-    </header>
-
-    <!-- Profile Section -->
-    <section id="profile-section">
+  <!-- 👤 Profile Section -->
+  <div id="mainSection" style="display:none;">
+    <div id="profileContainer">
       <h2>Your Profile</h2>
-      <img id="profile-photo" src="" alt="Profile Photo" />
-      <input type="file" id="new-photo" />
-      <p>Name: <span id="profile-name"></span></p>
-      <p>Email: <span id="profile-email"></span></p>
-      <p>Country: <span id="profile-country"></span></p>
-      <p>LinkedIn: <a id="profile-linkedin" href="#" target="_blank">View</a></p>
-      <p>Twitter: <span id="profile-twitter"></span></p>
-      <p>Rating Count: <span id="rating-count">0</span></p>
-      <p>Brand Replies: <span id="brand-replies">0</span></p>
-      <p>Authenticity: <span id="auth-level">0%</span></p>
-    </section>
-
-    <!-- Brand Rating -->
-    <section id="rating-section">
-      <h2>Rate a Brand</h2>
-      <select id="brand-select"></select>
-      <input type="text" id="product-name" placeholder="Enter product name" />
-      <button class="rate-btn" data-rating="stash">💰 Stash</button>
-      <button class="rate-btn" data-rating="trash">🚮 Trash</button>
-    </section>
+      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+      <p><strong>Country:</strong> <span id="profileCountry"></span></p>
+      <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+      <p><strong>Authenticity Level:</strong> <span id="profileAuth"></span></p>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <!-- 🛍️ Brand Rating Section (placeholder) -->
+    <div id="brandRatingSection">
+      <h3>Rate a Product</h3>
+      <!-- More to come in next phase -->
+    </div>
   </div>
 
-  <!-- Firebase + App -->
-  <script type="module" src="firebase-config.js"></script>
+  <!-- 🔗 Firebase + App -->
   <script type="module" src="App.js"></script>
 </body>
 </html>
