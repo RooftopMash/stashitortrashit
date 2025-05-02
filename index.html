@@ -1,69 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stash or Trash???</title>
-  <link rel="stylesheet" href="style.css"/>
-  <script type="module" src="App.js" defer></script>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <!-- LOGIN -->
-  <div id="loginScreen" class="auth-screen">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email"/>
-    <input type="password" id="loginPassword" placeholder="Password"/>
-    <button id="loginBtn">Login</button>
-    <p>New here? <a href="#" id="goToSignup">Sign up</a></p>
-  </div>
+  <div class="container">
+    <div id="loginScreen" class="hidden">
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <button id="loginBtn">Login</button>
+      <p>New here? <a href="#" id="signupLink">Sign up</a></p>
+    </div>
 
-  <!-- SIGNUP -->
-  <div id="signupScreen" class="auth-screen hidden">
-    <h2>Sign Up</h2>
-    <input type="email" id="signupEmail" placeholder="Email"/>
-    <input type="password" id="signupPassword" placeholder="Password"/>
-    <input type="text" id="signupCountry" placeholder="Country"/>
-    <button id="signupBtn">Create Account</button>
-    <p>Already have an account? <a href="#" id="goToLogin">Login</a></p>
-  </div>
+    <div id="signupScreen" class="hidden">
+      <h2>Sign Up</h2>
+      <input type="email" id="signupEmail" placeholder="Email" />
+      <input type="password" id="signupPassword" placeholder="Password" />
+      <button id="signupBtn">Sign Up</button>
+      <p>Already have an account? <a href="#" id="loginLink">Login</a></p>
+    </div>
 
-  <!-- WELCOME SCREEN -->
-  <div id="welcomeScreen" class="hidden">
-    <h2>Welcome to Stash or Trash???</h2>
-    <p>⚠️ All ratings and uploads are user-generated. This platform holds no liability for posted content.</p>
-    <button id="continueBtn">Continue</button>
-  </div>
+    <div id="welcomeScreen" class="hidden">
+      <h2>Welcome to Stash or Trash???</h2>
+      <p>Please rate brands/products and share your thoughts with the world!</p>
+      <button id="goToAppBtn">Go to App</button>
+    </div>
 
-  <!-- MAIN APP -->
-  <div id="appScreen" class="hidden">
-    <header>
-      <h1>Stash or Trash???</h1>
-      <button id="logoutBtn">Logout</button>
-    </header>
-
-    <!-- Profile Section -->
-    <section id="profileSection">
-      <h3>Your Profile</h3>
-      <img id="profilePicPreview" src="default-profile.png" alt="Profile Picture" width="100"/>
-      <input type="file" id="profilePicInput" accept="image/png, image/jpeg"/>
-      <input type="text" id="userCountry" placeholder="Country"/>
-      <input type="text" id="userPhone" placeholder="Phone Number"/>
-      <input type="text" id="userAddress" placeholder="Address"/>
-      <button id="updateProfileBtn">Update Profile</button>
-    </section>
-
-    <!-- Rating Section -->
-    <section id="ratingSection">
-      <h3>Rate a Brand</h3>
+    <div id="appScreen" class="hidden">
+      <h2>Rate Products!</h2>
       <select id="brandDropdown">
         <option value="">Select a brand...</option>
-        <!-- Brands from Firestore will appear here -->
       </select>
-      <div id="ratingButtons" class="hidden">
-        <button data-rating="stash">💰 Stash</button>
-        <button data-rating="trash">🚮 Trash</button>
+
+      <div id="ratingButtons">
+        <button data-rating="stash">💰</button>
+        <button data-rating="trash">🚮</button>
       </div>
-    </section>
+
+      <div class="profile-section">
+        <h3>Your Profile</h3>
+        <img id="profilePicPreview" src="default-avatar.jpg" alt="Profile" />
+        <input type="file" id="profilePicUpload" />
+        <input type="text" id="profileCountry" placeholder="Country" />
+        <button id="saveProfileBtn">Save Profile</button>
+        <button id="logoutBtn">Log Out</button>
+      </div>
+    </div>
   </div>
+
+  <script type="module" src="App.js"></script>
 </body>
+
 </html>
