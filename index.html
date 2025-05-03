@@ -8,17 +8,22 @@
 </head>
 <body>
   <!-- 🔐 Login / Signup Section -->
-  <div id="loginSection">
+  <div id="authSection">
     <h2>Welcome to Stash or Trash???</h2>
-    <h3>Login</h3>
-    <input type="email" id="loginEmail" placeholder="Email" />
-    <input type="password" id="loginPassword" placeholder="Password" />
-    <button id="loginBtn">Login</button>
+    
+    <div id="loginForm">
+      <h3>Login</h3>
+      <input type="email" id="loginEmail" placeholder="Email" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+      <button id="loginBtn">Login</button>
+    </div>
 
-    <h3>New here? Sign Up</h3>
-    <input type="email" id="signupEmail" placeholder="Email" />
-    <input type="password" id="signupPassword" placeholder="Password" />
-    <button id="signupBtn">Sign Up</button>
+    <div id="signupForm">
+      <h3>New here? Sign Up</h3>
+      <input type="email" id="signupEmail" placeholder="Email" />
+      <input type="password" id="signupPassword" placeholder="Password" />
+      <button id="signupBtn">Sign Up</button>
+    </div>
   </div>
 
   <!-- 👤 Profile Section -->
@@ -28,13 +33,22 @@
       <p><strong>Email:</strong> <span id="profileEmail"></span></p>
       <p><strong>Country:</strong> <span id="profileCountry"></span></p>
       <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
-      <p><strong>Authenticity Level:</strong> <span id="profileAuth"></span></p>
+      <p><strong>Authenticity Level:</strong> <span id="profileAuth">0%</span></p>
       <button id="logoutBtn">Logout</button>
     </div>
-    <!-- 🛍️ Brand Rating Section (placeholder) -->
+
+    <!-- 🛍️ Brand Rating Section -->
     <div id="brandRatingSection">
       <h3>Rate a Product</h3>
-      <!-- More to come in next phase -->
+      <select id="brandDropdown">
+        <option value="">Select a brand</option>
+        <!-- dynamically populated -->
+      </select>
+      <input type="text" id="productNameInput" placeholder="Enter product name" />
+      <div>
+        <button id="stashBtn">💰 Stash</button>
+        <button id="trashBtn">🚮 Trash</button>
+      </div>
     </div>
   </div>
 
