@@ -7,52 +7,66 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- 🔐 Login / Signup Section -->
-  <div id="authSection">
-    <h2>Welcome to Stash or Trash???</h2>
+  <!-- 👋 Landing -->
+  <div id="landingScreen">
+    <h1>Welcome to Stash or Trash???</h1>
+    <button onclick="showUserLogin()">Login as User</button>
+    <button onclick="showBrandLogin()">Login as Brand</button>
+  </div>
+
+  <!-- 👤 User Auth -->
+  <div id="userAuth" style="display:none;">
+    <h2>User Login</h2>
+    <input type="email" id="userLoginEmail" placeholder="Email" />
+    <input type="password" id="userLoginPassword" placeholder="Password" />
+    <button id="userLoginBtn">Login</button>
+
+    <h3>New User? Sign Up</h3>
+    <input type="email" id="userSignupEmail" placeholder="Email" />
+    <input type="password" id="userSignupPassword" placeholder="Password" />
+    <button id="userSignupBtn">Sign Up</button>
+    <button onclick="backToLanding()">⬅ Back</button>
+  </div>
+
+  <!-- 🏢 Brand Auth -->
+  <div id="brandAuth" style="display:none;">
+    <h2>Brand Login</h2>
+    <input type="email" id="brandLoginEmail" placeholder="Email" />
+    <input type="password" id="brandLoginPassword" placeholder="Password" />
+    <button id="brandLoginBtn">Login</button>
+
+    <h3>New Brand? Sign Up</h3>
+    <input type="email" id="brandSignupEmail" placeholder="Email" />
+    <input type="password" id="brandSignupPassword" placeholder="Password" />
+    <button id="brandSignupBtn">Sign Up</button>
+    <button onclick="backToLanding()">⬅ Back</button>
+  </div>
+
+  <!-- ✅ Profile Section (Editable) -->
+  <div id="profileSection" style="display:none;">
+    <h2>My Profile</h2>
+    <input type="text" id="profileName" placeholder="Full Name" />
+    <input type="email" id="profileEmail" placeholder="Email" disabled />
+    <input type="tel" id="profilePhone" placeholder="Phone Number" />
     
-    <div id="loginForm">
-      <h3>Login</h3>
-      <input type="email" id="loginEmail" placeholder="Email" />
-      <input type="password" id="loginPassword" placeholder="Password" />
-      <button id="loginBtn">Login</button>
+    <!-- 🌍 Country Dropdown with Flags -->
+    <select id="profileCountry"></select>
+
+    <!-- 🌐 Socials -->
+    <input type="url" id="profileSocial" placeholder="Website or Social Link" />
+
+    <!-- 🖼️ Brand Logo -->
+    <div id="brandLogoUpload" style="display:none;">
+      <label>Upload Logo:</label>
+      <input type="file" id="brandLogoInput" accept="image/png, image/jpeg" />
+      <img id="brandLogoPreview" style="max-width:100px; display:none;" />
     </div>
 
-    <div id="signupForm">
-      <h3>New here? Sign Up</h3>
-      <input type="email" id="signupEmail" placeholder="Email" />
-      <input type="password" id="signupPassword" placeholder="Password" />
-      <button id="signupBtn">Sign Up</button>
-    </div>
+    <button id="saveProfileBtn">Save Changes</button>
+    <button id="logoutBtn">Logout</button>
   </div>
 
-  <!-- 👤 Profile Section -->
-  <div id="mainSection" style="display:none;">
-    <div id="profileContainer">
-      <h2>Your Profile</h2>
-      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
-      <p><strong>Country:</strong> <span id="profileCountry"></span></p>
-      <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
-      <p><strong>Authenticity Level:</strong> <span id="profileAuth">0%</span></p>
-      <button id="logoutBtn">Logout</button>
-    </div>
-
-    <!-- 🛍️ Brand Rating Section -->
-    <div id="brandRatingSection">
-      <h3>Rate a Product</h3>
-      <select id="brandDropdown">
-        <option value="">Select a brand</option>
-        <!-- dynamically populated -->
-      </select>
-      <input type="text" id="productNameInput" placeholder="Enter product name" />
-      <div>
-        <button id="stashBtn">💰 Stash</button>
-        <button id="trashBtn">🚮 Trash</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 🔗 Firebase + App -->
+  <!-- 🔗 Scripts -->
   <script type="module" src="App.js"></script>
 </body>
 </html>
