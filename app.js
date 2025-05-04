@@ -1,19 +1,27 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+// Import Firebase SDK
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js';
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js';
 import {
   getFirestore,
   doc,
   setDoc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  getDoc,
+  updateDoc
+} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js';
 
-// 🧠 Firebase Config
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
   authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -24,101 +32,175 @@ const firebaseConfig = {
   measurementId: "G-8Y4ZXJTPM6"
 };
 
-// 🛠️ Init Services
+// Init Services
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// 🔐 Signup
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  const email = document.getElementById("signupEmail").value;
-  const password = document.getElementById("signupPassword").value;
+// Elements
+const userSignupBtn = document.getElementById('userSignupBtn');
+const userLoginBtn = document.getElementById('userLoginBtn');
+const brandSignupBtn = document.getElementById('brandSignupBtn');
+const brandLoginBtn = document.getElementById('brandLoginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const profileSection = document.getElementById('profileSection');
+const logoInput = document.getElementById('logoInput');
+
+// Register Handlers
+if (userSignupBtn) {
+  userSignupBtn.addEventListener('click', () => handleSignup('user'));
+}
+if (brandSignupBtn) {
+  brandSignupBtn.addEventListener('click', () => handleSignup('brand'));
+}
+if (userLoginBtn) {
+  userLoginBtn.addEventListener('click', () => handleLogin('user'));
+}
+if (brandLoginBtn) {
+  brandLoginBtn.addEventListener('click', () => handleLogin('brand'));
+}
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', handleLogout);
+}
+
+// Handle Signup
+async function handleSignup(type) {
+  const email = document.getElementById(`${type}Email`).value.trim();
+  const password = document.getElementById(`${type}Password`).value;
+  const name = document.getElementById(`${type}Name`).value;
+  const phone = document.getElementById(`${type}Phone`).value;
+  const country = document.getElementById(`${type}Country`).value;
+  const social = document.getElementById(`${type}Social`).value;
+
+  if (!validateEmail(email) || password.length < 6) {
+    alert("Enter a valid email and password with at least 6 characters.");
+    return;
+  }
+
   try {
     const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    console.log("✅ Signed up:", userCred.user.email);
-  } catch (error) {
-    console.error("❌ Signup error:", error.message);
-  }
-});
+    const uid = userCred.user.uid;
 
-// 🔐 Login
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
-    console.log("✅ Logged in:", userCred.user.email);
-  } catch (error) {
-    console.error("❌ Login error:", error.message);
-  }
-});
+    // Upload logo if brand
+    let logoURL = '';
+    if (type === 'brand' && logoInput && logoInput.files[0]) {
+      const file = logoInput.files[0];
+      const storageRef = ref(storage, `logos/${uid}`);
+      await uploadBytes(storageRef, file);
+      logoURL = await getDownloadURL(storageRef);
+    }
 
-// 🚪 Logout
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    location.reload();
-  } catch (error) {
-    console.error("❌ Logout error:", error.message);
-  }
-});
-
-// 📄 Save Profile to Firestore
-async function saveUserProfile(user) {
-  const userRef = doc(db, "users", user.uid);
-  const existing = await getDoc(userRef);
-  if (!existing.exists()) {
-    await setDoc(userRef, {
-      uid: user.uid,
-      email: user.email,
-      country: "",
-      phone: "",
-      address: "",
-      socialLinks: {
-        linkedin: "",
-        facebook: "",
-        twitter: "",
-        instagram: ""
-      },
-      authLevel: 0,
+    await setDoc(doc(db, type + 's', uid), {
+      uid,
+      email,
+      name,
+      phone,
+      country,
+      social,
+      logo: logoURL,
+      type,
       createdAt: new Date().toISOString()
     });
-    console.log("✅ New user profile created in Firestore");
-  } else {
-    console.log("📄 User already exists in Firestore");
+
+    alert("Signup successful. You can now log in.");
+  } catch (err) {
+    alert(err.message);
+    console.error(err);
   }
 }
 
-// 📥 Load Profile UI
-async function loadUserProfile(uid) {
-  const userRef = doc(db, "users", uid);
-  const docSnap = await getDoc(userRef);
-  if (docSnap.exists()) {
-    const data = docSnap.data();
-    document.getElementById("profileEmail").textContent = data.email || "";
-    document.getElementById("profileCountry").textContent = data.country || "";
-    document.getElementById("profilePhone").textContent = data.phone || "";
+// Handle Login
+async function handleLogin(type) {
+  const email = document.getElementById(`${type}Email`).value.trim();
+  const password = document.getElementById(`${type}Password`).value;
 
-    let filled = 0;
-    for (let key in data.socialLinks) {
-      if (data.socialLinks[key]) filled++;
-    }
-    const authPercent = Math.round((filled / 4) * 100);
-    document.getElementById("profileAuth").textContent = `${authPercent}%`;
-  } else {
-    console.log("⚠️ User profile not found");
+  if (!validateEmail(email) || password.length < 6) {
+    alert("Invalid login credentials.");
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    alert(err.message);
+    console.error(err);
   }
 }
 
-// 🧠 Auth State Listener
+// Handle Logout
+async function handleLogout() {
+  try {
+    await signOut(auth);
+    window.location.reload();
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// Load Profile
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    document.getElementById("authSection").style.display = "none";
-    document.getElementById("mainSection").style.display = "block";
-    await saveUserProfile(user);
-    await loadUserProfile(user.uid);
-  } else {
-    document.getElementById("authSection").style.display = "block";
-    document.getElementById("mainSection").style.display = "none";
+    const uid = user.uid;
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    const brandDoc = await getDoc(doc(db, 'brands', uid));
+    const profile = userDoc.exists() ? userDoc.data() : brandDoc.data();
+    if (profile) {
+      populateProfile(profile);
+    }
   }
 });
+
+// Display Profile
+function populateProfile(data) {
+  if (!profileSection) return;
+  profileSection.innerHTML = `
+    <h3>Welcome, ${data.name}</h3>
+    <input type="text" id="editName" value="${data.name}" />
+    <input type="email" id="editEmail" value="${data.email}" />
+    <input type="tel" id="editPhone" value="${data.phone}" />
+    <input type="text" id="editCountry" value="${data.country}" />
+    <input type="url" id="editSocial" value="${data.social}" />
+    <input type="file" id="editLogo" />
+    <button onclick="updateProfile('${data.uid}', '${data.type}')">Save Changes</button>
+  `;
+}
+
+// Update Profile
+window.updateProfile = async (uid, type) => {
+  const name = document.getElementById('editName').value;
+  const email = document.getElementById('editEmail').value;
+  const phone = document.getElementById('editPhone').value;
+  const country = document.getElementById('editCountry').value;
+  const social = document.getElementById('editSocial').value;
+  const logoFile = document.getElementById('editLogo').files[0];
+
+  try {
+    let logoURL = '';
+    if (logoFile) {
+      const logoRef = ref(storage, `logos/${uid}`);
+      await uploadBytes(logoRef, logoFile);
+      logoURL = await getDownloadURL(logoRef);
+    }
+
+    await updateDoc(doc(db, type + 's', uid), {
+      name,
+      email,
+      phone,
+      country,
+      social,
+      ...(logoURL && { logo: logoURL })
+    });
+
+    alert('Profile updated!');
+  } catch (err) {
+    alert('Error updating profile.');
+    console.error(err);
+  }
+};
+
+// Validators
+function validateEmail(email) {
+  const re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
