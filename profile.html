@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile - Stash or Trash???</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>My Profile</h1>
+
+    <div id="profileInfo">
+      <img id="profilePhoto" src="" alt="Profile Photo" width="100" height="100" style="border-radius: 50%;" />
+      <input type="file" id="newProfilePhoto" />
+      <br><br>
+
+      <label>Email:</label>
+      <p id="profileEmail"></p>
+
+      <label>Phone:</label>
+      <input type="text" id="profilePhone" />
+
+      <label>Country:</label>
+      <input type="text" id="profileCountry" />
+
+      <label>Address:</label>
+      <input type="text" id="profileAddress" />
+
+      <br><br>
+      <button id="saveProfileBtn">Save Changes</button>
+      <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+    </div>
+  </div>
+
+  <script type="module">
+    // ✅ Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+      authDomain: "stashortrash-acbbf.firebaseapp.com",
+      projectId: "stashortrash-acbbf",
+      storageBucket: "stashortrash-acbbf.appspot.com",
+      messagingSenderId: "782905521538",
+      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+      measurementId: "G-8Y4ZXJTPM6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const userId = user.uid;
+        document.getElementById("profileEmail").innerText = user.email;
+
+        const userRef = doc(db, "users", userId);
+        const brandRef = doc(db, "brands", userId);
+
+        let docSnap = await getDoc(userRef);
+        let role = "user";
+
+        if (!docSnap.exists()) {
+          docSnap = await getDoc(brandRef);
+          role = "brand";
+        }
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById("profilePhone").value = data.phone || "";
+          document.getElementById("profileCountry").value = data.country || "";
+          document.getElementById("profileAddress").value = data.address || "";
+          if (data.profilePhotoURL) {
+            document.getElementById("profilePhoto").src = data.profilePhotoURL;
+          }
+        }
+
+        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+          const phone = document.getElementById("profilePhone").value;
+          const country = document.getElementById("profileCountry").value;
+          const address = document.getElementById("profileAddress").value;
+
+          let profilePhotoURL = docSnap.data().profilePhotoURL || "";
+          const newPhotoFile = document.getElementById("newProfilePhoto").files[0];
+          if (newPhotoFile) {
+            const photoRef = ref(storage, `profilePhotos/${userId}/${newPhotoFile.name}`);
+            await uploadBytes(photoRef, newPhotoFile);
+            profilePhotoURL = await getDownloadURL(photoRef);
+            document.getElementById("profilePhoto").src = profilePhotoURL;
+          }
+
+          const targetRef = (role === "user") ? userRef : brandRef;
+          await setDoc(targetRef, {
+            ...docSnap.data(),
+            phone, country, address, profilePhotoURL
+          });
+
+          alert("Profile updated.");
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</body>
+</html>
 
