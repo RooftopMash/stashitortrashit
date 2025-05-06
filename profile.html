@@ -3,45 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Profile - Stash or Trash???</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Edit Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>My Profile</h1>
-
-    <div id="profileInfo">
-      <img id="profilePhoto" src="" alt="Profile Photo" width="100" height="100" style="border-radius: 50%;" />
-      <input type="file" id="newProfilePhoto" />
-      <br><br>
-
-      <label>Email:</label>
-      <p id="profileEmail"></p>
-
-      <label>Phone:</label>
-      <input type="text" id="profilePhone" />
-
-      <label>Country:</label>
-      <input type="text" id="profileCountry" />
-
-      <label>Address:</label>
-      <input type="text" id="profileAddress" />
-
-      <br><br>
-      <button id="saveProfileBtn">Save Changes</button>
-      <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-    </div>
+    <h2>Edit Your Profile</h2>
+    <input id="phone" placeholder="Phone Number" />
+    <select id="country">
+      <option value="">Select Country</option>
+      <option value="South Africa">South Africa</option>
+      <option value="USA">USA</option>
+      <option value="UK">UK</option>
+    </select>
+    <input type="file" id="profilePic" />
+    <button id="saveBtn">Save Changes</button>
+    <p><a href="dashboard.html">← Back to Dashboard</a></p>
   </div>
 
   <script type="module">
-    // ✅ Firebase Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import {
-      getFirestore, doc, getDoc, setDoc
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      updateDoc
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import {
-      getStorage, ref, uploadBytes, getDownloadURL
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
     } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
     const firebaseConfig = {
@@ -59,62 +85,48 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    let currentUser = null;
+    const phoneInput = document.getElementById("phone");
+    const countrySelect = document.getElementById("country");
+    const profilePicInput = document.getElementById("profilePic");
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const userId = user.uid;
-        document.getElementById("profileEmail").innerText = user.email;
-
-        const userRef = doc(db, "users", userId);
-        const brandRef = doc(db, "brands", userId);
-
-        let docSnap = await getDoc(userRef);
-        let role = "user";
-
-        if (!docSnap.exists()) {
-          docSnap = await getDoc(brandRef);
-          role = "brand";
-        }
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("profilePhone").value = data.phone || "";
-          document.getElementById("profileCountry").value = data.country || "";
-          document.getElementById("profileAddress").value = data.address || "";
-          if (data.profilePhotoURL) {
-            document.getElementById("profilePhoto").src = data.profilePhotoURL;
-          }
-        }
-
-        document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-          const phone = document.getElementById("profilePhone").value;
-          const country = document.getElementById("profileCountry").value;
-          const address = document.getElementById("profileAddress").value;
-
-          let profilePhotoURL = docSnap.data().profilePhotoURL || "";
-          const newPhotoFile = document.getElementById("newProfilePhoto").files[0];
-          if (newPhotoFile) {
-            const photoRef = ref(storage, `profilePhotos/${userId}/${newPhotoFile.name}`);
-            await uploadBytes(photoRef, newPhotoFile);
-            profilePhotoURL = await getDownloadURL(photoRef);
-            document.getElementById("profilePhoto").src = profilePhotoURL;
-          }
-
-          const targetRef = (role === "user") ? userRef : brandRef;
-          await setDoc(targetRef, {
-            ...docSnap.data(),
-            phone, country, address, profilePhotoURL
-          });
-
-          alert("Profile updated.");
-        });
-      } else {
+      if (!user) {
+        alert("Not logged in.");
         window.location.href = "index.html";
+        return;
       }
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        phoneInput.value = data.phone || "";
+        countrySelect.value = data.country || "";
+      }
+
+      document.getElementById("saveBtn").addEventListener("click", async () => {
+        const phone = phoneInput.value;
+        const country = countrySelect.value;
+
+        const updates = { phone, country };
+
+        const file = profilePicInput.files[0];
+        if (file) {
+          const picRef = ref(storage, `profilePics/${user.uid}/${file.name}`);
+          await uploadBytes(picRef, file);
+          const url = await getDownloadURL(picRef);
+          updates.profilePic = url;
+        }
+
+        try {
+          await updateDoc(docRef, updates);
+          alert("Profile updated.");
+          window.location.href = "dashboard.html";
+        } catch (err) {
+          alert("Failed to update: " + err.message);
+        }
+      });
     });
   </script>
 </body>
 </html>
-
