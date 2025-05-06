@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard - Stash or Trash???</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎉 Welcome to Your Dashboard</h1>
+    <p id="welcomeMessage">Loading user...</p>
+
+    <div class="dashboard-buttons">
+      <button onclick="location.href='profile.html'">👤 Edit Profile</button>
+      <button onclick="location.href='ratings.html'">⭐ View Ratings</button>
+      <button id="logoutBtn">🚪 Logout</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+      authDomain: "stashortrash-acbbf.firebaseapp.com",
+      projectId: "stashortrash-acbbf",
+      storageBucket: "stashortrash-acbbf.appspot.com",
+      messagingSenderId: "782905521538",
+      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+      measurementId: "G-8Y4ZXJTPM6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const welcomeMessage = document.getElementById("welcomeMessage");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const brandDoc = await getDoc(doc(db, "brands", user.uid));
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          welcomeMessage.textContent = `👋 Hello, ${userData.email} (User from ${userData.country})`;
+        } else if (brandDoc.exists()) {
+          const brandData = brandDoc.data();
+          welcomeMessage.textContent = `🏢 Welcome, ${brandData.brandName} (Brand from ${brandData.country})`;
+        } else {
+          welcomeMessage.textContent = "User info not found.";
+        }
+      } else {
+        location.href = "index.html"; // Redirect to login if not logged in
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      alert("Logged out successfully.");
+      location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
 
