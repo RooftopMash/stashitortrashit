@@ -3,203 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stash or Trash???</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://flagcdn.com">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #141414;
-      color: white;
-      padding: 1.5rem;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    .login-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    .login-buttons button {
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      transition: all 0.3s ease;
-    }
-
-    .login-buttons button:hover {
-      background-color: #0056b3;
-    }
-
-    .form-section {
-      display: none;
-      margin-top: 2rem;
-      text-align: left;
-      background: #fff;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-section h3 {
-      margin-bottom: 1rem;
-    }
-
-    .form-section input,
-    .form-section select {
-      width: 100%;
-      padding: 0.8rem;
-      margin: 0.5rem 0 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .form-section button {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1.1rem;
-      border: none;
-      background-color: #28a745;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .flag-option {
-      display: flex;
-      align-items: center;
-    }
-
-    .flag-option img {
-      width: 20px;
-      height: 14px;
-      margin-right: 8px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    footer {
-      margin-top: 3rem;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-    }
-  </style>
+  <title>Stash or Trash??? - Login & Signup</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Stash or Trash???</h1>
-    <p>Global Compliments & Complaints Platform – Professional Edition</p>
-  </header>
-
   <div class="container">
-    <h2>Choose Your Portal</h2>
-    <div class="login-buttons">
-      <button onclick="toggleForm('user')">Login as User</button>
-      <button onclick="toggleForm('brand')">Login as Brand</button>
+    <h1>Welcome to Stash or Trash???</h1>
+
+    <div class="form-toggle">
+      <button onclick="showUserForm()">User</button>
+      <button onclick="showBrandForm()">Brand</button>
     </div>
 
-    <!-- User Login/Signup -->
-    <div id="userForm" class="form-section">
-      <h3>User Login</h3>
-      <input type="email" id="userLoginEmail" placeholder="Email" />
-      <input type="password" id="userLoginPassword" placeholder="Password" />
+    <!-- User Form -->
+    <div id="userForm">
+      <h2>User Login</h2>
+      <input id="userLoginEmail" type="email" placeholder="Email" />
+      <input id="userLoginPassword" type="password" placeholder="Password" />
       <button id="userLoginBtn">Login</button>
-
-      <h3 style="margin-top:2rem;">New User? Sign Up</h3>
-      <input type="email" id="userSignupEmail" placeholder="Email" />
-      <input type="password" id="userSignupPassword" placeholder="Password" />
-      <select id="userCountryDropdown">
-        <!-- Country options will be added dynamically -->
-      </select>
-      <input type="text" id="userPhone" placeholder="Phone Number" />
-      <button id="userSignupBtn">Sign Up</button>
+      <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
+      <div id="userSignup" style="display:none;">
+        <input id="userSignupEmail" type="email" placeholder="Email" />
+        <input id="userSignupPassword" type="password" placeholder="Password" />
+        <input id="userCountryDropdown" type="text" placeholder="Country" />
+        <input id="userPhone" type="text" placeholder="Phone Number" />
+        <button id="userSignupBtn">Sign Up</button>
+      </div>
     </div>
 
-    <!-- Brand Login/Signup -->
-    <div id="brandForm" class="form-section">
-      <h3>Brand Login</h3>
-      <input type="email" id="brandLoginEmail" placeholder="Official Brand Email" />
-      <input type="password" id="brandLoginPassword" placeholder="Password" />
+    <!-- Brand Form -->
+    <div id="brandForm" style="display:none;">
+      <h2>Brand Login</h2>
+      <input id="brandLoginEmail" type="email" placeholder="Email" />
+      <input id="brandLoginPassword" type="password" placeholder="Password" />
       <button id="brandLoginBtn">Login</button>
-
-      <h3 style="margin-top:2rem;">New Brand? Register</h3>
-      <input type="email" id="brandSignupEmail" placeholder="Official Brand Email" />
-      <input type="password" id="brandSignupPassword" placeholder="Password" />
-      <input type="text" id="brandName" placeholder="Brand Name" />
-      <select id="brandCountryDropdown">
-        <!-- Country options will be added dynamically -->
-      </select>
-      <input type="text" id="brandPhone" placeholder="Phone Number" />
-      <input type="url" id="brandWebsite" placeholder="Brand Website URL" />
-      <input type="file" id="brandLogo" accept="image/*" />
-      <button id="brandSignupBtn">Register</button>
+      <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
+      <div id="brandSignup" style="display:none;">
+        <input id="brandSignupEmail" type="email" placeholder="Email" />
+        <input id="brandSignupPassword" type="password" placeholder="Password" />
+        <input id="brandName" type="text" placeholder="Brand Name" />
+        <input id="brandCountryDropdown" type="text" placeholder="Country" />
+        <input id="brandPhone" type="text" placeholder="Phone Number" />
+        <input id="brandWebsite" type="text" placeholder="Website URL" />
+        <input id="brandLogo" type="file" />
+        <button id="brandSignupBtn">Sign Up</button>
+      </div>
     </div>
   </div>
 
-  <footer>
-    &copy; 2025 Stash or Trash??? | All rights reserved.
-  </footer>
-
-  <script>
-    function toggleForm(type) {
-      document.getElementById("userForm").style.display = type === "user" ? "block" : "none";
-      document.getElementById("brandForm").style.display = type === "brand" ? "block" : "none";
-    }
-
-    const countries = [
-      { code: "us", name: "United States" },
-      { code: "gb", name: "United Kingdom" },
-      { code: "za", name: "South Africa" },
-      { code: "ng", name: "Nigeria" },
-      { code: "ke", name: "Kenya" },
-      { code: "de", name: "Germany" },
-      { code: "in", name: "India" },
-      { code: "cn", name: "China" },
-      { code: "jp", name: "Japan" },
-      { code: "fr", name: "France" },
-      { code: "br", name: "Brazil" },
-      { code: "eg", name: "Egypt" },
-      // Full list available upon request — this is preview only
-    ];
-
-    function populateCountryDropdown(id) {
-      const dropdown = document.getElementById(id);
-      countries.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c.name;
-        option.innerHTML = `<span class="flag-option"><img src="https://flagcdn.com/16x12/${c.code}.png"> ${c.name}</span>`;
-        option.textContent = c.name; // Required fallback for render
-        dropdown.appendChild(option);
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      populateCountryDropdown("userCountryDropdown");
-      populateCountryDropdown("brandCountryDropdown");
-    });
-  </script>
+  <script type="module" src="App.js"></script>
 </body>
 </html>
