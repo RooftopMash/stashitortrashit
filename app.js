@@ -1,23 +1,18 @@
-// Import Firebase modules (must be used with <script type="module"> in HTML)
+// App.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import {
   getFirestore,
   doc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-// ✅ Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
   authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -28,154 +23,117 @@ const firebaseConfig = {
   measurementId: "G-8Y4ZXJTPM6"
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// ✅ Helper: Disable/Enable Button
-function toggleButton(buttonId, isDisabled) {
-  const btn = document.getElementById(buttonId);
-  if (btn) {
-    btn.disabled = isDisabled;
-    btn.innerText = isDisabled ? "Please wait..." : btn.dataset.originalText || btn.innerText;
-    if (!btn.dataset.originalText) btn.dataset.originalText = btn.innerText;
-  }
-}
+// Show/Hide form sections
+window.showUserForm = () => {
+  document.getElementById("userForm").style.display = "block";
+  document.getElementById("brandForm").style.display = "none";
+};
 
-// ✅ USER SIGNUP
+window.showBrandForm = () => {
+  document.getElementById("brandForm").style.display = "block";
+  document.getElementById("userForm").style.display = "none";
+};
+
+window.toggleUserSignup = () => {
+  const signup = document.getElementById("userSignup");
+  signup.style.display = signup.style.display === "none" ? "block" : "none";
+};
+
+window.toggleBrandSignup = () => {
+  const signup = document.getElementById("brandSignup");
+  signup.style.display = signup.style.display === "none" ? "block" : "none";
+};
+
+// User Sign Up
 document.getElementById("userSignupBtn").addEventListener("click", async () => {
-  const email = document.getElementById("userSignupEmail").value.trim();
-  const password = document.getElementById("userSignupPassword").value.trim();
+  const email = document.getElementById("userSignupEmail").value;
+  const password = document.getElementById("userSignupPassword").value;
   const country = document.getElementById("userCountryDropdown").value;
-  const phone = document.getElementById("userPhone").value.trim();
+  const phone = document.getElementById("userPhone").value;
 
-  if (!email || !password || !country || !phone) {
-    alert("Please fill out all required fields.");
-    return;
-  }
-
-  toggleButton("userSignupBtn", true);
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = userCredential.user.uid;
-    await setDoc(doc(db, "users", uid), {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      type: "user",
       email,
       country,
-      phone,
-      role: "user"
+      phone
     });
-    alert("User signed up successfully!");
-    window.location.href = "welcome.html";
+
+    window.location.href = "dashboard.html";
   } catch (error) {
-    alert("Signup failed: " + error.message);
+    alert("User Signup Failed: " + error.message);
   }
-  toggleButton("userSignupBtn", false);
 });
 
-// ✅ USER LOGIN
+// User Login
 document.getElementById("userLoginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("userLoginEmail").value.trim();
-  const password = document.getElementById("userLoginPassword").value.trim();
+  const email = document.getElementById("userLoginEmail").value;
+  const password = document.getElementById("userLoginPassword").value;
 
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
-  }
-
-  toggleButton("userLoginBtn", true);
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("User logged in successfully!");
-    window.location.href = "welcome.html";
+    window.location.href = "dashboard.html";
   } catch (error) {
-    alert("Login failed: " + error.message);
+    alert("User Login Failed: " + error.message);
   }
-  toggleButton("userLoginBtn", false);
 });
 
-// ✅ BRAND SIGNUP
+// Brand Sign Up
 document.getElementById("brandSignupBtn").addEventListener("click", async () => {
-  const email = document.getElementById("brandSignupEmail").value.trim();
-  const password = document.getElementById("brandSignupPassword").value.trim();
-  const brandName = document.getElementById("brandName").value.trim();
+  const email = document.getElementById("brandSignupEmail").value;
+  const password = document.getElementById("brandSignupPassword").value;
+  const name = document.getElementById("brandName").value;
   const country = document.getElementById("brandCountryDropdown").value;
-  const phone = document.getElementById("brandPhone").value.trim();
-  const website = document.getElementById("brandWebsite").value.trim();
+  const phone = document.getElementById("brandPhone").value;
+  const website = document.getElementById("brandWebsite").value;
   const logoFile = document.getElementById("brandLogo").files[0];
 
-  if (!email || !password || !brandName || !country || !phone || !website) {
-    alert("Please fill out all required fields.");
-    return;
-  }
-
-  if (logoFile && logoFile.size > 5 * 1024 * 1024) {
-    alert("Logo file must be under 5MB.");
-    return;
-  }
-
-  toggleButton("brandSignupBtn", true);
   try {
-    const brandCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = brandCredential.user.uid;
+    const brandCred = await createUserWithEmailAndPassword(auth, email, password);
+    const brand = brandCred.user;
 
-    let logoURL = "";
-    if (logoFile) {
-      const storageRef = ref(storage, `brandLogos/${uid}/${logoFile.name}`);
-      await uploadBytes(storageRef, logoFile);
-      logoURL = await getDownloadURL(storageRef);
-    }
+    const logoRef = ref(storage, `brandLogos/${brand.uid}`);
+    await uploadBytes(logoRef, logoFile);
 
-    await setDoc(doc(db, "brands", uid), {
+    await setDoc(doc(db, "brands", brand.uid), {
+      type: "brand",
       email,
-      brandName,
+      name,
       country,
       phone,
       website,
-      logoURL,
-      role: "brand"
+      logoPath: logoRef.fullPath
     });
 
-    alert("Brand registered successfully!");
-    window.location.href = "welcome.html";
+    window.location.href = "dashboard.html";
   } catch (error) {
-    alert("Brand signup failed: " + error.message);
+    alert("Brand Signup Failed: " + error.message);
   }
-  toggleButton("brandSignupBtn", false);
 });
 
-// ✅ BRAND LOGIN
+// Brand Login
 document.getElementById("brandLoginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("brandLoginEmail").value.trim();
-  const password = document.getElementById("brandLoginPassword").value.trim();
+  const email = document.getElementById("brandLoginEmail").value;
+  const password = document.getElementById("brandLoginPassword").value;
 
-  if (!email || !password) {
-    alert("Please enter both email and password.");
-    return;
-  }
-
-  toggleButton("brandLoginBtn", true);
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("Brand logged in successfully!");
-    window.location.href = "welcome.html";
+    window.location.href = "dashboard.html";
   } catch (error) {
-    alert("Brand login failed: " + error.message);
+    alert("Brand Login Failed: " + error.message);
   }
-  toggleButton("brandLoginBtn", false);
 });
 
-// ✅ ENTER key login shortcut
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    const userForm = document.getElementById("userForm")?.style.display !== "none";
-    const brandForm = document.getElementById("brandForm")?.style.display !== "none";
-
-    if (userForm) {
-      document.getElementById("userLoginBtn").click();
-    } else if (brandForm) {
-      document.getElementById("brandLoginBtn").click();
-    }
-  }
+// Optional: Redirect if already logged in
+onAuthStateChanged(auth, (user) => {
+  // Uncomment this if you want auto-redirect
+  // if (user) window.location.href = "dashboard.html";
 });
