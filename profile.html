@@ -3,130 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Edit Profile</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      text-align: center;
-    }
-    .container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    input, select {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #1e88e5;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1565c0;
-    }
-  </style>
+  <title>Stash or Trash??? - Profile</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="container">
-    <h2>Edit Your Profile</h2>
-    <input id="phone" placeholder="Phone Number" />
-    <select id="country">
-      <option value="">Select Country</option>
-      <option value="South Africa">South Africa</option>
-      <option value="USA">USA</option>
-      <option value="UK">UK</option>
-    </select>
-    <input type="file" id="profilePic" />
-    <button id="saveBtn">Save Changes</button>
-    <p><a href="dashboard.html">← Back to Dashboard</a></p>
+    <h1>Your Profile</h1>
+    <div class="form-section">
+      <input id="profilePhoto" type="file" accept="image/*" />
+      <img id="profileImagePreview" src="" alt="Profile Photo" style="width: 150px; height: 150px; display: none;"/>
+      <input id="profileName" type="text" placeholder="Name" />
+      <input id="profileCountry" type="text" placeholder="Country" />
+      <input id="profilePhone" type="text" placeholder="Phone Number" />
+      <button id="saveProfileBtn">Save Changes</button>
+    </div>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
-      authDomain: "stashortrash-acbbf.firebaseapp.com",
-      projectId: "stashortrash-acbbf",
-      storageBucket: "stashortrash-acbbf.appspot.com",
-      messagingSenderId: "782905521538",
-      appId: "1:782905521538:web:856d1e7789edd76882cb9b",
-      measurementId: "G-8Y4ZXJTPM6"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const phoneInput = document.getElementById("phone");
-    const countrySelect = document.getElementById("country");
-    const profilePicInput = document.getElementById("profilePic");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        alert("Not logged in.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        phoneInput.value = data.phone || "";
-        countrySelect.value = data.country || "";
-      }
-
-      document.getElementById("saveBtn").addEventListener("click", async () => {
-        const phone = phoneInput.value;
-        const country = countrySelect.value;
-
-        const updates = { phone, country };
-
-        const file = profilePicInput.files[0];
-        if (file) {
-          const picRef = ref(storage, `profilePics/${user.uid}/${file.name}`);
-          await uploadBytes(picRef, file);
-          const url = await getDownloadURL(picRef);
-          updates.profilePic = url;
-        }
-
-        try {
-          await updateDoc(docRef, updates);
-          alert("Profile updated.");
-          window.location.href = "dashboard.html";
-        } catch (err) {
-          alert("Failed to update: " + err.message);
-        }
-      });
-    });
-  </script>
+  <script type="module" src="App.js"></script>
 </body>
 </html>
