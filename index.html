@@ -15,7 +15,7 @@
       <button onclick="showBrandForm()">Brand</button>
     </div>
 
-    <!-- User Form -->
+    <!-- User Form (Visible by Default) -->
     <div id="userForm">
       <h2>User Login</h2>
       <input id="userLoginEmail" type="email" placeholder="Email" />
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Brand Form -->
+    <!-- Brand Form (Hidden by Default) -->
     <div id="brandForm" style="display:none;">
       <h2>Brand Login</h2>
       <input id="brandLoginEmail" type="email" placeholder="Email" />
@@ -51,27 +51,6 @@
     </div>
   </div>
 
-  <script type="module" src="./App.js"></script>
-  <script>
-    function showUserForm() {
-      document.getElementById('userForm').style.display = 'block';
-      document.getElementById('brandForm').style.display = 'none';
-    }
-
-    function showBrandForm() {
-      document.getElementById('brandForm').style.display = 'block';
-      document.getElementById('userForm').style.display = 'none';
-    }
-
-    function toggleUserSignup() {
-      const signup = document.getElementById('userSignup');
-      signup.style.display = (signup.style.display === 'none') ? 'block' : 'none';
-    }
-
-    function toggleBrandSignup() {
-      const signup = document.getElementById('brandSignup');
-      signup.style.display = (signup.style.display === 'none') ? 'block' : 'none';
-    }
-  </script>
+  <script type="module" src="App.js"></script>
 </body>
 </html>
