@@ -1,22 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stash or Trash??? - Login & Signup</title>
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Stash or Trash???</h1>
 
-    <div class="form-toggle">
-      <button onclick="showUserForm()">User</button>
-      <button onclick="showBrandForm()">Brand</button>
-    </div>
-
-    <!-- User Form (Visible by Default) -->
-    <div id="userForm">
+    <div class="form-section">
       <h2>User Login</h2>
       <input id="userLoginEmail" type="email" placeholder="Email" />
       <input id="userLoginPassword" type="password" placeholder="Password" />
@@ -25,28 +19,7 @@
       <div id="userSignup" style="display:none;">
         <input id="userSignupEmail" type="email" placeholder="Email" />
         <input id="userSignupPassword" type="password" placeholder="Password" />
-        <input id="userCountryDropdown" type="text" placeholder="Country" />
-        <input id="userPhone" type="text" placeholder="Phone Number" />
         <button id="userSignupBtn">Sign Up</button>
-      </div>
-    </div>
-
-    <!-- Brand Form (Hidden by Default) -->
-    <div id="brandForm" style="display:none;">
-      <h2>Brand Login</h2>
-      <input id="brandLoginEmail" type="email" placeholder="Email" />
-      <input id="brandLoginPassword" type="password" placeholder="Password" />
-      <button id="brandLoginBtn">Login</button>
-      <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
-      <div id="brandSignup" style="display:none;">
-        <input id="brandSignupEmail" type="email" placeholder="Email" />
-        <input id="brandSignupPassword" type="password" placeholder="Password" />
-        <input id="brandName" type="text" placeholder="Brand Name" />
-        <input id="brandCountryDropdown" type="text" placeholder="Country" />
-        <input id="brandPhone" type="text" placeholder="Phone Number" />
-        <input id="brandWebsite" type="text" placeholder="Website URL" />
-        <input id="brandLogo" type="file" />
-        <button id="brandSignupBtn">Sign Up</button>
       </div>
     </div>
   </div>
