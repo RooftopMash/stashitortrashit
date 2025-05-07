@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stash or Trash??? - Login & Signup</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="icon" href="data:,">
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Stash or Trash???</h1>
 
-    <div class="form-section">
+    <div class="form-toggle">
+      <button onclick="showUserForm()">User</button>
+      <button onclick="showBrandForm()">Brand</button>
+    </div>
+
+    <!-- User Form -->
+    <div id="userForm">
       <h2>User Login</h2>
       <input id="userLoginEmail" type="email" placeholder="Email" />
       <input id="userLoginPassword" type="password" placeholder="Password" />
@@ -19,11 +26,12 @@
       <div id="userSignup" style="display:none;">
         <input id="userSignupEmail" type="email" placeholder="Email" />
         <input id="userSignupPassword" type="password" placeholder="Password" />
+        <input id="userCountryDropdown" type="text" placeholder="Country" />
+        <input id="userPhone" type="text" placeholder="Phone Number" />
         <button id="userSignupBtn">Sign Up</button>
       </div>
     </div>
   </div>
-
-  <script type="module" src="App.js"></script>
+  <script type="module" src="/App.js"></script>
 </body>
 </html>
