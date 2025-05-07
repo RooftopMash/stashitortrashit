@@ -3,22 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stash or Trash??? - Profile</title>
+  <title>User Profile - Stash or Trash???</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>User Profile</h1>
-    <img id="profileImage" src="default-profile.jpg" alt="Profile Image" width="150">
-    <input type="file" id="profileImageInput">
-    
-    <h3>Email: <span id="profileEmail"></span></h3>
-    <h3>Country: <span id="profileCountry"></span></h3>
-    <h3>Phone: <span id="profilePhone"></span></h3>
-
+    <h1>Your Profile</h1>
+    <div>
+      <label for="displayName">Display Name:</label>
+      <input type="text" id="displayName" placeholder="Enter your display name">
+    </div>
+    <div>
+      <label for="phone">Phone Number:</label>
+      <input type="text" id="phone" placeholder="Enter your phone number">
+    </div>
+    <button onclick="updateProfile()">Update Profile</button>
     <button id="logoutBtn">Logout</button>
   </div>
-  
+
   <script type="module" src="App.js"></script>
 </body>
 </html>
