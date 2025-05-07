@@ -1,159 +1,38 @@
-/* Global Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Typography */
+/* General Styling */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(145deg, #f0f2f5, #ffffff);
+  font-family: Arial, sans-serif;
+  background: #f4f4f9;
   color: #333;
-  line-height: 1.6;
 }
 
-h1, h2, h3 {
-  color: #111;
-}
-
-input, select, button {
-  font-family: inherit;
-}
-
-/* Header */
-header {
-  background-color: #141414;
-  color: white;
-  text-align: center;
-  padding: 2rem 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-header h1 {
-  font-size: 2.4rem;
-  margin-bottom: 0.5rem;
-}
-
-header p {
-  font-size: 1.1rem;
-  color: #ccc;
-}
-
-/* Main container */
 .container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-/* Buttons */
-.login-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-.login-buttons button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background: #007bff;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.login-buttons button:hover {
-  background: #0056b3;
-}
-
-/* Form Sections */
-.form-section {
-  margin-top: 2rem;
-  background: #f9f9f9;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-}
-
-.form-section h3 {
-  font-size: 1.5rem;
-  color: #444;
-  margin-bottom: 1rem;
-}
-
-/* Inputs */
-.form-section input[type="text"],
-.form-section input[type="email"],
-.form-section input[type="password"],
-.form-section input[type="url"],
-.form-section input[type="file"],
-.form-section select {
-  width: 100%;
-  padding: 0.9rem;
-  margin: 0.5rem 0 1.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 20px;
   background: #fff;
-  transition: border-color 0.3s ease;
-}
-
-.form-section input:focus,
-.form-section select:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Action Buttons */
-.form-section button {
-  width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
-  border: none;
-  background-color: #28a745;
-  color: white;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.form-section button:hover {
-  background-color: #218838;
-}
-
-/* Footer */
-footer {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  padding: 2rem;
-  color: #999;
-  font-size: 0.9rem;
-  margin-top: 2rem;
 }
 
-/* Flag Icons in Dropdowns (optional fallback visuals) */
-select option {
-  padding-left: 24px;
-  background-repeat: no-repeat;
-  background-position: left center;
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .login-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
+button {
+  padding: 10px 20px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
 
-  .container {
-    margin: 1rem;
-    padding: 1rem;
-  }
+button:hover {
+  background: #0056b3;
 }
