@@ -1,10 +1,8 @@
-// Firebase Config
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+// Import Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
   authDomain: "stashortrash-acbbf.firebaseapp.com",
@@ -15,47 +13,52 @@ const firebaseConfig = {
   measurementId: "G-8Y4ZXJTPM6"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const auth = getAuth();
+const db = getFirestore();
 
-// User Login
-document.getElementById("userLoginBtn")?.addEventListener("click", async () => {
+document.getElementById("userLoginBtn").onclick = async () => {
   const email = document.getElementById("userLoginEmail").value;
   const password = document.getElementById("userLoginPassword").value;
-  const user = await signInWithEmailAndPassword(auth, email, password);
-  window.location.href = "dashboard.html";
-});
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
-// User Signup
-document.getElementById("userSignupBtn")?.addEventListener("click", async () => {
+document.getElementById("userSignupBtn").onclick = async () => {
   const email = document.getElementById("userSignupEmail").value;
   const password = document.getElementById("userSignupPassword").value;
-  await createUserWithEmailAndPassword(auth, email, password);
-  window.location.href = "dashboard.html";
-});
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
-// Logout User
-function logoutUser() {
+document.getElementById("saveProfileBtn").onclick = async () => {
+  const profilePhoto = document.getElementById("profilePhoto").files[0];
+  const country = document.getElementById("profileCountry").value;
+  const address = document.getElementById("profileAddress").value;
+  const phone = document.getElementById("profilePhone").value;
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      await setDoc(doc(db, "users", user.uid), { country, address, phone });
+      alert("Profile updated!");
+    }
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+window.logout = () => {
   signOut(auth).then(() => {
     window.location.href = "index.html";
+  }).catch((error) => {
+    alert(error.message);
   });
-}
-
-// Save Profile
-async function saveProfile() {
-  const user = auth.currentUser;
-  const file = document.getElementById("profileImage").files[0];
-  const country = document.getElementById("userCountry").value;
-  const phone = document.getElementById("userPhone").value;
-
-  if (file) {
-    const fileRef = ref(storage, `profiles/${user.uid}`);
-    await uploadBytes(fileRef, file);
-  }
-
-  await setDoc(doc(db, "users", user.uid), { country, phone }, { merge: true });
-  alert("Profile updated!");
-}
+};
