@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stash or Trash??? - Profile</title>
-  <link rel="stylesheet" href="./style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Stash or Trash???</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Your Profile</h1>
-    <div class="form-section">
-      <input id="profilePhoto" type="file" accept="image/*" />
-      <img id="profileImagePreview" src="" alt="Profile Photo" style="width: 150px; height: 150px; display: none;"/>
-      <input id="profileName" type="text" placeholder="Name" />
-      <input id="profileCountry" type="text" placeholder="Country" />
-      <input id="profilePhone" type="text" placeholder="Phone Number" />
-      <button id="saveProfileBtn">Save Changes</button>
-    </div>
-    <button onclick="logout()">Logout</button>
+    <h1>Edit Profile</h1>
+    <input type="file" id="profileImage" />
+    <input type="text" id="userCountry" placeholder="Country" />
+    <input type="text" id="userPhone" placeholder="Phone Number" />
+    <button onclick="saveProfile()">Save Changes</button>
+    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
   </div>
 
   <script type="module" src="App.js"></script>
