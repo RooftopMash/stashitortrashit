@@ -2,20 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile - Stash or Trash???</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div class="container">
     <h1>Edit Profile</h1>
-    <input type="file" id="profileImage" />
-    <input type="text" id="userCountry" placeholder="Country" />
-    <input type="text" id="userPhone" placeholder="Phone Number" />
-    <button onclick="saveProfile()">Save Changes</button>
+    <input id="profilePhoto" type="file" accept="image/*">
+    <input id="profileCountry" type="text" placeholder="Country">
+    <input id="profileAddress" type="text" placeholder="Address">
+    <input id="profilePhone" type="text" placeholder="Phone Number">
+    <button id="saveProfileBtn">Save</button>
     <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
   </div>
-
-  <script type="module" src="App.js"></script>
+  <script type="module" src="/App.js"></script>
 </body>
 </html>
