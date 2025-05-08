@@ -1,48 +1,32 @@
-// Firebase Setup (Ensure your Firebase config is correct)
+// Firebase Initialization
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_AUTH_DOMAIN_HERE",
+  projectId: "YOUR_PROJECT_ID_HERE",
+  storageBucket: "YOUR_STORAGE_BUCKET_HERE",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
+  appId: "YOUR_APP_ID_HERE"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const db = getFirestore();
-const storage = getStorage();
+const db = getFirestore(app);
 
-// Login & Signup Functions
-document.getElementById("userLoginBtn")?.addEventListener("click", async () => {
+// Login Function
+document.getElementById("userLoginBtn").addEventListener("click", async () => {
   const email = document.getElementById("userLoginEmail").value;
   const password = document.getElementById("userLoginPassword").value;
   try {
     await signInWithEmailAndPassword(auth, email, password);
     window.location.href = "dashboard.html";
   } catch (error) {
-    alert(error.message);
+    alert("Login Failed");
   }
 });
-
-// Profile Save Function
-async function saveProfile() {
-  const user = auth.currentUser;
-  if (user) {
-    const profileRef = doc(db, "users", user.uid);
-    await setDoc(profileRef, {
-      country: document.getElementById("profileCountry").value,
-      address: document.getElementById("profileAddress").value,
-      phone: document.getElementById("profilePhone").value
-    });
-    alert("Profile saved.");
-  }
-}
 
 // Logout Function
 function logout() {
@@ -51,6 +35,17 @@ function logout() {
   });
 }
 
-// Exporting Functions for HTML Usage
-window.saveProfile = saveProfile;
-window.logout = logout;
+// Profile Update Function
+async function updateProfile() {
+  const user = auth.currentUser;
+  if (user) {
+    const profileRef = doc(db, "users", user.uid);
+    await updateDoc(profileRef, {
+      country: document.getElementById("profileCountry").value,
+      phone: document.getElementById("profilePhone").value
+    });
+    alert("Profile Updated!");
+  } else {
+    alert("No user logged in");
+  }
+}
