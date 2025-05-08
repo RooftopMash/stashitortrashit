@@ -1,51 +1,88 @@
-// Firebase Initialization
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// Initialize Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
+// Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_AUTH_DOMAIN_HERE",
-  projectId: "YOUR_PROJECT_ID_HERE",
-  storageBucket: "YOUR_STORAGE_BUCKET_HERE",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
-  appId: "YOUR_APP_ID_HERE"
+  apiKey: "AIzaSyBu1iRSWC3l7VGJvHyD49xXqqGdEIa9Kis",
+  authDomain: "stashortrash-acbbf.firebaseapp.com",
+  projectId: "stashortrash-acbbf",
+  storageBucket: "stashortrash-acbbf.appspot.com",
+  messagingSenderId: "782905521538",
+  appId: "1:782905521538:web:856d1e7789edd76882cb9b",
+  measurementId: "G-8Y4ZXJTPM6"
 };
 
+// Initialize Firebase services
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Login Function
+// LOGIN
 document.getElementById("userLoginBtn").addEventListener("click", async () => {
   const email = document.getElementById("userLoginEmail").value;
   const password = document.getElementById("userLoginPassword").value;
+
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     window.location.href = "dashboard.html";
   } catch (error) {
-    alert("Login Failed");
+    alert("Login failed: " + error.message);
   }
 });
 
-// Logout Function
-function logout() {
+// SIGN UP
+document.getElementById("userSignupBtn").addEventListener("click", async () => {
+  const email = document.getElementById("userSignupEmail").value;
+  const password = document.getElementById("userSignupPassword").value;
+  const country = document.getElementById("userCountryDropdown").value;
+  const phone = document.getElementById("userPhone").value;
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      email,
+      country,
+      phone,
+      profilePhoto: ""
+    });
+
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert("Signup failed: " + error.message);
+  }
+});
+
+// LOGOUT (used in dashboard.html)
+export function logout() {
   signOut(auth).then(() => {
     window.location.href = "index.html";
+  }).catch((error) => {
+    alert("Logout failed: " + error.message);
   });
 }
 
-// Profile Update Function
-async function updateProfile() {
+// PROFILE UPDATE
+async function updateProfilePhoto(file) {
   const user = auth.currentUser;
-  if (user) {
-    const profileRef = doc(db, "users", user.uid);
-    await updateDoc(profileRef, {
-      country: document.getElementById("profileCountry").value,
-      phone: document.getElementById("profilePhone").value
-    });
-    alert("Profile Updated!");
-  } else {
-    alert("No user logged in");
-  }
+  const fileRef = ref(storage, `profile_photos/${user.uid}`);
+  await uploadBytes(fileRef, file);
+  const downloadURL = await getDownloadURL(fileRef);
+
+  await updateDoc(doc(db, "users", user.uid), {
+    profilePhoto: downloadURL
+  });
+
+  document.getElementById("profilePhotoPreview").src = downloadURL;
 }
+
+// Attach profile photo change event
+document.getElementById("profilePhotoInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  updateProfilePhoto(file);
+});
