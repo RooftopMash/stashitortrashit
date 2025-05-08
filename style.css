@@ -5,7 +5,6 @@
   box-sizing: border-box;
 }
 
-/* Typography */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(145deg, #f0f2f5, #ffffff);
@@ -14,27 +13,20 @@ body {
 }
 
 .container {
-  max-width: 500px;
-  margin: 2rem auto;
+  max-width: 600px;
+  margin: 3rem auto;
   padding: 2rem;
-  background: #ffffff;
-  border-radius: 10px;
+  background: #fff;
+  border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
 }
 
 button {
-  background: #007bff;
-  color: #fff;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
   border: none;
-  padding: 0.8rem 1.5rem;
-  margin-top: 1rem;
-  border-radius: 6px;
+  background: #007bff;
+  color: white;
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -43,16 +35,7 @@ button:hover {
   background: #0056b3;
 }
 
+/* Profile Image Upload */
 input[type="file"] {
-  margin-top: 1rem;
-  display: block;
-}
-
-#profileImage {
-  display: block;
-  margin: 0 auto 1rem;
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
+  margin-bottom: 1rem;
 }
