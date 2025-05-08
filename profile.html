@@ -1,62 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Stash or Trash??? - Profile</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>User Profile</h1>
-    <div>
-      <img id="profilePhotoPreview" src="" alt="Profile Photo" width="150">
-      <input type="file" id="profilePhotoInput" />
-    </div>
-    <h3>Email: <span id="userEmail"></span></h3>
-    <h3>Country: <input type="text" id="userCountry" /></h3>
-    <h3>Phone: <input type="text" id="userPhone" /></h3>
-    <button onclick="saveProfile()">Save Changes</button>
-    <button onclick="logout()">Logout</button>
+    <h1>Edit Profile</h1>
+    <input type="text" id="displayName" placeholder="Full Name">
+    <input type="file" id="profileImage">
+    <button id="saveProfileBtn">Save Profile</button>
+    <button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
   </div>
-
   <script type="module" src="App.js"></script>
-  <script type="module">
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { logout } from "./App.js";
-
-    const auth = getAuth();
-    const db = getFirestore();
-    
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          document.getElementById("userEmail").innerText = docSnap.data().email;
-          document.getElementById("userCountry").value = docSnap.data().country;
-          document.getElementById("userPhone").value = docSnap.data().phone;
-          document.getElementById("profilePhotoPreview").src = docSnap.data().profilePhoto || "default-profile.png";
-        }
-      } else {
-        window.location.href = "index.html";
-      }
-    });
-
-    async function saveProfile() {
-      const user = auth.currentUser;
-      const country = document.getElementById("userCountry").value;
-      const phone = document.getElementById("userPhone").value;
-      
-      await updateDoc(doc(db, "users", user.uid), {
-        country,
-        phone
-      });
-
-      alert("Profile updated successfully.");
-    }
-  </script>
 </body>
 </html>
