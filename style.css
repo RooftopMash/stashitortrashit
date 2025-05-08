@@ -7,35 +7,30 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(145deg, #f0f2f5, #ffffff);
+  background: #f4f4f9;
   color: #333;
-  line-height: 1.6;
 }
 
 .container {
   max-width: 600px;
-  margin: 3rem auto;
+  margin: 2rem auto;
   padding: 2rem;
-  background: #fff;
+  background: white;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 button {
-  padding: 0.8rem 1.2rem;
+  padding: 1rem;
   font-size: 1rem;
-  border: none;
-  background: #007bff;
+  background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  margin-top: 1rem;
 }
 
 button:hover {
-  background: #0056b3;
-}
-
-/* Profile Image Upload */
-input[type="file"] {
-  margin-bottom: 1rem;
+  background-color: #0056b3;
 }
