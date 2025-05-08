@@ -9,18 +9,16 @@
 <body>
   <div class="container">
     <h1>Your Profile</h1>
-    <div>
-      <label for="displayName">Display Name:</label>
-      <input type="text" id="displayName" placeholder="Enter your display name">
+    <div class="profile-form">
+      <input type="file" id="profilePhoto" accept="image/*">
+      <input type="text" id="profileCountry" placeholder="Country">
+      <input type="text" id="profileAddress" placeholder="Address">
+      <input type="text" id="profilePhone" placeholder="Phone Number">
+      <button onclick="saveProfile()">Save Profile</button>
+      <button onclick="logout()">Logout</button>
     </div>
-    <div>
-      <label for="phone">Phone Number:</label>
-      <input type="text" id="phone" placeholder="Enter your phone number">
-    </div>
-    <button onclick="updateProfile()">Update Profile</button>
-    <button id="logoutBtn">Logout</button>
   </div>
-
+  
   <script type="module" src="App.js"></script>
 </body>
 </html>
