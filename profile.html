@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stash or Trash??? - Profile</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Profile Management</h1>
-    <div class="form-section">
-      <label>Email:</label>
-      <input type="email" id="profileEmail" readonly />
-
-      <label>Phone Number:</label>
-      <input type="text" id="profilePhone" placeholder="Your Phone Number" />
-
-      <button id="saveProfileBtn">Save Profile</button>
-      <button id="logoutBtn">Logout</button>
+    <h1>User Profile</h1>
+    <div>
+      <label for="profilePhoto">Profile Photo:</label>
+      <input type="file" id="profilePhoto" />
+      <img id="profileImagePreview" src="" alt="Profile Image" style="display:none;">
     </div>
+    <div>
+      <label for="profileCountry">Country:</label>
+      <input type="text" id="profileCountry" placeholder="Your Country">
+    </div>
+    <div>
+      <label for="profilePhone">Phone Number:</label>
+      <input type="text" id="profilePhone" placeholder="Your Phone Number">
+    </div>
+    <button onclick="saveProfile()">Save Profile</button>
+    <button onclick="logout()">Logout</button>
   </div>
-  
-  <script type="module" src="App.js"></script>
+
+  <script>
+    function saveProfile() {
+      alert("Profile saved (This is just a placeholder)");
+    }
+
+    function logout() {
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
