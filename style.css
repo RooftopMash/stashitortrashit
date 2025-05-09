@@ -1,8 +1,10 @@
+/* GLOBAL STYLES */
 body {
   font-family: Arial, sans-serif;
   background: #f4f4f9;
   margin: 0;
   padding: 0;
+  line-height: 1.6; /* Improves readability */
 }
 
 .container {
@@ -12,13 +14,18 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevents content overflow */
 }
 
+/* TYPOGRAPHY */
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  font-size: 1.8rem; /* Scales better on mobile */
+  color: #333; /* Ensures better contrast */
 }
 
+/* BUTTONS */
 button {
   display: block;
   width: 100%;
@@ -28,13 +35,21 @@ button {
   color: #fff;
   border: none;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.1s;
+  border-radius: 4px; /* Matches input styling */
 }
 
 button:hover {
   background: #0056b3;
+  transform: scale(1.02); /* Adds a subtle zoom effect */
 }
 
+button:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* INPUT FIELDS */
 input {
   display: block;
   width: 100%;
@@ -42,4 +57,42 @@ input {
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 1rem;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Adds a glow effect */
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 768px) {
+  .container {
+    max-width: 90%;
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  button, input {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
+/* UTILITY CLASSES */
+.hidden {
+  display: none !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-bold {
+  font-weight: bold;
 }
