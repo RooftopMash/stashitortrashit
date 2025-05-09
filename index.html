@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Stash or Trash??? - Login & Signup</title>
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Stash or Trash???</h1>
+
     <div class="form-toggle">
       <button onclick="showUserForm()">User</button>
       <button onclick="showBrandForm()">Brand</button>
@@ -29,8 +30,27 @@
         <button id="userSignupBtn">Sign Up</button>
       </div>
     </div>
+
+    <!-- Brand Form -->
+    <div id="brandForm" style="display:none;">
+      <h2>Brand Login</h2>
+      <input id="brandLoginEmail" type="email" placeholder="Email" />
+      <input id="brandLoginPassword" type="password" placeholder="Password" />
+      <button id="brandLoginBtn">Login</button>
+      <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
+      <div id="brandSignup" style="display:none;">
+        <input id="brandSignupEmail" type="email" placeholder="Email" />
+        <input id="brandSignupPassword" type="password" placeholder="Password" />
+        <input id="brandName" type="text" placeholder="Brand Name" />
+        <input id="brandCountryDropdown" type="text" placeholder="Country" />
+        <input id="brandPhone" type="text" placeholder="Phone Number" />
+        <input id="brandWebsite" type="text" placeholder="Website URL" />
+        <input id="brandLogo" type="file" />
+        <button id="brandSignupBtn">Sign Up</button>
+      </div>
+    </div>
   </div>
-  
+
   <script type="module" src="App.js"></script>
 </body>
 </html>
