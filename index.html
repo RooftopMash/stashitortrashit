@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stash or Trash??? - Login & Signup</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to Stash or Trash???</h1>
+    <h1 class="main-title">Stash or Trash???</h1>
 
     <div class="form-toggle">
       <button onclick="showUserForm()">User</button>
@@ -16,13 +16,13 @@
     </div>
 
     <!-- User Form -->
-    <div id="userForm">
+    <div id="userForm" class="form-section">
       <h2>User Login</h2>
       <input id="userLoginEmail" type="email" placeholder="Email" />
       <input id="userLoginPassword" type="password" placeholder="Password" />
       <button id="userLoginBtn">Login</button>
       <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
-      <div id="userSignup" style="display:none;">
+      <div id="userSignup" class="signup-section hidden">
         <input id="userSignupEmail" type="email" placeholder="Email" />
         <input id="userSignupPassword" type="password" placeholder="Password" />
         <input id="userCountryDropdown" type="text" placeholder="Country" />
@@ -32,13 +32,13 @@
     </div>
 
     <!-- Brand Form -->
-    <div id="brandForm" style="display:none;">
+    <div id="brandForm" class="form-section hidden">
       <h2>Brand Login</h2>
       <input id="brandLoginEmail" type="email" placeholder="Email" />
       <input id="brandLoginPassword" type="password" placeholder="Password" />
       <button id="brandLoginBtn">Login</button>
       <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
-      <div id="brandSignup" style="display:none;">
+      <div id="brandSignup" class="signup-section hidden">
         <input id="brandSignupEmail" type="email" placeholder="Email" />
         <input id="brandSignupPassword" type="password" placeholder="Password" />
         <input id="brandName" type="text" placeholder="Brand Name" />
