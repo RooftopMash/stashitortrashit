@@ -1,36 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stash or Trash???</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stash or Trash??? - Home</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Navbar -->
-        <nav class="navbar">
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-            </ul>
-        </nav>
-
-        <!-- Main content -->
-        <div class="main-content">
-            <h1>Welcome to Stash or Trash???</h1>
-            <p>Rate products, brands, and companies. Share your feedback!</p>
-
-            <!-- Rating buttons -->
-            <div class="rating-buttons">
-                <button class="stash-btn" onclick="rateProduct('stash')">💰 Stash</button>
-                <button class="trash-btn" onclick="rateProduct('trash')">🚮 Trash</button>
-            </div>
-        </div>
+  <div class="container">
+    <h1>Stash or Trash???</h1>
+    <div class="form-toggle">
+      <button onclick="showUserForm()">User</button>
+      <button onclick="showBrandForm()">Brand</button>
     </div>
 
-    <script src="firebase-config.js"></script>
-    <script src="app.js"></script>
+    <div id="userForm">
+      <h2>User Login</h2>
+      <input id="userLoginEmail" type="email" placeholder="Email" />
+      <input id="userLoginPassword" type="password" placeholder="Password" />
+      <button onclick="userLogin()">Login</button>
+      <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
+      <div id="userSignup" class="hidden">
+        <input id="userSignupEmail" type="email" placeholder="Email" />
+        <input id="userSignupPassword" type="password" placeholder="Password" />
+        <input id="userCountry" type="text" placeholder="Country" />
+        <input id="userPhone" type="text" placeholder="Phone Number" />
+        <button onclick="userSignup()">Sign Up</button>
+      </div>
+    </div>
+
+    <div id="brandForm" class="hidden">
+      <h2>Brand Login</h2>
+      <input id="brandLoginEmail" type="email" placeholder="Email" />
+      <input id="brandLoginPassword" type="password" placeholder="Password" />
+      <button onclick="brandLogin()">Login</button>
+      <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
+      <div id="brandSignup" class="hidden">
+        <input id="brandSignupEmail" type="email" placeholder="Email" />
+        <input id="brandSignupPassword" type="password" placeholder="Password" />
+        <input id="brandName" type="text" placeholder="Brand Name" />
+        <input id="brandCountry" type="text" placeholder="Country" />
+        <input id="brandPhone" type="text" placeholder="Phone Number" />
+        <button onclick="brandSignup()">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
