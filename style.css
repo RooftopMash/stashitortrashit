@@ -1,98 +1,108 @@
 /* GLOBAL STYLES */
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f9;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f2f5;
   margin: 0;
   padding: 0;
-  line-height: 1.6; /* Improves readability */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .container {
-  max-width: 500px;
-  margin: 50px auto;
   background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Prevents content overflow */
+  padding: 30px;
+  width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
 }
 
-/* TYPOGRAPHY */
 h1 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 1.8rem; /* Scales better on mobile */
-  color: #333; /* Ensures better contrast */
+  color: #2c3e50;
 }
 
-/* BUTTONS */
 button {
-  display: block;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
-  background: #007bff;
+  background: #3498db;
   color: #fff;
   border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-  border-radius: 4px; /* Matches input styling */
+  font-weight: bold;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background: #0056b3;
-  transform: scale(1.02); /* Adds a subtle zoom effect */
+  background: #2980b9;
 }
 
-button:focus {
-  outline: 2px solid #0056b3;
-  outline-offset: 2px;
-}
-
-/* INPUT FIELDS */
 input {
-  display: block;
   width: 100%;
-  margin-bottom: 15px;
   padding: 10px;
+  margin-bottom: 15px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  border-radius: 5px;
+  font-size: 16px;
 }
 
-input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Adds a glow effect */
+h2 {
+  color: #34495e;
 }
 
-/* RESPONSIVENESS */
-@media (max-width: 768px) {
-  .container {
-    max-width: 90%;
-    margin: 20px auto;
-    padding: 15px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  button, input {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
+a {
+  color: #3498db;
+  text-decoration: none;
 }
 
-/* UTILITY CLASSES */
+a:hover {
+  text-decoration: underline;
+}
+
+/* Toggle Forms */
 .hidden {
-  display: none !important;
+  display: none;
 }
 
-.text-center {
-  text-align: center;
+.form-toggle {
+  display: flex;
+  justify-content: space-between;
 }
 
-.text-bold {
-  font-weight: bold;
+.form-toggle button {
+  width: 48%;
+  background: #2980b9;
+}
+
+.form-toggle button:hover {
+  background: #1f6f99;
+}
+
+/* Forms Section */
+.form-section {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sign-up Section */
+.signup-section {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+}
+
+/* Button on Signup */
+#userSignupBtn, #brandSignupBtn {
+  background: #2ecc71;
+}
+
+#userSignupBtn:hover, #brandSignupBtn:hover {
+  background: #27ae60;
 }
