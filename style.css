@@ -1,108 +1,92 @@
-/* GLOBAL STYLES */
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f0f2f5;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    background-color: #f8f8f8;
+    color: #333;
+    line-height: 1.6;
 }
 
 .container {
-  background: #fff;
-  padding: 30px;
-  width: 400px;
-  border-radius: 10px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
+/* Navbar Styles */
+.navbar {
+    background-color: #333;
+    padding: 10px 0;
+    text-align: center;
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background: #3498db;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s;
+.navbar ul {
+    list-style-type: none;
 }
 
-button:hover {
-  background: #2980b9;
+.navbar ul li {
+    display: inline;
+    margin: 0 20px;
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+.navbar ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-h2 {
-  color: #34495e;
+/* Main Content */
+.main-content {
+    text-align: center;
+    margin-top: 50px;
 }
 
-a {
-  color: #3498db;
-  text-decoration: none;
+.main-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
 }
 
-a:hover {
-  text-decoration: underline;
+.main-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
 }
 
-/* Toggle Forms */
-.hidden {
-  display: none;
+/* Rating Buttons */
+.rating-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 }
 
-.form-toggle {
-  display: flex;
-  justify-content: space-between;
+.stash-btn, .trash-btn {
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
 }
 
-.form-toggle button {
-  width: 48%;
-  background: #2980b9;
+.stash-btn {
+    background-color: #4CAF50;
+    color: white;
 }
 
-.form-toggle button:hover {
-  background: #1f6f99;
+.stash-btn:hover {
+    background-color: #45a049;
 }
 
-/* Forms Section */
-.form-section {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.trash-btn {
+    background-color: #f44336;
+    color: white;
 }
 
-/* Sign-up Section */
-.signup-section {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f7f7f7;
-  border-radius: 8px;
-}
-
-/* Button on Signup */
-#userSignupBtn, #brandSignupBtn {
-  background: #2ecc71;
-}
-
-#userSignupBtn:hover, #brandSignupBtn:hover {
-  background: #27ae60;
+.trash-btn:hover {
+    background-color: #e53935;
 }
