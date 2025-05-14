@@ -1,60 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stash or Trash???</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="App.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stash or Trash???</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Stash or Trash???</h1>
-    <nav>
-      <button onclick="showUserForm()">User</button>
-      <button onclick="showBrandForm()">Brand</button>
-    </nav>
-  </header>
-  
-  <!-- User Form -->
-  <div id="userForm" class="form-section">
-    <h2>User Login</h2>
-    <input id="userLoginEmail" type="email" placeholder="Email" />
-    <input id="userLoginPassword" type="password" placeholder="Password" />
-    <button id="userLoginBtn">Login</button>
-    <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
-    
-    <div id="userSignup" class="hidden">
-      <input id="userSignupEmail" type="email" placeholder="Email" />
-      <input id="userSignupPassword" type="password" placeholder="Password" />
-      <input id="userCountry" type="text" placeholder="Country" />
-      <input id="userPhone" type="text" placeholder="Phone Number" />
-      <h3>Social Media Links (Optional)</h3>
-      <input id="userFacebook" type="url" placeholder="Facebook Profile Link" />
-      <input id="userInstagram" type="url" placeholder="Instagram Profile Link" />
-      <input id="userTwitter" type="url" placeholder="Twitter Profile Link" />
-      <input id="userLinkedIn" type="url" placeholder="LinkedIn Profile Link" />
-      <input id="userTikTok" type="url" placeholder="TikTok Profile Link" />
-      <button id="userSignupBtn">Sign Up</button>
-    </div>
-  </div>
+    <header>
+        <h1>Stash or Trash???</h1>
+    </header>
 
-  <!-- Brand Form -->
-  <div id="brandForm" class="form-section hidden">
-    <h2>Brand Login</h2>
-    <input id="brandLoginEmail" type="email" placeholder="Email" />
-    <input id="brandLoginPassword" type="password" placeholder="Password" />
-    <button id="brandLoginBtn">Login</button>
-    <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
-    
-    <div id="brandSignup" class="hidden">
-      <input id="brandSignupEmail" type="email" placeholder="Email" />
-      <input id="brandSignupPassword" type="password" placeholder="Password" />
-      <input id="brandName" type="text" placeholder="Brand Name" />
-      <input id="brandCountry" type="text" placeholder="Country" />
-      <input id="brandPhone" type="text" placeholder="Phone Number" />
-      <button id="brandSignupBtn">Sign Up</button>
-    </div>
-  </div>
+    <main>
+        <div class="login-form">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" id="login-button">Login</button>
+            </form>
+            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Stash or Trash. All rights reserved.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
