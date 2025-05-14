@@ -3,49 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stash or Trash??? - Home</title>
+  <title>Stash or Trash???</title>
   <link rel="stylesheet" href="style.css">
+  <script type="module" src="App.js" defer></script>
 </head>
 <body>
-  <div class="container">
+  <header>
     <h1>Stash or Trash???</h1>
-    <div class="form-toggle">
+    <nav>
       <button onclick="showUserForm()">User</button>
       <button onclick="showBrandForm()">Brand</button>
-    </div>
-
-    <div id="userForm">
-      <h2>User Login</h2>
-      <input id="userLoginEmail" type="email" placeholder="Email" />
-      <input id="userLoginPassword" type="password" placeholder="Password" />
-      <button onclick="userLogin()">Login</button>
-      <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
-      <div id="userSignup" class="hidden">
-        <input id="userSignupEmail" type="email" placeholder="Email" />
-        <input id="userSignupPassword" type="password" placeholder="Password" />
-        <input id="userCountry" type="text" placeholder="Country" />
-        <input id="userPhone" type="text" placeholder="Phone Number" />
-        <button onclick="userSignup()">Sign Up</button>
-      </div>
-    </div>
-
-    <div id="brandForm" class="hidden">
-      <h2>Brand Login</h2>
-      <input id="brandLoginEmail" type="email" placeholder="Email" />
-      <input id="brandLoginPassword" type="password" placeholder="Password" />
-      <button onclick="brandLogin()">Login</button>
-      <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
-      <div id="brandSignup" class="hidden">
-        <input id="brandSignupEmail" type="email" placeholder="Email" />
-        <input id="brandSignupPassword" type="password" placeholder="Password" />
-        <input id="brandName" type="text" placeholder="Brand Name" />
-        <input id="brandCountry" type="text" placeholder="Country" />
-        <input id="brandPhone" type="text" placeholder="Phone Number" />
-        <button onclick="brandSignup()">Sign Up</button>
-      </div>
+    </nav>
+  </header>
+  
+  <!-- User Form -->
+  <div id="userForm" class="form-section">
+    <h2>User Login</h2>
+    <input id="userLoginEmail" type="email" placeholder="Email" />
+    <input id="userLoginPassword" type="password" placeholder="Password" />
+    <button id="userLoginBtn">Login</button>
+    <p>New here? <a href="#" onclick="toggleUserSignup()">Sign up</a></p>
+    
+    <div id="userSignup" class="hidden">
+      <input id="userSignupEmail" type="email" placeholder="Email" />
+      <input id="userSignupPassword" type="password" placeholder="Password" />
+      <input id="userCountry" type="text" placeholder="Country" />
+      <input id="userPhone" type="text" placeholder="Phone Number" />
+      <h3>Social Media Links (Optional)</h3>
+      <input id="userFacebook" type="url" placeholder="Facebook Profile Link" />
+      <input id="userInstagram" type="url" placeholder="Instagram Profile Link" />
+      <input id="userTwitter" type="url" placeholder="Twitter Profile Link" />
+      <input id="userLinkedIn" type="url" placeholder="LinkedIn Profile Link" />
+      <input id="userTikTok" type="url" placeholder="TikTok Profile Link" />
+      <button id="userSignupBtn">Sign Up</button>
     </div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <!-- Brand Form -->
+  <div id="brandForm" class="form-section hidden">
+    <h2>Brand Login</h2>
+    <input id="brandLoginEmail" type="email" placeholder="Email" />
+    <input id="brandLoginPassword" type="password" placeholder="Password" />
+    <button id="brandLoginBtn">Login</button>
+    <p>New here? <a href="#" onclick="toggleBrandSignup()">Sign up</a></p>
+    
+    <div id="brandSignup" class="hidden">
+      <input id="brandSignupEmail" type="email" placeholder="Email" />
+      <input id="brandSignupPassword" type="password" placeholder="Password" />
+      <input id="brandName" type="text" placeholder="Brand Name" />
+      <input id="brandCountry" type="text" placeholder="Country" />
+      <input id="brandPhone" type="text" placeholder="Phone Number" />
+      <button id="brandSignupBtn">Sign Up</button>
+    </div>
+  </div>
 </body>
 </html>
